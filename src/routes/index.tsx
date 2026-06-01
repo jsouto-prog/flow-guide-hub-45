@@ -539,66 +539,22 @@ function Index() {
 
       {/* Main layout */}
       <div className="mx-auto max-w-7xl px-6 py-12">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[260px_1fr]">
-          {/* Sidebar */}
-          <aside className="lg:sticky lg:top-8 lg:h-[calc(100vh-4rem)] lg:overflow-y-auto">
-            <div className="mb-4">
-              <input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Buscar etapa, documento..."
-                className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-              />
+        <main className="min-w-0">
+          {/* Search bar */}
+          <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Buscar etapa, documento, actividad..."
+              className="w-full max-w-md rounded-lg border border-border bg-card px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+            />
+            <div className="flex gap-2 text-xs">
+              <a href="#horarios" className="rounded-lg border border-border bg-card px-3 py-2 font-medium hover:bg-secondary">Horarios</a>
+              <a href="#faq" className="rounded-lg border border-border bg-card px-3 py-2 font-medium hover:bg-secondary">FAQ</a>
             </div>
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Índice del proceso
-            </div>
-            <nav className="space-y-1">
-              {filtered.map((s) => {
-                const isActive = active === s.id;
-                return (
-                  <button
-                    key={s.id}
-                    onClick={() => scrollTo(s.id)}
-                    className={`flex w-full items-start gap-3 rounded-lg px-3 py-2 text-left text-sm transition-all ${
-                      isActive
-                        ? "bg-secondary font-semibold"
-                        : "hover:bg-secondary/50"
-                    }`}
-                  >
-                    <span
-                      className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md text-[10px] font-bold text-white"
-                      style={{
-                        background: `var(${s.phaseVar})`,
-                        opacity: isActive ? 1 : 0.7,
-                      }}
-                    >
-                      {s.number}
-                    </span>
-                    <span className="leading-tight">{s.name}</span>
-                  </button>
-                );
-              })}
-              <button
-                onClick={() => scrollTo("horarios")}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-all hover:bg-secondary/50"
-              >
-                <span className="flex h-6 w-6 items-center justify-center rounded-md bg-muted text-[10px]">⏱</span>
-                Horarios & Pack and Hold
-              </button>
-              <button
-                onClick={() => scrollTo("faq")}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-all hover:bg-secondary/50"
-              >
-                <span className="flex h-6 w-6 items-center justify-center rounded-md bg-muted text-[10px]">?</span>
-                Preguntas frecuentes
-              </button>
-            </nav>
-          </aside>
+          </div>
 
-          {/* Content */}
-          <main className="min-w-0">
             {/* Flow diagram */}
             <section className="mb-16 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
               <h2 className="mb-1 text-xl font-bold">Mapa del proceso</h2>
@@ -665,63 +621,7 @@ function Index() {
                     </div>
 
                     {isOpen && (
-                      <div className="space-y-8 p-6 md:p-8">
-                        {/* Objective */}
-                        <div>
-                          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                            Objetivo
-                          </div>
-                          <p className="mt-2 text-base leading-relaxed">{s.objective}</p>
-                        </div>
-
-                        {/* Meta grid */}
-                        <div className="grid gap-4 md:grid-cols-3">
-                          <MetaCard label="Responsable" items={[s.responsible]} />
-                          <MetaCard label="Entradas" items={s.inputs} />
-                          <MetaCard label="Dependencias" items={s.dependencies} />
-                        </div>
-
-                        {/* Activities timeline */}
-                        <div>
-                          <div className="mb-4 text-sm font-bold">Actividades</div>
-                          <div className="space-y-3">
-                            {s.activities.map((a, i) => (
-                              <Activity key={i} activity={a} phaseVar={s.phaseVar} />
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Outputs + Docs */}
-                        <div className="grid gap-4 md:grid-cols-2">
-                          <MetaCard label="Documentación asociada" items={s.docs} />
-                          <MetaCard label="Salidas / Resultados" items={s.outputs} />
-                        </div>
-
-                        {/* Warehouse */}
-                        <div className="rounded-xl border-l-4 bg-secondary/50 p-4" style={{ borderColor: `var(${s.phaseVar})` }}>
-                          <div className="text-xs font-bold uppercase tracking-wider" style={{ color: `var(${s.phaseVar})` }}>
-                            Qué pasa en el warehouse
-                          </div>
-                          <p className="mt-1 text-sm">{s.warehouse}</p>
-                        </div>
-
-                        {/* Critical */}
-                        {s.critical && (
-                          <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
-                            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-destructive">
-                              <span>⚠</span> Puntos críticos / Validaciones
-                            </div>
-                            <ul className="mt-2 space-y-1 text-sm">
-                              {s.critical.map((c, i) => (
-                                <li key={i} className="flex gap-2">
-                                  <span className="text-destructive">•</span>
-                                  <span>{c}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
+                      <StageBody stage={s} />
                     )}
                   </section>
                 );
@@ -796,8 +696,7 @@ function Index() {
             <footer className="mt-20 border-t border-border pt-8 text-center text-xs text-muted-foreground">
               Proceso 5411 — Guía interactiva operativa
             </footer>
-          </main>
-        </div>
+        </main>
       </div>
     </div>
   );
