@@ -939,6 +939,16 @@ function StageBody({ stage: s }: { stage: Stage }) {
                 {s.number}
               </span>
             </div>
+
+            {/* Ver Video */}
+            <button
+              className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
+              style={{ background: `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))` }}
+              onClick={() => alert(`Video de la etapa: ${s.name}`)}
+            >
+              <Play className="h-4 w-4 fill-current" />
+              Ver Video
+            </button>
           </div>
         </div>
       </div>
