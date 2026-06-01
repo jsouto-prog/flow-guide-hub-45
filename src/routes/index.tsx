@@ -1,6 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import logisticsFlowAsset from "@/assets/logistics-flow.png.asset.json";
+import {
+  ClipboardList,
+  Warehouse,
+  Users,
+  Inbox,
+  Link2,
+  ListChecks,
+  FileText,
+  PackageCheck,
+  AlertTriangle,
+  Boxes,
+  Truck,
+  ScanLine,
+  PackageOpen,
+  ClipboardCheck,
+  Forklift,
+} from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -522,66 +539,22 @@ function Index() {
 
       {/* Main layout */}
       <div className="mx-auto max-w-7xl px-6 py-12">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[260px_1fr]">
-          {/* Sidebar */}
-          <aside className="lg:sticky lg:top-8 lg:h-[calc(100vh-4rem)] lg:overflow-y-auto">
-            <div className="mb-4">
-              <input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Buscar etapa, documento..."
-                className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-              />
+        <main className="min-w-0">
+          {/* Search bar */}
+          <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Buscar etapa, documento, actividad..."
+              className="w-full max-w-md rounded-lg border border-border bg-card px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+            />
+            <div className="flex gap-2 text-xs">
+              <a href="#horarios" className="rounded-lg border border-border bg-card px-3 py-2 font-medium hover:bg-secondary">Horarios</a>
+              <a href="#faq" className="rounded-lg border border-border bg-card px-3 py-2 font-medium hover:bg-secondary">FAQ</a>
             </div>
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Índice del proceso
-            </div>
-            <nav className="space-y-1">
-              {filtered.map((s) => {
-                const isActive = active === s.id;
-                return (
-                  <button
-                    key={s.id}
-                    onClick={() => scrollTo(s.id)}
-                    className={`flex w-full items-start gap-3 rounded-lg px-3 py-2 text-left text-sm transition-all ${
-                      isActive
-                        ? "bg-secondary font-semibold"
-                        : "hover:bg-secondary/50"
-                    }`}
-                  >
-                    <span
-                      className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md text-[10px] font-bold text-white"
-                      style={{
-                        background: `var(${s.phaseVar})`,
-                        opacity: isActive ? 1 : 0.7,
-                      }}
-                    >
-                      {s.number}
-                    </span>
-                    <span className="leading-tight">{s.name}</span>
-                  </button>
-                );
-              })}
-              <button
-                onClick={() => scrollTo("horarios")}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-all hover:bg-secondary/50"
-              >
-                <span className="flex h-6 w-6 items-center justify-center rounded-md bg-muted text-[10px]">⏱</span>
-                Horarios & Pack and Hold
-              </button>
-              <button
-                onClick={() => scrollTo("faq")}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-all hover:bg-secondary/50"
-              >
-                <span className="flex h-6 w-6 items-center justify-center rounded-md bg-muted text-[10px]">?</span>
-                Preguntas frecuentes
-              </button>
-            </nav>
-          </aside>
+          </div>
 
-          {/* Content */}
-          <main className="min-w-0">
             {/* Flow diagram */}
             <section className="mb-16 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
               <h2 className="mb-1 text-xl font-bold">Mapa del proceso</h2>
@@ -648,63 +621,7 @@ function Index() {
                     </div>
 
                     {isOpen && (
-                      <div className="space-y-8 p-6 md:p-8">
-                        {/* Objective */}
-                        <div>
-                          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                            Objetivo
-                          </div>
-                          <p className="mt-2 text-base leading-relaxed">{s.objective}</p>
-                        </div>
-
-                        {/* Meta grid */}
-                        <div className="grid gap-4 md:grid-cols-3">
-                          <MetaCard label="Responsable" items={[s.responsible]} />
-                          <MetaCard label="Entradas" items={s.inputs} />
-                          <MetaCard label="Dependencias" items={s.dependencies} />
-                        </div>
-
-                        {/* Activities timeline */}
-                        <div>
-                          <div className="mb-4 text-sm font-bold">Actividades</div>
-                          <div className="space-y-3">
-                            {s.activities.map((a, i) => (
-                              <Activity key={i} activity={a} phaseVar={s.phaseVar} />
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Outputs + Docs */}
-                        <div className="grid gap-4 md:grid-cols-2">
-                          <MetaCard label="Documentación asociada" items={s.docs} />
-                          <MetaCard label="Salidas / Resultados" items={s.outputs} />
-                        </div>
-
-                        {/* Warehouse */}
-                        <div className="rounded-xl border-l-4 bg-secondary/50 p-4" style={{ borderColor: `var(${s.phaseVar})` }}>
-                          <div className="text-xs font-bold uppercase tracking-wider" style={{ color: `var(${s.phaseVar})` }}>
-                            Qué pasa en el warehouse
-                          </div>
-                          <p className="mt-1 text-sm">{s.warehouse}</p>
-                        </div>
-
-                        {/* Critical */}
-                        {s.critical && (
-                          <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
-                            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-destructive">
-                              <span>⚠</span> Puntos críticos / Validaciones
-                            </div>
-                            <ul className="mt-2 space-y-1 text-sm">
-                              {s.critical.map((c, i) => (
-                                <li key={i} className="flex gap-2">
-                                  <span className="text-destructive">•</span>
-                                  <span>{c}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
+                      <StageBody stage={s} />
                     )}
                   </section>
                 );
@@ -779,8 +696,7 @@ function Index() {
             <footer className="mt-20 border-t border-border pt-8 text-center text-xs text-muted-foreground">
               Proceso 5411 — Guía interactiva operativa
             </footer>
-          </main>
-        </div>
+        </main>
       </div>
     </div>
   );
@@ -801,6 +717,323 @@ function MetaCard({ label, items }: { label: string; items: string[] }) {
         ))}
       </ul>
     </div>
+  );
+}
+
+const WAREHOUSE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  inbound: Truck,
+  cartons: PackageOpen,
+  "control-arribo": ScanLine,
+  outbound: ClipboardCheck,
+  "ordenes-mintsoft": ListChecks,
+  stock: Boxes,
+  batches: Forklift,
+  shipping: PackageCheck,
+};
+
+function StageBody({ stage: s }: { stage: Stage }) {
+  const WhIcon = WAREHOUSE_ICONS[s.id] ?? Warehouse;
+  return (
+    <div className="space-y-8 p-6 md:p-8">
+      {/* Objective banner — common to both areas */}
+      <div className="rounded-xl border border-border bg-background p-5">
+        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Objetivo de la etapa
+        </div>
+        <p className="mt-2 text-base leading-relaxed">{s.objective}</p>
+      </div>
+
+      {/* Two perspectives: Admin vs Warehouse */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* LEFT — Administración */}
+        <div
+          className="relative rounded-2xl border border-border bg-background p-5 md:p-6"
+          style={{
+            background:
+              "linear-gradient(180deg, oklch(0.98 0.01 250) 0%, var(--card) 100%)",
+          }}
+        >
+          <div className="mb-5 flex items-center gap-3 border-b border-border pb-4">
+            <div
+              className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[var(--shadow-soft)]"
+              style={{ background: "var(--gradient-hero)" }}
+            >
+              <ClipboardList className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                Perspectiva
+              </div>
+              <h3 className="text-lg font-bold">Administración</h3>
+            </div>
+          </div>
+
+          <div className="space-y-5">
+            {/* Responsable */}
+            <div className="flex items-start gap-3 rounded-lg bg-secondary/40 p-3">
+              <Users className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Responsable
+                </div>
+                <div className="text-sm font-medium">{s.responsible}</div>
+              </div>
+            </div>
+
+            {/* Entradas + Dependencias */}
+            <div className="grid gap-3 sm:grid-cols-2">
+              <MiniList
+                icon={<Inbox className="h-4 w-4" />}
+                label="Entradas"
+                items={s.inputs}
+              />
+              <MiniList
+                icon={<Link2 className="h-4 w-4" />}
+                label="Dependencias"
+                items={s.dependencies}
+              />
+            </div>
+
+            {/* Actividades */}
+            <div>
+              <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <ListChecks className="h-4 w-4" /> Actividades administrativas
+              </div>
+              <div className="space-y-2">
+                {s.activities.map((a, i) => (
+                  <Activity key={i} activity={a} phaseVar={s.phaseVar} />
+                ))}
+              </div>
+            </div>
+
+            {/* Documentación + Salidas */}
+            <div className="grid gap-3 sm:grid-cols-2">
+              <MiniList
+                icon={<FileText className="h-4 w-4" />}
+                label="Documentación"
+                items={s.docs}
+              />
+              <MiniList
+                icon={<PackageCheck className="h-4 w-4" />}
+                label="Salidas"
+                items={s.outputs}
+              />
+            </div>
+
+            {/* Críticos */}
+            {s.critical && (
+              <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-destructive">
+                  <AlertTriangle className="h-4 w-4" /> Puntos críticos / Validaciones
+                </div>
+                <ul className="mt-2 space-y-1 text-sm">
+                  {s.critical.map((c, i) => (
+                    <li key={i} className="flex gap-2">
+                      <span className="text-destructive">•</span>
+                      <span>{c}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT — Warehouse */}
+        <div
+          className="relative overflow-hidden rounded-2xl border p-5 md:p-6"
+          style={{
+            borderColor: `oklch(from var(${s.phaseVar}) l c h / 0.3)`,
+            background: `linear-gradient(180deg, oklch(from var(${s.phaseVar}) 0.97 0.02 h) 0%, var(--card) 100%)`,
+          }}
+        >
+          {/* Decorative big icon */}
+          <WhIcon
+            className="pointer-events-none absolute -right-6 -top-6 h-44 w-44 opacity-[0.07]"
+          />
+
+          <div className="mb-5 flex items-center gap-3 border-b pb-4" style={{ borderColor: `oklch(from var(${s.phaseVar}) l c h / 0.2)` }}>
+            <div
+              className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[var(--shadow-soft)]"
+              style={{
+                background: `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.1) c h))`,
+              }}
+            >
+              <Warehouse className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                Perspectiva
+              </div>
+              <h3 className="text-lg font-bold">Warehouse</h3>
+            </div>
+          </div>
+
+          <div className="relative space-y-5">
+            {/* Hero icon + warehouse statement */}
+            <div className="flex flex-col items-center gap-3 rounded-xl bg-card p-5 text-center shadow-sm">
+              <div
+                className="flex h-16 w-16 items-center justify-center rounded-2xl text-white"
+                style={{
+                  background: `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
+                }}
+              >
+                <WhIcon className="h-8 w-8" />
+              </div>
+              <div
+                className="text-[10px] font-bold uppercase tracking-[0.2em]"
+                style={{ color: `var(${s.phaseVar})` }}
+              >
+                Qué pasa físicamente
+              </div>
+              <p className="text-sm leading-relaxed">{s.warehouse}</p>
+            </div>
+
+            {/* Metric chips for visual balance */}
+            <div className="grid grid-cols-3 gap-2">
+              <Chip
+                phaseVar={s.phaseVar}
+                value={s.activities.length}
+                label="Pasos op."
+              />
+              <Chip
+                phaseVar={s.phaseVar}
+                value={s.docs.length}
+                label="Documentos"
+              />
+              <Chip
+                phaseVar={s.phaseVar}
+                value={s.inputs.length}
+                label="Entradas"
+              />
+            </div>
+
+            {/* Visual flow strip */}
+            <div className="rounded-xl border border-border bg-card p-4">
+              <div className="mb-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                Flujo físico
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <FlowStep icon={<Truck className="h-4 w-4" />} label="Recepción" active={s.number <= 3} phaseVar={s.phaseVar} />
+                <Dash phaseVar={s.phaseVar} />
+                <FlowStep icon={<Boxes className="h-4 w-4" />} label="Almacén" active={s.number >= 2 && s.number <= 6} phaseVar={s.phaseVar} />
+                <Dash phaseVar={s.phaseVar} />
+                <FlowStep icon={<PackageOpen className="h-4 w-4" />} label="Picking" active={s.number >= 6 && s.number <= 7} phaseVar={s.phaseVar} />
+                <Dash phaseVar={s.phaseVar} />
+                <FlowStep icon={<Truck className="h-4 w-4" />} label="Despacho" active={s.number >= 7} phaseVar={s.phaseVar} />
+              </div>
+            </div>
+
+            {/* Etapa badge */}
+            <div
+              className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3"
+            >
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Etapa operativa
+              </span>
+              <span
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white"
+                style={{ background: `var(${s.phaseVar})` }}
+              >
+                {s.number}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MiniList({
+  icon,
+  label,
+  items,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  items: string[];
+}) {
+  return (
+    <div className="rounded-lg border border-border bg-card p-3">
+      <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+        {icon} {label}
+      </div>
+      <ul className="space-y-1">
+        {items.map((it, i) => (
+          <li key={i} className="flex gap-2 text-xs">
+            <span className="text-primary">›</span>
+            <span>{it}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function Chip({
+  phaseVar,
+  value,
+  label,
+}: {
+  phaseVar: string;
+  value: number;
+  label: string;
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-3 text-center">
+      <div
+        className="text-2xl font-bold"
+        style={{ color: `var(${phaseVar})` }}
+      >
+        {value}
+      </div>
+      <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
+    </div>
+  );
+}
+
+function FlowStep({
+  icon,
+  label,
+  active,
+  phaseVar,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  active: boolean;
+  phaseVar: string;
+}) {
+  return (
+    <div className="flex flex-1 flex-col items-center gap-1">
+      <div
+        className="flex h-8 w-8 items-center justify-center rounded-lg transition-all"
+        style={{
+          background: active ? `var(${phaseVar})` : "var(--secondary)",
+          color: active ? "white" : "var(--muted-foreground)",
+          boxShadow: active ? "var(--shadow-soft)" : undefined,
+        }}
+      >
+        {icon}
+      </div>
+      <div
+        className="text-[9px] font-semibold uppercase tracking-wider"
+        style={{ color: active ? `var(${phaseVar})` : "var(--muted-foreground)" }}
+      >
+        {label}
+      </div>
+    </div>
+  );
+}
+
+function Dash({ phaseVar }: { phaseVar: string }) {
+  return (
+    <div
+      className="h-px flex-1"
+      style={{ background: `oklch(from var(${phaseVar}) l c h / 0.3)` }}
+    />
   );
 }
 
