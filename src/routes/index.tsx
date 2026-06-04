@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import logisticsFlowAsset from "@/assets/logistics-flow.png.asset.json";
-import heroFlowAsset from "@/assets/hero-flow-transparent.png.asset.json";
+import heroFlowAsset from "@/assets/hero-flow-v2.png.asset.json";
 import {
   ClipboardList,
   Warehouse,
@@ -481,8 +481,16 @@ function Index() {
         <div className="absolute inset-0" style={{
           backgroundImage: "radial-gradient(circle at 20% 30%, oklch(0.6 0.2 270 / 0.15), transparent 50%), radial-gradient(circle at 80% 70%, oklch(0.7 0.18 50 / 0.12), transparent 50%)"
         }} />
-        <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 py-20 md:py-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,45%)]">
-          <div className="min-w-0">
+        <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-28">
+          {/* Hero illustration - absolutely positioned on desktop, doesn't affect step grid */}
+          <div className="mb-10 flex justify-center lg:absolute lg:right-6 lg:top-8 lg:mb-0 lg:w-[42%] lg:max-w-[560px]">
+            <img
+              src={heroFlowAsset.url}
+              alt="Flujo logístico 5411 y triángulo de comunicación"
+              className="w-full h-auto rounded-2xl shadow-xl"
+            />
+          </div>
+          <div className="min-w-0 lg:max-w-[55%]">
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs font-medium backdrop-blur">
             <span className="h-2 w-2 rounded-full" style={{ background: "var(--phase-4)" }} />
             Proceso Operativo Logístico
@@ -534,15 +542,6 @@ function Index() {
               </button>
             ))}
           </div>
-          </div>
-
-          {/* Hero illustration */}
-          <div className="order-last flex items-center justify-center lg:order-none">
-            <img
-              src={heroFlowAsset.url}
-              alt="Flujo logístico 5411 y triángulo de comunicación"
-              className="w-full h-auto rounded-2xl shadow-xl"
-            />
           </div>
         </div>
       </header>
