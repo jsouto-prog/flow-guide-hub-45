@@ -1190,6 +1190,15 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
           </div>
         </div>
 
+        <div className="mb-8 flex justify-center rounded-2xl border border-border bg-card/40 p-4 md:p-8">
+          <img
+            src={flujoComunicacionAsset.url}
+            alt="Flujo logístico y triángulo de comunicación 5411"
+            className="block h-auto w-full max-w-5xl select-none"
+            draggable={false}
+          />
+        </div>
+
         <div className="relative overflow-hidden rounded-2xl border border-border bg-white shadow-[var(--shadow-soft)]">
           <img
             src={logisticsFlowAsset.url}
