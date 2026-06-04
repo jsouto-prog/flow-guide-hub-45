@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import logisticsFlowAsset from "@/assets/logistics-flow.png.asset.json";
+import flujoComunicacionAsset from "@/assets/flujo-comunicacion.png.asset.json";
 import {
   ClipboardList,
   Warehouse,
@@ -1187,6 +1188,15 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
           <div className="hidden text-xs text-muted-foreground md:block">
             Inbound → Recepción → Escaneo → Pick &amp; Pack → Etiquetado → Outbound
           </div>
+        </div>
+
+        <div className="mb-8 flex justify-center rounded-2xl border border-border bg-card/40 p-4 md:p-8">
+          <img
+            src={flujoComunicacionAsset.url}
+            alt="Flujo logístico y triángulo de comunicación 5411"
+            className="block h-auto w-full max-w-5xl select-none"
+            draggable={false}
+          />
         </div>
 
         <div className="relative overflow-hidden rounded-2xl border border-border bg-white shadow-[var(--shadow-soft)]">
