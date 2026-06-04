@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import logisticsFlowAsset from "@/assets/logistics-flow.png.asset.json";
+import flujoComunicacionAsset from "@/assets/flujo-comunicacion.png.asset.json";
 import {
   ClipboardList,
   Warehouse,
