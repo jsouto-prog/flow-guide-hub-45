@@ -486,7 +486,7 @@ function Index() {
           <img
             src={flujoHeroAsset.url}
             alt="Flujo logístico 5411"
-            className="pointer-events-none hidden lg:block absolute right-6 top-16 w-[46%] max-w-[640px] h-auto select-none"
+            className="pointer-events-none hidden lg:block absolute right-6 top-40 w-[46%] max-w-[640px] h-auto select-none"
             style={{ mixBlendMode: "multiply" }}
           />
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs font-medium backdrop-blur">
@@ -504,7 +504,7 @@ function Index() {
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl">
             Guía interactiva de principio a fin: desde el aviso del cliente hasta el despacho y
-            las devoluciones. Navegá por las 8 etapas del flujo operativo.
+            las devoluciones.
           </p>
           {/* Inline image for mobile/tablet — placed above CTAs */}
           <img
@@ -530,7 +530,7 @@ function Index() {
           </div>
 
           {/* Phase pills */}
-          <div className="mt-14 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
+          <div className="mt-24 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
             {STAGES.map((s) => (
               <button
                 key={s.id}
