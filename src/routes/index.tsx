@@ -504,7 +504,7 @@ function Index() {
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl">
             Guía interactiva de principio a fin: desde el aviso del cliente hasta el despacho y
-            las devoluciones. Navegá por las 8 etapas del flujo operativo.
+            las devoluciones.
           </p>
           {/* Inline image for mobile/tablet — placed above CTAs */}
           <img
