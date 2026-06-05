@@ -486,7 +486,7 @@ function Index() {
           <img
             src={flujoHeroAsset.url}
             alt="Flujo logístico 5411"
-            className="pointer-events-none hidden lg:block absolute right-6 top-16 w-[46%] max-w-[640px] h-auto select-none"
+            className="pointer-events-none hidden lg:block absolute right-6 top-40 w-[46%] max-w-[640px] h-auto select-none"
             style={{ mixBlendMode: "multiply" }}
           />
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs font-medium backdrop-blur">
