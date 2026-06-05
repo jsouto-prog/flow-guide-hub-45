@@ -530,7 +530,7 @@ function Index() {
           </div>
 
           {/* Phase pills */}
-          <div className="mt-14 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
+          <div className="mt-24 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
             {STAGES.map((s) => (
               <button
                 key={s.id}
