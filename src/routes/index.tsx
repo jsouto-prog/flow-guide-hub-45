@@ -482,6 +482,13 @@ function Index() {
           backgroundImage: "radial-gradient(circle at 20% 30%, oklch(0.6 0.2 270 / 0.15), transparent 50%), radial-gradient(circle at 80% 70%, oklch(0.7 0.18 50 / 0.12), transparent 50%)"
         }} />
         <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-28">
+          {/* Floating hero image — desktop: absolute top-right; mobile/tablet: inline before CTAs */}
+          <img
+            src={flujoHeroAsset.url}
+            alt="Flujo logístico 5411"
+            className="pointer-events-none hidden lg:block absolute right-6 top-16 w-[46%] max-w-[640px] h-auto select-none"
+            style={{ mixBlendMode: "multiply" }}
+          />
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs font-medium backdrop-blur">
             <span className="h-2 w-2 rounded-full" style={{ background: "var(--phase-4)" }} />
             Proceso Operativo Logístico
@@ -499,6 +506,13 @@ function Index() {
             Guía interactiva de principio a fin: desde el aviso del cliente hasta el despacho y
             las devoluciones. Navegá por las 8 etapas del flujo operativo.
           </p>
+          {/* Inline image for mobile/tablet — placed above CTAs */}
+          <img
+            src={flujoHeroAsset.url}
+            alt="Flujo logístico 5411"
+            className="mt-8 block lg:hidden w-full max-w-2xl h-auto select-none"
+            style={{ mixBlendMode: "multiply" }}
+          />
           <div className="mt-10 flex flex-wrap gap-3">
             <button
               onClick={() => scrollTo(STAGES[0].id)}
