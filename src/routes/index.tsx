@@ -1167,7 +1167,7 @@ const FLOW_HOTSPOTS: {
     title: "Llega el camión / avión",
     description:
       "Inbound: DHL, UPS o freight entregan la mercadería. El cliente envió previamente el Packing List y se creó el ASN en Mintsoft.",
-    targetId: "inbound",
+    targetId: "inbound-fase-1",
     phaseVar: "--phase-1",
   },
   {
@@ -1199,7 +1199,7 @@ const FLOW_HOTSPOTS: {
     title: "Etiquetan y preparan envío",
     description:
       "Generación de labels, tracking number y commercial invoice. Preparación de las cajas para el pickup del carrier.",
-    targetId: "outbound",
+    targetId: "outbound-fase-1",
     phaseVar: "--phase-6",
   },
   {
