@@ -715,6 +715,7 @@ function Index() {
             </footer>
         </main>
       </div>
+      <VideoModal open={videoOpen} onClose={() => setVideoOpen(false)} />
     </div>
   );
 }
@@ -748,7 +749,7 @@ const WAREHOUSE_ICONS: Record<string, React.ComponentType<{ className?: string }
   shipping: PackageCheck,
 };
 
-function StageBody({ stage: s }: { stage: Stage }) {
+function StageBody({ stage: s, onOpenVideo }: { stage: Stage; onOpenVideo?: () => void }) {
   const WhIcon = WAREHOUSE_ICONS[s.id] ?? Warehouse;
   return (
     <div className="space-y-8 p-6 md:p-8">
@@ -960,7 +961,7 @@ function StageBody({ stage: s }: { stage: Stage }) {
             <button
               className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
               style={{ background: `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))` }}
-              onClick={() => alert(`Video de la etapa: ${s.name}`)}
+              onClick={() => onOpenVideo ? onOpenVideo() : alert(`Video de la etapa: ${s.name}`)}
             >
               <Play className="h-4 w-4 fill-current" />
               Ver Video
