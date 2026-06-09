@@ -739,10 +739,10 @@ function MetaCard({ label, items }: { label: string; items: string[] }) {
 }
 
 const WAREHOUSE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  inbound: Truck,
+  "inbound-fase-1": Truck,
   cartons: PackageOpen,
   "control-arribo": ScanLine,
-  outbound: ClipboardCheck,
+  "outbound-fase-1": ClipboardCheck,
   "ordenes-mintsoft": ListChecks,
   stock: Boxes,
   batches: Forklift,
