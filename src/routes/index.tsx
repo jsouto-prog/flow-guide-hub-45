@@ -432,6 +432,7 @@ function Index() {
   const [query, setQuery] = useState("");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [videoOpen, setVideoOpen] = useState(false);
+  const [openNav, setOpenNav] = useState<string | null>(null);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
