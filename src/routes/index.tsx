@@ -531,24 +531,12 @@ function Index() {
             </a>
           </div>
 
-          {/* Phase pills */}
-          <div className="mt-24 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8" style={{ marginTop: "calc(6rem + 100px)" }}>
-            {STAGES.map((s) => (
-              <button
-                key={s.id}
-                onClick={() => scrollTo(s.id)}
-                className="group rounded-xl border border-border bg-card p-3 text-left transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-soft)]"
-              >
-                <div
-                  className="mb-2 inline-flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold text-white"
-                  style={{ background: `var(${s.phaseVar})` }}
-                >
-                  {s.number}
-                </div>
-                <div className="text-xs font-semibold leading-tight">{s.name}</div>
-              </button>
-            ))}
-          </div>
+          {/* Navegación principal: 4 secciones (Inbound, Imagen, Outbound, Shipping) */}
+          <NavBar
+            openNav={openNav}
+            setOpenNav={setOpenNav}
+            scrollTo={scrollTo}
+          />
         </div>
       </header>
 
