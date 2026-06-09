@@ -973,6 +973,38 @@ function StageBody({ stage: s, onOpenVideo }: { stage: Stage; onOpenVideo?: () =
   );
 }
 
+function VideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  if (!open) return null;
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-sm rounded-2xl border border-border bg-card p-3 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute -top-3 -right-3 flex h-8 w-8 items-center justify-center rounded-full bg-background border border-border text-foreground shadow hover:bg-secondary transition-colors"
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+        <div className="aspect-[9/16] w-full overflow-hidden rounded-xl bg-black">
+          <iframe
+            className="h-full w-full"
+            src="https://www.youtube.com/embed/eJvWNrbTwZc?autoplay=1&rel=0"
+            title="Video Inbond"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function MiniList({
   icon,
   label,
