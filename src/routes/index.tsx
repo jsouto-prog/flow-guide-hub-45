@@ -638,7 +638,7 @@ function Index() {
                     </div>
 
                     {isOpen && (
-                      <StageBody stage={s} onOpenVideo={s.id === "inbound" ? () => setVideoOpen(true) : undefined} />
+                      <StageBody stage={s} onOpenVideo={s.id === "inbound-fase-1" ? () => setVideoOpen(true) : undefined} />
                     )}
                   </section>
                 );
