@@ -433,6 +433,7 @@ function Index() {
   const [query, setQuery] = useState("");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [videoOpen, setVideoOpen] = useState(false);
+  const [asnVideoOpen, setAsnVideoOpen] = useState(false);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -639,7 +640,11 @@ function Index() {
                     </div>
 
                     {isOpen && (
-                      <StageBody stage={s} onOpenVideo={s.id === "inbound" ? () => setVideoOpen(true) : undefined} />
+                     <StageBody
+                       stage={s}
+                       onOpenVideo={s.id === "inbound" ? () => setVideoOpen(true) : undefined}
+                       onOpenAsnVideo={s.id === "inbound" ? () => setAsnVideoOpen(true) : undefined}
+                     />
                     )}
                   </section>
                 );
@@ -717,6 +722,7 @@ function Index() {
         </main>
       </div>
       <VideoModal open={videoOpen} onClose={() => setVideoOpen(false)} />
+      <AsnVideoModal open={asnVideoOpen} onClose={() => setAsnVideoOpen(false)} />
     </div>
   );
 }
