@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import logisticsFlowAsset from "@/assets/logistics-flow.png.asset.json";
 import flujoHeroAsset from "@/assets/flujo-logistico-hero.png.asset.json";
+import asnVideoAsset from "@/assets/asn-tutorial.mp4.asset.json";
 import {
   ClipboardList,
   Warehouse,
@@ -433,6 +434,7 @@ function Index() {
   const [query, setQuery] = useState("");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [videoOpen, setVideoOpen] = useState(false);
+  const [asnVideoOpen, setAsnVideoOpen] = useState(false);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -639,7 +641,11 @@ function Index() {
                     </div>
 
                     {isOpen && (
-                      <StageBody stage={s} onOpenVideo={s.id === "inbound" ? () => setVideoOpen(true) : undefined} />
+                     <StageBody
+                       stage={s}
+                       onOpenVideo={s.id === "inbound" ? () => setVideoOpen(true) : undefined}
+                       onOpenAsnVideo={s.id === "inbound" ? () => setAsnVideoOpen(true) : undefined}
+                     />
                     )}
                   </section>
                 );
@@ -717,6 +723,7 @@ function Index() {
         </main>
       </div>
       <VideoModal open={videoOpen} onClose={() => setVideoOpen(false)} />
+      <AsnVideoModal open={asnVideoOpen} onClose={() => setAsnVideoOpen(false)} />
     </div>
   );
 }
@@ -750,7 +757,15 @@ const WAREHOUSE_ICONS: Record<string, React.ComponentType<{ className?: string }
   shipping: PackageCheck,
 };
 
-function StageBody({ stage: s, onOpenVideo }: { stage: Stage; onOpenVideo?: () => void }) {
+function StageBody({
+  stage: s,
+  onOpenVideo,
+  onOpenAsnVideo,
+}: {
+  stage: Stage;
+  onOpenVideo?: () => void;
+  onOpenAsnVideo?: () => void;
+}) {
   const WhIcon = WAREHOUSE_ICONS[s.id] ?? Warehouse;
   return (
     <div className="space-y-8 p-6 md:p-8">
@@ -829,7 +844,7 @@ function StageBody({ stage: s, onOpenVideo }: { stage: Stage; onOpenVideo?: () =
             {s.id === "inbound" && (
               <button
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
-                onClick={() => alert("Guía: Cómo crear un ASN")}
+                onClick={() => onOpenAsnVideo?.()}
               >
                 <ClipboardList className="h-4 w-4 text-primary" />
                 Como crear un ASN
@@ -1010,6 +1025,48 @@ function VideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
             title="Video Inbond"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AsnVideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (!open && videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  }, [open]);
+
+  if (!open) return null;
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-3xl rounded-2xl border border-border bg-card p-3 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute -top-3 -right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background border border-border text-foreground shadow hover:bg-secondary transition-colors"
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+        <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
+          <video
+            ref={videoRef}
+            className="h-full w-full"
+            src={asnVideoAsset.url}
+            controls
+            autoPlay
+            playsInline
           />
         </div>
       </div>
