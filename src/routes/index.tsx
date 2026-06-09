@@ -98,50 +98,8 @@ const STAGES: Stage[] = [
     phaseVar: "--phase-1",
   },
   {
-    id: "cartons",
-    number: 2,
-    name: "Creación de Cartons",
-    short: "Registro anticipado de cajas físicas",
-    objective:
-      "Con el packing list registramos cuántas cajas van a venir antes de que lleguen físicamente al warehouse.",
-    responsible: "Equipo Inbound",
-    inputs: ["Packing List confirmado", "Tracking number"],
-    activities: [
-      {
-        title: "1. Create New Carton",
-        detail: "Ruta en Mintsoft:",
-        items: ["Cartons → Cartons & Pallets → Create New Carton"],
-      },
-      {
-        title: "2. Configuración",
-        items: ["Storage = Stock", "Location = RS In Transit"],
-      },
-      {
-        title: "3. Código del Carton",
-        detail: "Formato: DOS PALABRAS + últimos 6 del tracking + número de caja",
-        items: ["Ejemplo: POSSE468889-001"],
-      },
-      {
-        title: "4. Print Labels PDF",
-        items: ["Se imprimen labels", "Se genera PDF de etiquetas"],
-      },
-      {
-        title: "5. Mail al inbound team",
-        detail:
-          "Se envían labels al warehouse. Enviarlas cuando confirman por Slack que llegaron las cajas.",
-      },
-    ],
-    docs: ["PDF de etiquetas", "Códigos de carton"],
-    outputs: ["Cartons pre-registrados en Mintsoft", "Labels listas para escaneo"],
-    dependencies: ["Inbound (ASN creado)"],
-    warehouse:
-      "Cuando llegan las cajas físicas: escanean etiquetas, las reconocen automáticamente, validan ingreso más rápido y saben exactamente cuántas cajas deberían llegar.",
-    critical: ["Enviar labels solo tras confirmación por Slack"],
-    phaseVar: "--phase-2",
-  },
-  {
     id: "control-arribo",
-    number: 3,
+    number: 2,
     name: "Control de Arribo",
     short: "Confirmación física de llegada",
     objective: "Validar físicamente que la mercadería que llegó coincide con el ASN cargado.",
@@ -178,7 +136,7 @@ const STAGES: Stage[] = [
   },
   {
     id: "outbound",
-    number: 4,
+    number: 3,
     name: "Outbound",
     short: "Preparación de órdenes de salida",
     objective:
@@ -211,7 +169,7 @@ const STAGES: Stage[] = [
   },
   {
     id: "ordenes-mintsoft",
-    number: 5,
+    number: 4,
     name: "Órdenes en Mintsoft",
     short: "Carga formal de órdenes",
     objective: "Cargar formalmente las órdenes en Mintsoft para que el warehouse pueda verlas.",
@@ -238,7 +196,7 @@ const STAGES: Stage[] = [
   },
   {
     id: "stock",
-    number: 6,
+    number: 5,
     name: "Gestión de Stock",
     short: "Validación de inventario real",
     objective: "Verificar que el stock esté correctamente ubicado y alocado en el sistema.",
@@ -275,7 +233,7 @@ const STAGES: Stage[] = [
   },
   {
     id: "batches",
-    number: 7,
+    number: 6,
     name: "Batches y Preparación",
     short: "Liberación para armado físico",
     objective:
@@ -315,7 +273,7 @@ const STAGES: Stage[] = [
   },
   {
     id: "shipping",
-    number: 8,
+    number: 7,
     name: "Shipping y Returns",
     short: "Despacho, freight y devoluciones",
     objective:
@@ -851,6 +809,9 @@ function StageBody({
               </button>
             )}
 
+            {/* Creación de Cartons — bloque administrativo (solo Inbound) */}
+            {s.id === "inbound" && <CartonsAdminBlock phaseVar={s.phaseVar} />}
+
             {/* Documentación + Salidas */}
             <div className="grid gap-3 sm:grid-cols-2">
               <MiniList
@@ -993,8 +954,139 @@ function StageBody({
               <Play className="h-4 w-4 fill-current" />
               Ver Video
             </button>
+
+            {/* Creación de Cartons — bloque warehouse (solo Inbound) */}
+            {s.id === "inbound" && <CartonsWarehouseBlock phaseVar={s.phaseVar} />}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function CartonsAdminBlock({ phaseVar }: { phaseVar: string }) {
+  const activities = [
+    { title: "1. Create New Carton", detail: "Ruta en Mintsoft:", items: ["Cartons → Cartons & Pallets → Create New Carton"] },
+    { title: "2. Configuración", items: ["Storage = Stock", "Location = RS In Transit"] },
+    { title: "3. Código del Carton", detail: "Formato: DOS PALABRAS + últimos 6 del tracking + número de caja", items: ["Ejemplo: POSSE468889-001"] },
+    { title: "4. Print Labels PDF", items: ["Se imprimen labels", "Se genera PDF de etiquetas"] },
+    { title: "5. Mail al inbound team", detail: "Se envían labels al warehouse. Enviarlas cuando confirman por Slack que llegaron las cajas." },
+  ];
+  return (
+    <div className="space-y-4 rounded-2xl border border-border bg-card/60 p-4">
+      <div className="flex items-center gap-2 border-b border-border pb-3">
+        <PackageOpen className="h-4 w-4 text-primary" />
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+            Creación de Cartons
+          </div>
+          <h4 className="text-sm font-bold">Administración</h4>
+        </div>
+      </div>
+
+      <div className="flex items-start gap-3 rounded-lg bg-secondary/40 p-3">
+        <Users className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            Responsable
+          </div>
+          <div className="text-sm font-medium">Equipo Inbound</div>
+        </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <MiniList
+          icon={<Inbox className="h-4 w-4" />}
+          label="Entradas"
+          items={["Packing List confirmado", "Tracking number"]}
+        />
+        <MiniList
+          icon={<Link2 className="h-4 w-4" />}
+          label="Dependencias"
+          items={["Inbound (ASN creado)"]}
+        />
+      </div>
+
+      <div>
+        <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+          <ListChecks className="h-4 w-4" /> Actividades administrativas
+        </div>
+        <div className="space-y-2">
+          {activities.map((a, i) => (
+            <Activity key={i} activity={a} phaseVar={phaseVar} />
+          ))}
+        </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <MiniList
+          icon={<FileText className="h-4 w-4" />}
+          label="Documentación"
+          items={["PDF de etiquetas", "Códigos de carton"]}
+        />
+        <MiniList
+          icon={<PackageCheck className="h-4 w-4" />}
+          label="Salidas"
+          items={["Cartons pre-registrados en Mintsoft", "Labels listas para escaneo"]}
+        />
+      </div>
+
+      <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-destructive">
+          <AlertTriangle className="h-4 w-4" /> Puntos críticos / Validaciones
+        </div>
+        <ul className="mt-2 space-y-1 text-sm">
+          <li className="flex gap-2">
+            <span className="text-destructive">•</span>
+            <span>Enviar labels solo tras confirmación por Slack</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function CartonsWarehouseBlock({ phaseVar }: { phaseVar: string }) {
+  return (
+    <div
+      className="space-y-4 rounded-2xl border p-4"
+      style={{
+        borderColor: `oklch(from var(${phaseVar}) l c h / 0.3)`,
+        background: `linear-gradient(180deg, oklch(from var(${phaseVar}) 0.97 0.02 h) 0%, var(--card) 100%)`,
+      }}
+    >
+      <div
+        className="flex items-center gap-2 border-b pb-3"
+        style={{ borderColor: `oklch(from var(${phaseVar}) l c h / 0.2)` }}
+      >
+        <PackageOpen className="h-4 w-4" style={{ color: `var(${phaseVar})` }} />
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+            Creación de Cartons
+          </div>
+          <h4 className="text-sm font-bold">Warehouse</h4>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center gap-3 rounded-xl bg-card p-5 text-center shadow-sm">
+        <div
+          className="flex h-14 w-14 items-center justify-center rounded-2xl text-white"
+          style={{
+            background: `linear-gradient(135deg, var(${phaseVar}), oklch(from var(${phaseVar}) calc(l - 0.12) c h))`,
+          }}
+        >
+          <PackageOpen className="h-7 w-7" />
+        </div>
+        <div
+          className="text-[10px] font-bold uppercase tracking-[0.2em]"
+          style={{ color: `var(${phaseVar})` }}
+        >
+          Qué pasa físicamente
+        </div>
+        <p className="text-sm leading-relaxed">
+          Cuando llegan las cajas físicas: escanean etiquetas, las reconocen automáticamente,
+          validan ingreso más rápido y saben exactamente cuántas cajas deberían llegar.
+        </p>
       </div>
     </div>
   );
@@ -1244,7 +1336,7 @@ const FLOW_HOTSPOTS: {
     title: "Llega al depósito",
     description:
       "Descarga de cajas en el warehouse 5411. Verificación física de cantidades y comparación contra el ASN cargado.",
-    targetId: "cartons",
+    targetId: "inbound",
     phaseVar: "--phase-2",
   },
   {
