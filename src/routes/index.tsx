@@ -1202,7 +1202,7 @@ const FLOW_HOTSPOTS: {
     title: "Llega al depósito",
     description:
       "Descarga de cajas en el warehouse 5411. Verificación física de cantidades y comparación contra el ASN cargado.",
-    targetId: "cartons",
+    targetId: "inbound",
     phaseVar: "--phase-2",
   },
   {
