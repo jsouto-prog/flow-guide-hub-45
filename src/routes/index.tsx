@@ -52,7 +52,7 @@ type Stage = {
 
 const STAGES: Stage[] = [
   {
-    id: "inbound-fase-1",
+    id: "inbound",
     number: 1,
     name: "Inbound",
     short: "Entrada de mercadería al warehouse",
@@ -175,7 +175,7 @@ const STAGES: Stage[] = [
     phaseVar: "--phase-3",
   },
   {
-    id: "outbound-fase-1",
+    id: "outbound",
     number: 4,
     name: "Outbound",
     short: "Preparación de órdenes de salida",
@@ -432,7 +432,6 @@ function Index() {
   const [query, setQuery] = useState("");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [videoOpen, setVideoOpen] = useState(false);
-  const [openNav, setOpenNav] = useState<string | null>(null);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -531,12 +530,24 @@ function Index() {
             </a>
           </div>
 
-          {/* Navegación principal: 4 secciones (Inbound, Imagen, Outbound, Shipping) */}
-          <NavBar
-            openNav={openNav}
-            setOpenNav={setOpenNav}
-            scrollTo={scrollTo}
-          />
+          {/* Phase pills */}
+          <div className="mt-24 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8" style={{ marginTop: "calc(6rem + 100px)" }}>
+            {STAGES.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => scrollTo(s.id)}
+                className="group rounded-xl border border-border bg-card p-3 text-left transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-soft)]"
+              >
+                <div
+                  className="mb-2 inline-flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold text-white"
+                  style={{ background: `var(${s.phaseVar})` }}
+                >
+                  {s.number}
+                </div>
+                <div className="text-xs font-semibold leading-tight">{s.name}</div>
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
@@ -592,67 +603,46 @@ function Index() {
 
             {/* Stages */}
             <div className="space-y-12">
-              {(() => {
-                const renderStage = (s: Stage) => {
-                  const isOpen = expanded[s.id] ?? true;
-                  return (
-                    <section
-                      key={s.id}
-                      id={s.id}
-                      className="scroll-mt-8 rounded-2xl border border-border bg-card overflow-hidden shadow-[var(--shadow-soft)]"
-                    >
-                      <div
-                        className="relative p-6 md:p-8"
-                        style={{
-                          background: `linear-gradient(135deg, var(${s.phaseVar}) 0%, oklch(from var(${s.phaseVar}) calc(l - 0.1) c h) 100%)`,
-                        }}
-                      >
-                        <div className="flex flex-wrap items-start justify-between gap-4 text-white">
-                          <div>
-                            <div className="text-xs font-semibold uppercase tracking-wider opacity-80">
-                              Etapa {s.number} de {STAGES.length}
-                            </div>
-                            <h2 className="mt-1 text-3xl font-bold md:text-4xl">{s.name}</h2>
-                            <p className="mt-2 text-base opacity-90">{s.short}</p>
-                          </div>
-                          <button
-                            onClick={() =>
-                              setExpanded((prev) => ({ ...prev, [s.id]: !isOpen }))
-                            }
-                            className="rounded-lg bg-white/20 px-3 py-1.5 text-xs font-semibold backdrop-blur transition-colors hover:bg-white/30"
-                          >
-                            {isOpen ? "Contraer −" : "Expandir +"}
-                          </button>
-                        </div>
-                      </div>
-                      {isOpen && (
-                        <StageBody
-                          stage={s}
-                          onOpenVideo={s.id === "inbound-fase-1" ? () => setVideoOpen(true) : undefined}
-                        />
-                      )}
-                    </section>
-                  );
-                };
-                const inboundStages = filtered.filter((s) => s.number <= 3);
-                const outboundStages = filtered.filter((s) => s.number >= 4 && s.number <= 7);
-                const shippingStages = filtered.filter((s) => s.number === 8);
+              {filtered.map((s) => {
+                const isOpen = expanded[s.id] ?? true;
                 return (
-                  <>
-                    {inboundStages.length > 0 && (
-                      <section id="inbound" className="scroll-mt-8 space-y-12">
-                        {inboundStages.map(renderStage)}
-                      </section>
+                  <section
+                    key={s.id}
+                    id={s.id}
+                    className="scroll-mt-8 rounded-2xl border border-border bg-card overflow-hidden shadow-[var(--shadow-soft)]"
+                  >
+                    {/* Header */}
+                    <div
+                      className="relative p-6 md:p-8"
+                      style={{
+                        background: `linear-gradient(135deg, var(${s.phaseVar}) 0%, oklch(from var(${s.phaseVar}) calc(l - 0.1) c h) 100%)`,
+                      }}
+                    >
+                      <div className="flex flex-wrap items-start justify-between gap-4 text-white">
+                        <div>
+                          <div className="text-xs font-semibold uppercase tracking-wider opacity-80">
+                            Etapa {s.number} de {STAGES.length}
+                          </div>
+                          <h2 className="mt-1 text-3xl font-bold md:text-4xl">{s.name}</h2>
+                          <p className="mt-2 text-base opacity-90">{s.short}</p>
+                        </div>
+                        <button
+                          onClick={() =>
+                            setExpanded((prev) => ({ ...prev, [s.id]: !isOpen }))
+                          }
+                          className="rounded-lg bg-white/20 px-3 py-1.5 text-xs font-semibold backdrop-blur transition-colors hover:bg-white/30"
+                        >
+                          {isOpen ? "Contraer −" : "Expandir +"}
+                        </button>
+                      </div>
+                    </div>
+
+                    {isOpen && (
+                      <StageBody stage={s} onOpenVideo={s.id === "inbound" ? () => setVideoOpen(true) : undefined} />
                     )}
-                    {outboundStages.length > 0 && (
-                      <section id="outbound" className="scroll-mt-8 space-y-12">
-                        {outboundStages.map(renderStage)}
-                      </section>
-                    )}
-                    {shippingStages.map(renderStage)}
-                  </>
+                  </section>
                 );
-              })()}
+              })}
               {filtered.length === 0 && (
                 <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
                   No se encontraron etapas para "{query}".
@@ -749,10 +739,10 @@ function MetaCard({ label, items }: { label: string; items: string[] }) {
 }
 
 const WAREHOUSE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  "inbound-fase-1": Truck,
+  inbound: Truck,
   cartons: PackageOpen,
   "control-arribo": ScanLine,
-  "outbound-fase-1": ClipboardCheck,
+  outbound: ClipboardCheck,
   "ordenes-mintsoft": ListChecks,
   stock: Boxes,
   batches: Forklift,
@@ -983,118 +973,6 @@ function StageBody({ stage: s, onOpenVideo }: { stage: Stage; onOpenVideo?: () =
   );
 }
 
-function NavBar({
-  openNav,
-  setOpenNav,
-  scrollTo,
-}: {
-  openNav: string | null;
-  setOpenNav: (v: string | null) => void;
-  scrollTo: (id: string) => void;
-}) {
-  const inboundPhases = STAGES.filter((s) => s.number <= 3);
-  const outboundPhases = STAGES.filter((s) => s.number >= 4 && s.number <= 7);
-
-  const navItem = (key: string, label: string, phaseVar: string, onClick: () => void, hasDropdown: boolean) => (
-    <button
-      key={key}
-      onClick={onClick}
-      className="group relative flex items-center justify-between gap-2 rounded-xl border border-border bg-card px-4 py-3 text-left transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-soft)]"
-    >
-      <div className="flex items-center gap-2">
-        <span
-          className="inline-block h-2.5 w-2.5 rounded-full"
-          style={{ background: `var(${phaseVar})` }}
-        />
-        <span className="text-sm font-semibold uppercase tracking-wider">{label}</span>
-      </div>
-      {hasDropdown && (
-        <span className={`text-xs text-muted-foreground transition-transform ${openNav === key ? "rotate-180" : ""}`}>
-          ▾
-        </span>
-      )}
-    </button>
-  );
-
-  const handleSectionClick = (key: string, sectionId: string) => {
-    setOpenNav(openNav === key ? null : key);
-    scrollTo(sectionId);
-  };
-
-  return (
-    <div
-      className="mt-24 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
-      style={{ marginTop: "calc(6rem + 100px)" }}
-    >
-      {/* INBOUND with dropdown */}
-      <div className="relative">
-        {navItem("inbound", "Inbound", "--phase-1", () => handleSectionClick("inbound", "inbound"), true)}
-        {openNav === "inbound" && (
-          <div className="absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-xl border border-border bg-card shadow-lg">
-            {inboundPhases.map((s, i) => (
-              <button
-                key={s.id}
-                onClick={() => {
-                  setOpenNav(null);
-                  scrollTo(s.id);
-                }}
-                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-secondary"
-              >
-                <span
-                  className="flex h-6 w-6 items-center justify-center rounded-md text-[11px] font-bold text-white"
-                  style={{ background: `var(${s.phaseVar})` }}
-                >
-                  {i + 1}
-                </span>
-                <span className="font-medium">Fase {i + 1}: {s.name}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* IMAGEN DEL DEPÓSITO */}
-      {navItem("imagen", "Imagen del depósito", "--phase-3", () => {
-        setOpenNav(null);
-        scrollTo("imagen-deposito");
-      }, false)}
-
-      {/* OUTBOUND with dropdown */}
-      <div className="relative">
-        {navItem("outbound", "Outbound", "--phase-4", () => handleSectionClick("outbound", "outbound"), true)}
-        {openNav === "outbound" && (
-          <div className="absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-xl border border-border bg-card shadow-lg">
-            {outboundPhases.map((s, i) => (
-              <button
-                key={s.id}
-                onClick={() => {
-                  setOpenNav(null);
-                  scrollTo(s.id);
-                }}
-                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-secondary"
-              >
-                <span
-                  className="flex h-6 w-6 items-center justify-center rounded-md text-[11px] font-bold text-white"
-                  style={{ background: `var(${s.phaseVar})` }}
-                >
-                  {i + 1}
-                </span>
-                <span className="font-medium">Fase {i + 1}: {s.name}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* SHIPPING Y RETURNS */}
-      {navItem("shipping", "Shipping y Returns", "--phase-8", () => {
-        setOpenNav(null);
-        scrollTo("shipping");
-      }, false)}
-    </div>
-  );
-}
-
 function VideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   if (!open) return null;
   return (
@@ -1289,7 +1167,7 @@ const FLOW_HOTSPOTS: {
     title: "Llega el camión / avión",
     description:
       "Inbound: DHL, UPS o freight entregan la mercadería. El cliente envió previamente el Packing List y se creó el ASN en Mintsoft.",
-    targetId: "inbound-fase-1",
+    targetId: "inbound",
     phaseVar: "--phase-1",
   },
   {
@@ -1321,7 +1199,7 @@ const FLOW_HOTSPOTS: {
     title: "Etiquetan y preparan envío",
     description:
       "Generación de labels, tracking number y commercial invoice. Preparación de las cajas para el pickup del carrier.",
-    targetId: "outbound-fase-1",
+    targetId: "outbound",
     phaseVar: "--phase-6",
   },
   {
@@ -1340,7 +1218,7 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
   const activeHotspot = FLOW_HOTSPOTS.find((h) => h.number === active)!;
 
   return (
-    <section id="imagen-deposito" className="scroll-mt-8 border-b border-border bg-card/40">
+    <section className="border-b border-border bg-card/40">
       <div className="mx-auto max-w-[1400px] px-4 py-12 md:px-6 md:py-16">
         <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
