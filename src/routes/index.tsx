@@ -73,9 +73,10 @@ const STAGES: Stage[] = [
         ],
       },
       {
-        title: "2. Conversión PDF → Excel",
-        detail: "Si el cliente manda PDF se convierte usando:",
-        items: ["Claude", "Gemini", "iLovePDF", "o conversión manual"],
+        title: "2. Creamos un ASN",
+        detail:
+          "¿Qué es un ASN? Un ASN significa Advanced Shipping Notice (Aviso de Envío Anticipado). Es un documento que se crea en Mintsoft antes de que la mercadería llegue al warehouse para avisarle al sistema y al equipo de Dallas que hay un cargamento en camino.",
+        items: [],
       },
       {
         title: "3. Adaptación al ASN Template",
