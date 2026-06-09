@@ -756,7 +756,15 @@ const WAREHOUSE_ICONS: Record<string, React.ComponentType<{ className?: string }
   shipping: PackageCheck,
 };
 
-function StageBody({ stage: s, onOpenVideo }: { stage: Stage; onOpenVideo?: () => void }) {
+function StageBody({
+  stage: s,
+  onOpenVideo,
+  onOpenAsnVideo,
+}: {
+  stage: Stage;
+  onOpenVideo?: () => void;
+  onOpenAsnVideo?: () => void;
+}) {
   const WhIcon = WAREHOUSE_ICONS[s.id] ?? Warehouse;
   return (
     <div className="space-y-8 p-6 md:p-8">
@@ -835,7 +843,7 @@ function StageBody({ stage: s, onOpenVideo }: { stage: Stage; onOpenVideo?: () =
             {s.id === "inbound" && (
               <button
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
-                onClick={() => alert("Guía: Cómo crear un ASN")}
+                onClick={() => onOpenAsnVideo?.()}
               >
                 <ClipboardList className="h-4 w-4 text-primary" />
                 Como crear un ASN
