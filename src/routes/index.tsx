@@ -98,50 +98,8 @@ const STAGES: Stage[] = [
     phaseVar: "--phase-1",
   },
   {
-    id: "cartons",
-    number: 2,
-    name: "Creación de Cartons",
-    short: "Registro anticipado de cajas físicas",
-    objective:
-      "Con el packing list registramos cuántas cajas van a venir antes de que lleguen físicamente al warehouse.",
-    responsible: "Equipo Inbound",
-    inputs: ["Packing List confirmado", "Tracking number"],
-    activities: [
-      {
-        title: "1. Create New Carton",
-        detail: "Ruta en Mintsoft:",
-        items: ["Cartons → Cartons & Pallets → Create New Carton"],
-      },
-      {
-        title: "2. Configuración",
-        items: ["Storage = Stock", "Location = RS In Transit"],
-      },
-      {
-        title: "3. Código del Carton",
-        detail: "Formato: DOS PALABRAS + últimos 6 del tracking + número de caja",
-        items: ["Ejemplo: POSSE468889-001"],
-      },
-      {
-        title: "4. Print Labels PDF",
-        items: ["Se imprimen labels", "Se genera PDF de etiquetas"],
-      },
-      {
-        title: "5. Mail al inbound team",
-        detail:
-          "Se envían labels al warehouse. Enviarlas cuando confirman por Slack que llegaron las cajas.",
-      },
-    ],
-    docs: ["PDF de etiquetas", "Códigos de carton"],
-    outputs: ["Cartons pre-registrados en Mintsoft", "Labels listas para escaneo"],
-    dependencies: ["Inbound (ASN creado)"],
-    warehouse:
-      "Cuando llegan las cajas físicas: escanean etiquetas, las reconocen automáticamente, validan ingreso más rápido y saben exactamente cuántas cajas deberían llegar.",
-    critical: ["Enviar labels solo tras confirmación por Slack"],
-    phaseVar: "--phase-2",
-  },
-  {
     id: "control-arribo",
-    number: 3,
+    number: 2,
     name: "Control de Arribo",
     short: "Confirmación física de llegada",
     objective: "Validar físicamente que la mercadería que llegó coincide con el ASN cargado.",
