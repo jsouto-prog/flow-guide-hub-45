@@ -809,6 +809,9 @@ function StageBody({
               </button>
             )}
 
+            {/* Creación de Cartons — bloque administrativo (solo Inbound) */}
+            {s.id === "inbound" && <CartonsAdminBlock phaseVar={s.phaseVar} />}
+
             {/* Documentación + Salidas */}
             <div className="grid gap-3 sm:grid-cols-2">
               <MiniList
