@@ -52,7 +52,7 @@ type Stage = {
 
 const STAGES: Stage[] = [
   {
-    id: "inbound",
+    id: "inbound-fase-1",
     number: 1,
     name: "Inbound",
     short: "Entrada de mercadería al warehouse",
@@ -175,7 +175,7 @@ const STAGES: Stage[] = [
     phaseVar: "--phase-3",
   },
   {
-    id: "outbound",
+    id: "outbound-fase-1",
     number: 4,
     name: "Outbound",
     short: "Preparación de órdenes de salida",
