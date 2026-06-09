@@ -592,46 +592,67 @@ function Index() {
 
             {/* Stages */}
             <div className="space-y-12">
-              {filtered.map((s) => {
-                const isOpen = expanded[s.id] ?? true;
-                return (
-                  <section
-                    key={s.id}
-                    id={s.id}
-                    className="scroll-mt-8 rounded-2xl border border-border bg-card overflow-hidden shadow-[var(--shadow-soft)]"
-                  >
-                    {/* Header */}
-                    <div
-                      className="relative p-6 md:p-8"
-                      style={{
-                        background: `linear-gradient(135deg, var(${s.phaseVar}) 0%, oklch(from var(${s.phaseVar}) calc(l - 0.1) c h) 100%)`,
-                      }}
+              {(() => {
+                const renderStage = (s: Stage) => {
+                  const isOpen = expanded[s.id] ?? true;
+                  return (
+                    <section
+                      key={s.id}
+                      id={s.id}
+                      className="scroll-mt-8 rounded-2xl border border-border bg-card overflow-hidden shadow-[var(--shadow-soft)]"
                     >
-                      <div className="flex flex-wrap items-start justify-between gap-4 text-white">
-                        <div>
-                          <div className="text-xs font-semibold uppercase tracking-wider opacity-80">
-                            Etapa {s.number} de {STAGES.length}
+                      <div
+                        className="relative p-6 md:p-8"
+                        style={{
+                          background: `linear-gradient(135deg, var(${s.phaseVar}) 0%, oklch(from var(${s.phaseVar}) calc(l - 0.1) c h) 100%)`,
+                        }}
+                      >
+                        <div className="flex flex-wrap items-start justify-between gap-4 text-white">
+                          <div>
+                            <div className="text-xs font-semibold uppercase tracking-wider opacity-80">
+                              Etapa {s.number} de {STAGES.length}
+                            </div>
+                            <h2 className="mt-1 text-3xl font-bold md:text-4xl">{s.name}</h2>
+                            <p className="mt-2 text-base opacity-90">{s.short}</p>
                           </div>
-                          <h2 className="mt-1 text-3xl font-bold md:text-4xl">{s.name}</h2>
-                          <p className="mt-2 text-base opacity-90">{s.short}</p>
+                          <button
+                            onClick={() =>
+                              setExpanded((prev) => ({ ...prev, [s.id]: !isOpen }))
+                            }
+                            className="rounded-lg bg-white/20 px-3 py-1.5 text-xs font-semibold backdrop-blur transition-colors hover:bg-white/30"
+                          >
+                            {isOpen ? "Contraer −" : "Expandir +"}
+                          </button>
                         </div>
-                        <button
-                          onClick={() =>
-                            setExpanded((prev) => ({ ...prev, [s.id]: !isOpen }))
-                          }
-                          className="rounded-lg bg-white/20 px-3 py-1.5 text-xs font-semibold backdrop-blur transition-colors hover:bg-white/30"
-                        >
-                          {isOpen ? "Contraer −" : "Expandir +"}
-                        </button>
                       </div>
-                    </div>
-
-                    {isOpen && (
-                      <StageBody stage={s} onOpenVideo={s.id === "inbound-fase-1" ? () => setVideoOpen(true) : undefined} />
+                      {isOpen && (
+                        <StageBody
+                          stage={s}
+                          onOpenVideo={s.id === "inbound-fase-1" ? () => setVideoOpen(true) : undefined}
+                        />
+                      )}
+                    </section>
+                  );
+                };
+                const inboundStages = filtered.filter((s) => s.number <= 3);
+                const outboundStages = filtered.filter((s) => s.number >= 4 && s.number <= 7);
+                const shippingStages = filtered.filter((s) => s.number === 8);
+                return (
+                  <>
+                    {inboundStages.length > 0 && (
+                      <section id="inbound" className="scroll-mt-8 space-y-12">
+                        {inboundStages.map(renderStage)}
+                      </section>
                     )}
-                  </section>
+                    {outboundStages.length > 0 && (
+                      <section id="outbound" className="scroll-mt-8 space-y-12">
+                        {outboundStages.map(renderStage)}
+                      </section>
+                    )}
+                    {shippingStages.map(renderStage)}
+                  </>
                 );
-              })}
+              })()}
               {filtered.length === 0 && (
                 <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
                   No se encontraron etapas para "{query}".
