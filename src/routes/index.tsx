@@ -136,7 +136,7 @@ const STAGES: Stage[] = [
   },
   {
     id: "outbound",
-    number: 4,
+    number: 3,
     name: "Outbound",
     short: "Preparación de órdenes de salida",
     objective:
@@ -169,7 +169,7 @@ const STAGES: Stage[] = [
   },
   {
     id: "ordenes-mintsoft",
-    number: 5,
+    number: 4,
     name: "Órdenes en Mintsoft",
     short: "Carga formal de órdenes",
     objective: "Cargar formalmente las órdenes en Mintsoft para que el warehouse pueda verlas.",
@@ -196,7 +196,7 @@ const STAGES: Stage[] = [
   },
   {
     id: "stock",
-    number: 6,
+    number: 5,
     name: "Gestión de Stock",
     short: "Validación de inventario real",
     objective: "Verificar que el stock esté correctamente ubicado y alocado en el sistema.",
@@ -233,7 +233,7 @@ const STAGES: Stage[] = [
   },
   {
     id: "batches",
-    number: 7,
+    number: 6,
     name: "Batches y Preparación",
     short: "Liberación para armado físico",
     objective:
@@ -273,7 +273,7 @@ const STAGES: Stage[] = [
   },
   {
     id: "shipping",
-    number: 8,
+    number: 7,
     name: "Shipping y Returns",
     short: "Despacho, freight y devoluciones",
     objective:
