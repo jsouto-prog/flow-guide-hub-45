@@ -983,6 +983,118 @@ function StageBody({ stage: s, onOpenVideo }: { stage: Stage; onOpenVideo?: () =
   );
 }
 
+function NavBar({
+  openNav,
+  setOpenNav,
+  scrollTo,
+}: {
+  openNav: string | null;
+  setOpenNav: (v: string | null) => void;
+  scrollTo: (id: string) => void;
+}) {
+  const inboundPhases = STAGES.filter((s) => s.number <= 3);
+  const outboundPhases = STAGES.filter((s) => s.number >= 4 && s.number <= 7);
+
+  const navItem = (key: string, label: string, phaseVar: string, onClick: () => void, hasDropdown: boolean) => (
+    <button
+      key={key}
+      onClick={onClick}
+      className="group relative flex items-center justify-between gap-2 rounded-xl border border-border bg-card px-4 py-3 text-left transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-soft)]"
+    >
+      <div className="flex items-center gap-2">
+        <span
+          className="inline-block h-2.5 w-2.5 rounded-full"
+          style={{ background: `var(${phaseVar})` }}
+        />
+        <span className="text-sm font-semibold uppercase tracking-wider">{label}</span>
+      </div>
+      {hasDropdown && (
+        <span className={`text-xs text-muted-foreground transition-transform ${openNav === key ? "rotate-180" : ""}`}>
+          ▾
+        </span>
+      )}
+    </button>
+  );
+
+  const handleSectionClick = (key: string, sectionId: string) => {
+    setOpenNav(openNav === key ? null : key);
+    scrollTo(sectionId);
+  };
+
+  return (
+    <div
+      className="mt-24 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
+      style={{ marginTop: "calc(6rem + 100px)" }}
+    >
+      {/* INBOUND with dropdown */}
+      <div className="relative">
+        {navItem("inbound", "Inbound", "--phase-1", () => handleSectionClick("inbound", "inbound"), true)}
+        {openNav === "inbound" && (
+          <div className="absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-xl border border-border bg-card shadow-lg">
+            {inboundPhases.map((s, i) => (
+              <button
+                key={s.id}
+                onClick={() => {
+                  setOpenNav(null);
+                  scrollTo(s.id);
+                }}
+                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-secondary"
+              >
+                <span
+                  className="flex h-6 w-6 items-center justify-center rounded-md text-[11px] font-bold text-white"
+                  style={{ background: `var(${s.phaseVar})` }}
+                >
+                  {i + 1}
+                </span>
+                <span className="font-medium">Fase {i + 1}: {s.name}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* IMAGEN DEL DEPÓSITO */}
+      {navItem("imagen", "Imagen del depósito", "--phase-3", () => {
+        setOpenNav(null);
+        scrollTo("imagen-deposito");
+      }, false)}
+
+      {/* OUTBOUND with dropdown */}
+      <div className="relative">
+        {navItem("outbound", "Outbound", "--phase-4", () => handleSectionClick("outbound", "outbound"), true)}
+        {openNav === "outbound" && (
+          <div className="absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-xl border border-border bg-card shadow-lg">
+            {outboundPhases.map((s, i) => (
+              <button
+                key={s.id}
+                onClick={() => {
+                  setOpenNav(null);
+                  scrollTo(s.id);
+                }}
+                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-secondary"
+              >
+                <span
+                  className="flex h-6 w-6 items-center justify-center rounded-md text-[11px] font-bold text-white"
+                  style={{ background: `var(${s.phaseVar})` }}
+                >
+                  {i + 1}
+                </span>
+                <span className="font-medium">Fase {i + 1}: {s.name}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* SHIPPING Y RETURNS */}
+      {navItem("shipping", "Shipping y Returns", "--phase-8", () => {
+        setOpenNav(null);
+        scrollTo("shipping");
+      }, false)}
+    </div>
+  );
+}
+
 function VideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   if (!open) return null;
   return (
