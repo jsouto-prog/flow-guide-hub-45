@@ -1218,7 +1218,7 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
   const activeHotspot = FLOW_HOTSPOTS.find((h) => h.number === active)!;
 
   return (
-    <section className="border-b border-border bg-card/40">
+    <section id="imagen-deposito" className="scroll-mt-8 border-b border-border bg-card/40">
       <div className="mx-auto max-w-[1400px] px-4 py-12 md:px-6 md:py-16">
         <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
