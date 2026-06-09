@@ -431,6 +431,7 @@ function Index() {
   );
   const [query, setQuery] = useState("");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [videoOpen, setVideoOpen] = useState(false);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -637,7 +638,7 @@ function Index() {
                     </div>
 
                     {isOpen && (
-                      <StageBody stage={s} />
+                      <StageBody stage={s} onOpenVideo={s.id === "inbound" ? () => setVideoOpen(true) : undefined} />
                     )}
                   </section>
                 );
@@ -714,6 +715,7 @@ function Index() {
             </footer>
         </main>
       </div>
+      <VideoModal open={videoOpen} onClose={() => setVideoOpen(false)} />
     </div>
   );
 }
@@ -747,7 +749,7 @@ const WAREHOUSE_ICONS: Record<string, React.ComponentType<{ className?: string }
   shipping: PackageCheck,
 };
 
-function StageBody({ stage: s }: { stage: Stage }) {
+function StageBody({ stage: s, onOpenVideo }: { stage: Stage; onOpenVideo?: () => void }) {
   const WhIcon = WAREHOUSE_ICONS[s.id] ?? Warehouse;
   return (
     <div className="space-y-8 p-6 md:p-8">
@@ -959,12 +961,44 @@ function StageBody({ stage: s }: { stage: Stage }) {
             <button
               className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
               style={{ background: `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))` }}
-              onClick={() => alert(`Video de la etapa: ${s.name}`)}
+              onClick={() => onOpenVideo ? onOpenVideo() : alert(`Video de la etapa: ${s.name}`)}
             >
               <Play className="h-4 w-4 fill-current" />
               Ver Video
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function VideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  if (!open) return null;
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-sm rounded-2xl border border-border bg-card p-3 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute -top-3 -right-3 flex h-8 w-8 items-center justify-center rounded-full bg-background border border-border text-foreground shadow hover:bg-secondary transition-colors"
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+        <div className="aspect-[9/16] w-full overflow-hidden rounded-xl bg-black">
+          <iframe
+            className="h-full w-full"
+            src="https://www.youtube.com/embed/eJvWNrbTwZc?autoplay=1&rel=0"
+            title="Video Inbond"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
         </div>
       </div>
     </div>
