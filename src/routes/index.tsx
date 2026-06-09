@@ -393,6 +393,7 @@ function Index() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [videoOpen, setVideoOpen] = useState(false);
   const [asnVideoOpen, setAsnVideoOpen] = useState(false);
+  const [boxVideoOpen, setBoxVideoOpen] = useState(false);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -603,6 +604,7 @@ function Index() {
                        stage={s}
                        onOpenVideo={s.id === "inbound" ? () => setVideoOpen(true) : undefined}
                        onOpenAsnVideo={s.id === "inbound" ? () => setAsnVideoOpen(true) : undefined}
+                       onOpenBoxVideo={s.id === "inbound" ? () => setBoxVideoOpen(true) : undefined}
                      />
                     )}
                   </section>
@@ -682,9 +684,12 @@ function Index() {
       </div>
       <VideoModal open={videoOpen} onClose={() => setVideoOpen(false)} />
       <AsnVideoModal open={asnVideoOpen} onClose={() => setAsnVideoOpen(false)} />
+      <BoxVideoModal open={boxVideoOpen} onClose={() => setBoxVideoOpen(false)} videoUrl={BOX_VIDEO_URL} />
     </div>
   );
 }
+
+const BOX_VIDEO_URL = "REPLACE_WITH_EMBED_LINK";
 
 function MetaCard({ label, items }: { label: string; items: string[] }) {
   return (
@@ -719,10 +724,12 @@ function StageBody({
   stage: s,
   onOpenVideo,
   onOpenAsnVideo,
+  onOpenBoxVideo,
 }: {
   stage: Stage;
   onOpenVideo?: () => void;
   onOpenAsnVideo?: () => void;
+  onOpenBoxVideo?: () => void;
 }) {
   const WhIcon = WAREHOUSE_ICONS[s.id] ?? Warehouse;
   return (
@@ -739,13 +746,9 @@ function StageBody({
       <div className="grid gap-6 lg:grid-cols-2">
         {/* LEFT — Administración */}
         <div
-          className="relative rounded-2xl border border-border bg-background p-5 md:p-6"
-          style={{
-            background:
-              "linear-gradient(180deg, oklch(0.98 0.01 250) 0%, var(--card) 100%)",
-          }}
+          className="relative rounded-2xl border border-border bg-card/60 p-4"
         >
-          <div className="mb-5 flex items-center gap-3 border-b border-border pb-4">
+          <div className="mb-4 flex items-center gap-2 border-b border-border pb-3">
             <div
               className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[var(--shadow-soft)]"
               style={{ background: "var(--gradient-hero)" }}
@@ -760,7 +763,7 @@ function StageBody({
             </div>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-4">
             {/* Responsable */}
             <div className="flex items-start gap-3 rounded-lg bg-secondary/40 p-3">
               <Users className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
@@ -809,9 +812,6 @@ function StageBody({
               </button>
             )}
 
-            {/* Creación de Cartons — bloque administrativo (solo Inbound) */}
-            {s.id === "inbound" && <CartonsAdminBlock phaseVar={s.phaseVar} />}
-
             {/* Documentación + Salidas */}
             <div className="grid gap-3 sm:grid-cols-2">
               <MiniList
@@ -842,6 +842,9 @@ function StageBody({
                 </ul>
               </div>
             )}
+
+            {/* Creación de Cartons — bloque administrativo (solo Inbound) */}
+            {s.id === "inbound" && <CartonsAdminBlock phaseVar={s.phaseVar} onOpenBoxVideo={onOpenBoxVideo} />}
           </div>
         </div>
 
@@ -956,7 +959,11 @@ function StageBody({
             </button>
 
             {/* Creación de Cartons — bloque warehouse (solo Inbound) */}
-            {s.id === "inbound" && <CartonsWarehouseBlock phaseVar={s.phaseVar} />}
+            {s.id === "inbound" && (
+              <div className="mt-0 lg:mt-45">
+                <CartonsWarehouseBlock phaseVar={s.phaseVar} />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -964,7 +971,7 @@ function StageBody({
   );
 }
 
-function CartonsAdminBlock({ phaseVar }: { phaseVar: string }) {
+function CartonsAdminBlock({ phaseVar, onOpenBoxVideo }: { phaseVar: string; onOpenBoxVideo?: () => void }) {
   const activities = [
     { title: "1. Create New Carton", detail: "Ruta en Mintsoft:", items: ["Cartons → Cartons & Pallets → Create New Carton"] },
     { title: "2. Configuración", items: ["Storage = Stock", "Location = RS In Transit"] },
@@ -982,6 +989,12 @@ function CartonsAdminBlock({ phaseVar }: { phaseVar: string }) {
           </div>
           <h4 className="text-sm font-bold">Administración</h4>
         </div>
+      </div>
+
+      <div className="rounded-lg border border-border bg-secondary/10 p-3">
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Registro anticipado de cajas físicas. Con el packing list registramos cuántas cajas van a venir antes de que lleguen físicamente al warehouse
+        </p>
       </div>
 
       <div className="flex items-start gap-3 rounded-lg bg-secondary/40 p-3">
@@ -1017,6 +1030,16 @@ function CartonsAdminBlock({ phaseVar }: { phaseVar: string }) {
           ))}
         </div>
       </div>
+
+      {onOpenBoxVideo && (
+        <button
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
+          onClick={onOpenBoxVideo}
+        >
+          <ClipboardList className="h-4 w-4 text-primary" />
+          Como crear una caja
+        </button>
+      )}
 
       <div className="grid gap-3 sm:grid-cols-2">
         <MiniList
@@ -1159,6 +1182,39 @@ function AsnVideoModal({ open, onClose }: { open: boolean; onClose: () => void }
             controls
             autoPlay
             playsInline
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BoxVideoModal({ open, onClose, videoUrl }: { open: boolean; onClose: () => void; videoUrl: string }) {
+  if (!open) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-4xl rounded-2xl border border-border bg-card p-3 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute -top-3 -right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background border border-border text-foreground shadow hover:bg-secondary transition-colors"
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+        <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
+          <iframe
+            className="h-full w-full"
+            src={videoUrl}
+            title="Video Cómo crear una caja"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
           />
         </div>
       </div>
