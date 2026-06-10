@@ -1180,16 +1180,24 @@ function AsnVideoModal({ open, onClose }: { open: boolean; onClose: () => void }
   );
 }
 
-function BoxVideoModal({ open, onClose, videoUrl }: { open: boolean; onClose: () => void; videoUrl: string }) {
-  if (!open) return null;
+function BoxVideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
 
+  useEffect(() => {
+    if (!open && videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  }, [open]);
+
+  if (!open) return null;
   return (
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-4xl rounded-2xl border border-border bg-card p-3 shadow-2xl"
+        className="relative w-full max-w-3xl rounded-2xl border border-border bg-card p-3 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -1200,12 +1208,13 @@ function BoxVideoModal({ open, onClose, videoUrl }: { open: boolean; onClose: ()
           ×
         </button>
         <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
-          <iframe
+          <video
+            ref={videoRef}
             className="h-full w-full"
-            src={videoUrl}
-            title="Video Cómo crear una caja"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
+            src={boxVideoAsset.url}
+            controls
+            autoPlay
+            playsInline
           />
         </div>
       </div>
