@@ -761,6 +761,18 @@ function StageBody({
                 Perspectiva
               </div>
               <h3 className="text-lg font-bold">Administración</h3>
+              {s.id === "inbound" && (
+                <div
+                  className="mt-1 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.15em]"
+                  style={{
+                    color: "oklch(0.55 0.13 200)",
+                    background: "oklch(0.95 0.04 200)",
+                    border: "1px solid oklch(0.75 0.08 200 / 0.4)",
+                  }}
+                >
+                  <ClipboardList className="h-3 w-3" /> Creación de ASN
+                </div>
+              )}
             </div>
           </div>
 
@@ -890,6 +902,18 @@ function StageBody({
               >
                 <WhIcon className="h-8 w-8" />
               </div>
+              {s.id === "inbound" && (
+                <div
+                  className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.15em]"
+                  style={{
+                    color: "oklch(0.55 0.13 200)",
+                    background: "oklch(0.95 0.04 200)",
+                    border: "1px solid oklch(0.75 0.08 200 / 0.4)",
+                  }}
+                >
+                  <ClipboardList className="h-3 w-3" /> Creación de ASN
+                </div>
+              )}
               <div
                 className="text-[10px] font-bold uppercase tracking-[0.2em]"
                 style={{ color: `var(${s.phaseVar})` }}
