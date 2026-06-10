@@ -1108,15 +1108,15 @@ function CartonsWarehouseBlock({ phaseVar }: { phaseVar: string }) {
     <div
       className="space-y-4 rounded-2xl border p-4"
       style={{
-        borderColor: `oklch(from var(${phaseVar}) l c h / 0.3)`,
-        background: `linear-gradient(180deg, oklch(from var(${phaseVar}) 0.97 0.02 h) 0%, var(--card) 100%)`,
+        borderColor: "oklch(0.78 0.06 60 / 0.5)",
+        background: "linear-gradient(180deg, oklch(0.94 0.04 65) 0%, oklch(0.97 0.02 65) 100%)",
       }}
     >
       <div
         className="flex items-center gap-2 border-b pb-3"
-        style={{ borderColor: `oklch(from var(${phaseVar}) l c h / 0.2)` }}
+        style={{ borderColor: "oklch(0.78 0.06 60 / 0.4)" }}
       >
-        <PackageOpen className="h-4 w-4" style={{ color: `var(${phaseVar})` }} />
+        <PackageOpen className="h-4 w-4" style={{ color: "oklch(0.5 0.09 55)" }} />
         <div>
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
             Creación de Cartons
@@ -1129,14 +1129,14 @@ function CartonsWarehouseBlock({ phaseVar }: { phaseVar: string }) {
         <div
           className="flex h-14 w-14 items-center justify-center rounded-2xl text-white"
           style={{
-            background: `linear-gradient(135deg, var(${phaseVar}), oklch(from var(${phaseVar}) calc(l - 0.12) c h))`,
+            background: "linear-gradient(135deg, oklch(0.6 0.1 55), oklch(0.45 0.08 50))",
           }}
         >
           <PackageOpen className="h-7 w-7" />
         </div>
         <div
           className="text-[10px] font-bold uppercase tracking-[0.2em]"
-          style={{ color: `var(${phaseVar})` }}
+          style={{ color: "oklch(0.5 0.09 55)" }}
         >
           Qué pasa físicamente
         </div>
