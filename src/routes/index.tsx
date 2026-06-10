@@ -1021,6 +1021,16 @@ function CartonsAdminBlock({ phaseVar, onOpenBoxVideo }: { phaseVar: string; onO
         />
       </div>
 
+      {onOpenBoxVideo && (
+        <button
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
+          onClick={onOpenBoxVideo}
+        >
+          <PackageOpen className="h-4 w-4 text-primary" />
+          Como crear una caja
+        </button>
+      )}
+
       <div>
         <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
           <ListChecks className="h-4 w-4" /> Actividades administrativas
