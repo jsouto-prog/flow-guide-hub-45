@@ -1005,9 +1005,18 @@ function CartonsAdminBlock({ phaseVar, onOpenBoxVideo }: { phaseVar: string; onO
     { title: "5. Mail al inbound team", detail: "Se envían labels al warehouse. Enviarlas cuando confirman por Slack que llegaron las cajas." },
   ];
   return (
-    <div className="space-y-4 rounded-2xl border border-border bg-card/60 p-4">
-      <div className="flex items-center gap-2 border-b border-border pb-3">
-        <PackageOpen className="h-4 w-4 text-primary" />
+    <div
+      className="space-y-4 rounded-2xl border p-4"
+      style={{
+        borderColor: "oklch(0.78 0.06 60 / 0.5)",
+        background: "linear-gradient(180deg, oklch(0.94 0.04 65) 0%, oklch(0.97 0.02 65) 100%)",
+      }}
+    >
+      <div
+        className="flex items-center gap-2 border-b pb-3"
+        style={{ borderColor: "oklch(0.78 0.06 60 / 0.4)" }}
+      >
+        <PackageOpen className="h-4 w-4" style={{ color: "oklch(0.5 0.09 55)" }} />
         <div>
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
             Creación de Cartons
