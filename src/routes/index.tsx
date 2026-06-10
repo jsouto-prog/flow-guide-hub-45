@@ -1,9 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import logisticsFlowAsset from "@/assets/logistics-flow.png.asset.json";
 import flujoHeroAsset from "@/assets/flujo-logistico-hero.png.asset.json";
-import asnVideoAsset from "@/assets/asn-tutorial.mp4.asset.json";
-import boxVideoAsset from "@/assets/cajas-tutorial.mp4.asset.json";
 import {
   ClipboardList,
   Warehouse,
@@ -1182,15 +1180,6 @@ function VideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 }
 
 function AsnVideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (!open && videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
-  }, [open]);
-
   if (!open) return null;
   return (
     <div
@@ -1209,13 +1198,12 @@ function AsnVideoModal({ open, onClose }: { open: boolean; onClose: () => void }
           ×
         </button>
         <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
-          <video
-            ref={videoRef}
+          <iframe
             className="h-full w-full"
-            src={asnVideoAsset.url}
-            controls
-            autoPlay
-            playsInline
+            src="https://www.youtube.com/embed/y7goZ96k0eY?autoplay=1&rel=0"
+            title="Como crear un ASN"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
           />
         </div>
       </div>
@@ -1224,15 +1212,6 @@ function AsnVideoModal({ open, onClose }: { open: boolean; onClose: () => void }
 }
 
 function BoxVideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (!open && videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
-  }, [open]);
-
   if (!open) return null;
   return (
     <div
@@ -1251,13 +1230,12 @@ function BoxVideoModal({ open, onClose }: { open: boolean; onClose: () => void }
           ×
         </button>
         <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
-          <video
-            ref={videoRef}
+          <iframe
             className="h-full w-full"
-            src={boxVideoAsset.url}
-            controls
-            autoPlay
-            playsInline
+            src="https://www.youtube.com/embed/doRO4KPgpFo?autoplay=1&rel=0"
+            title="Como crear una caja"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
           />
         </div>
       </div>
