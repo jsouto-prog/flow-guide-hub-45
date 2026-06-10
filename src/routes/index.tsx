@@ -761,6 +761,18 @@ function StageBody({
                 Perspectiva
               </div>
               <h3 className="text-lg font-bold">Administración</h3>
+              {s.id === "inbound" && (
+                <div
+                  className="mt-1 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.15em]"
+                  style={{
+                    color: "oklch(0.55 0.13 200)",
+                    background: "oklch(0.95 0.04 200)",
+                    border: "1px solid oklch(0.75 0.08 200 / 0.4)",
+                  }}
+                >
+                  <ClipboardList className="h-3 w-3" /> Creación de ASN
+                </div>
+              )}
             </div>
           </div>
 
@@ -890,6 +902,18 @@ function StageBody({
               >
                 <WhIcon className="h-8 w-8" />
               </div>
+              {s.id === "inbound" && (
+                <div
+                  className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.15em]"
+                  style={{
+                    color: "oklch(0.55 0.13 200)",
+                    background: "oklch(0.95 0.04 200)",
+                    border: "1px solid oklch(0.75 0.08 200 / 0.4)",
+                  }}
+                >
+                  <ClipboardList className="h-3 w-3" /> Creación de ASN
+                </div>
+              )}
               <div
                 className="text-[10px] font-bold uppercase tracking-[0.2em]"
                 style={{ color: `var(${s.phaseVar})` }}
@@ -981,9 +1005,18 @@ function CartonsAdminBlock({ phaseVar, onOpenBoxVideo }: { phaseVar: string; onO
     { title: "5. Mail al inbound team", detail: "Se envían labels al warehouse. Enviarlas cuando confirman por Slack que llegaron las cajas." },
   ];
   return (
-    <div className="space-y-4 rounded-2xl border border-border bg-card/60 p-4">
-      <div className="flex items-center gap-2 border-b border-border pb-3">
-        <PackageOpen className="h-4 w-4 text-primary" />
+    <div
+      className="space-y-4 rounded-2xl border p-4"
+      style={{
+        borderColor: "oklch(0.78 0.06 60 / 0.5)",
+        background: "linear-gradient(180deg, oklch(0.94 0.04 65) 0%, oklch(0.97 0.02 65) 100%)",
+      }}
+    >
+      <div
+        className="flex items-center gap-2 border-b pb-3"
+        style={{ borderColor: "oklch(0.78 0.06 60 / 0.4)" }}
+      >
+        <PackageOpen className="h-4 w-4" style={{ color: "oklch(0.5 0.09 55)" }} />
         <div>
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
             Creación de Cartons
@@ -1075,15 +1108,15 @@ function CartonsWarehouseBlock({ phaseVar }: { phaseVar: string }) {
     <div
       className="space-y-4 rounded-2xl border p-4"
       style={{
-        borderColor: `oklch(from var(${phaseVar}) l c h / 0.3)`,
-        background: `linear-gradient(180deg, oklch(from var(${phaseVar}) 0.97 0.02 h) 0%, var(--card) 100%)`,
+        borderColor: "oklch(0.78 0.06 60 / 0.5)",
+        background: "linear-gradient(180deg, oklch(0.94 0.04 65) 0%, oklch(0.97 0.02 65) 100%)",
       }}
     >
       <div
         className="flex items-center gap-2 border-b pb-3"
-        style={{ borderColor: `oklch(from var(${phaseVar}) l c h / 0.2)` }}
+        style={{ borderColor: "oklch(0.78 0.06 60 / 0.4)" }}
       >
-        <PackageOpen className="h-4 w-4" style={{ color: `var(${phaseVar})` }} />
+        <PackageOpen className="h-4 w-4" style={{ color: "oklch(0.5 0.09 55)" }} />
         <div>
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
             Creación de Cartons
@@ -1096,14 +1129,14 @@ function CartonsWarehouseBlock({ phaseVar }: { phaseVar: string }) {
         <div
           className="flex h-14 w-14 items-center justify-center rounded-2xl text-white"
           style={{
-            background: `linear-gradient(135deg, var(${phaseVar}), oklch(from var(${phaseVar}) calc(l - 0.12) c h))`,
+            background: "linear-gradient(135deg, oklch(0.6 0.1 55), oklch(0.45 0.08 50))",
           }}
         >
           <PackageOpen className="h-7 w-7" />
         </div>
         <div
           className="text-[10px] font-bold uppercase tracking-[0.2em]"
-          style={{ color: `var(${phaseVar})` }}
+          style={{ color: "oklch(0.5 0.09 55)" }}
         >
           Qué pasa físicamente
         </div>
