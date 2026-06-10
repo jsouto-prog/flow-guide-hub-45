@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import logisticsFlowAsset from "@/assets/logistics-flow.png.asset.json";
 import flujoHeroAsset from "@/assets/flujo-logistico-hero.png.asset.json";
 import asnVideoAsset from "@/assets/asn-tutorial.mp4.asset.json";
+import boxVideoAsset from "@/assets/cajas-tutorial.mp4.asset.json";
 import {
   ClipboardList,
   Warehouse,
@@ -684,12 +685,12 @@ function Index() {
       </div>
       <VideoModal open={videoOpen} onClose={() => setVideoOpen(false)} />
       <AsnVideoModal open={asnVideoOpen} onClose={() => setAsnVideoOpen(false)} />
-      <BoxVideoModal open={boxVideoOpen} onClose={() => setBoxVideoOpen(false)} videoUrl={BOX_VIDEO_URL} />
+      <BoxVideoModal open={boxVideoOpen} onClose={() => setBoxVideoOpen(false)} />
     </div>
   );
 }
 
-const BOX_VIDEO_URL = "REPLACE_WITH_EMBED_LINK";
+
 
 function MetaCard({ label, items }: { label: string; items: string[] }) {
   return (
@@ -1020,6 +1021,16 @@ function CartonsAdminBlock({ phaseVar, onOpenBoxVideo }: { phaseVar: string; onO
         />
       </div>
 
+      {onOpenBoxVideo && (
+        <button
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
+          onClick={onOpenBoxVideo}
+        >
+          <PackageOpen className="h-4 w-4 text-primary" />
+          Como crear una caja
+        </button>
+      )}
+
       <div>
         <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
           <ListChecks className="h-4 w-4" /> Actividades administrativas
@@ -1179,16 +1190,24 @@ function AsnVideoModal({ open, onClose }: { open: boolean; onClose: () => void }
   );
 }
 
-function BoxVideoModal({ open, onClose, videoUrl }: { open: boolean; onClose: () => void; videoUrl: string }) {
-  if (!open) return null;
+function BoxVideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
 
+  useEffect(() => {
+    if (!open && videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  }, [open]);
+
+  if (!open) return null;
   return (
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-4xl rounded-2xl border border-border bg-card p-3 shadow-2xl"
+        className="relative w-full max-w-3xl rounded-2xl border border-border bg-card p-3 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -1199,12 +1218,13 @@ function BoxVideoModal({ open, onClose, videoUrl }: { open: boolean; onClose: ()
           ×
         </button>
         <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
-          <iframe
+          <video
+            ref={videoRef}
             className="h-full w-full"
-            src={videoUrl}
-            title="Video Cómo crear una caja"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
+            src={boxVideoAsset.url}
+            controls
+            autoPlay
+            playsInline
           />
         </div>
       </div>
