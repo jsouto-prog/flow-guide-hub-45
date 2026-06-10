@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import logisticsFlowAsset from "@/assets/logistics-flow.png.asset.json";
 import flujoHeroAsset from "@/assets/flujo-logistico-hero.png.asset.json";
 import asnVideoAsset from "@/assets/asn-tutorial.mp4.asset.json";
+import boxVideoAsset from "@/assets/cajas-tutorial.mp4.asset.json";
 import {
   ClipboardList,
   Warehouse,
@@ -684,12 +685,12 @@ function Index() {
       </div>
       <VideoModal open={videoOpen} onClose={() => setVideoOpen(false)} />
       <AsnVideoModal open={asnVideoOpen} onClose={() => setAsnVideoOpen(false)} />
-      <BoxVideoModal open={boxVideoOpen} onClose={() => setBoxVideoOpen(false)} videoUrl={BOX_VIDEO_URL} />
+      <BoxVideoModal open={boxVideoOpen} onClose={() => setBoxVideoOpen(false)} />
     </div>
   );
 }
 
-const BOX_VIDEO_URL = "REPLACE_WITH_EMBED_LINK";
+
 
 function MetaCard({ label, items }: { label: string; items: string[] }) {
   return (
