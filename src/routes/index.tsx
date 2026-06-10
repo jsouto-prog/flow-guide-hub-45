@@ -1031,16 +1031,6 @@ function CartonsAdminBlock({ phaseVar, onOpenBoxVideo }: { phaseVar: string; onO
         </div>
       </div>
 
-      {onOpenBoxVideo && (
-        <button
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
-          onClick={onOpenBoxVideo}
-        >
-          <ClipboardList className="h-4 w-4 text-primary" />
-          Como crear una caja
-        </button>
-      )}
-
       <div className="grid gap-3 sm:grid-cols-2">
         <MiniList
           icon={<FileText className="h-4 w-4" />}
