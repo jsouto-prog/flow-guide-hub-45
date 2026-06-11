@@ -752,7 +752,6 @@ function StageBody({
   onOpenAsnVideo?: () => void;
   onOpenBoxVideo?: () => void;
 }) {
-  const WhIcon = WAREHOUSE_ICONS[s.id] ?? Warehouse;
   return (
     <div className="space-y-8 p-6 md:p-8">
       {/* Objective banner — common to both areas */}
