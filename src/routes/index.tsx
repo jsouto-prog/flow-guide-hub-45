@@ -55,6 +55,7 @@ type Stage = {
   dependencies: string[];
   warehouse: string;
   critical?: string[];
+  phaseColor?: string;
   phaseVar: string;
 };
 
@@ -138,6 +139,7 @@ const STAGES: Stage[] = [
     dependencies: ["Creación de cartons", "ASN en Mintsoft"],
     warehouse: "Reciben el camión, cuentan cajas y validan que coincidan con el ASN cargado.",
     critical: ["Detectar faltantes antes de confirmar al cliente"],
+    phaseColor: "green",
     phaseVar: "--phase-3",
   },
   {
@@ -340,6 +342,8 @@ const STAGES: Stage[] = [
     phaseVar: "--phase-8",
   },
 ];
+
+const CONTROL_ARRIBO_STAGE = STAGES.find((stage) => stage.id === "control-arribo");
 
 const FAQS = [
   {
@@ -825,6 +829,36 @@ function StageBody({
         </div>
       )}
 
+      {s.id === "inbound" && CONTROL_ARRIBO_STAGE && (
+        <div
+          className="rounded-3xl border-2 p-4 md:p-5"
+          style={{
+            borderColor: "oklch(0.58 0.08 140 / 0.45)",
+            background:
+              "linear-gradient(180deg, oklch(0.96 0.04 120) 0%, oklch(0.99 0.02 120) 100%)",
+          }}
+        >
+          <div
+            className="mb-4 flex items-center gap-2 border-b pb-3"
+            style={{ borderColor: "oklch(0.58 0.08 140 / 0.35)" }}
+          >
+            <ScanLine className="h-5 w-5" style={{ color: "oklch(0.45 0.12 140)" }} />
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                Proceso
+              </div>
+              <h3 className="text-base font-bold" style={{ color: "oklch(0.35 0.12 140)" }}>
+                Control de Arribo
+              </h3>
+            </div>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <StageAdminColumn s={CONTROL_ARRIBO_STAGE} />
+            <StageWarehouseColumn s={CONTROL_ARRIBO_STAGE} onOpenVideo={onOpenVideo} />
+          </div>
+        </div>
+      )}
+
       {s.id !== "inbound" && (
         <div className="grid gap-6 lg:grid-cols-2">
           <StageAdminColumn
@@ -862,12 +896,13 @@ function StageAdminColumn({
   s: Stage;
   onOpenAsnVideo?: () => void;
 }) {
+  const adminIconBg = s.phaseColor === "green" ? "oklch(0.45 0.12 140)" : "var(--gradient-hero)";
   return (
     <div className="relative rounded-2xl border border-border bg-card/60 p-4">
           <div className="mb-4 flex items-center gap-2 border-b border-border pb-3">
             <div
               className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[var(--shadow-soft)]"
-              style={{ background: "var(--gradient-hero)" }}
+              style={{ background: adminIconBg }}
             >
               <ClipboardList className="h-5 w-5" />
             </div>
@@ -979,12 +1014,20 @@ function StageWarehouseColumn({
   onOpenVideo?: () => void;
 }) {
   const WhIcon = WAREHOUSE_ICONS[s.id] ?? Warehouse;
+  const warehouseAccent = s.phaseColor === "green" ? {
+    border: "oklch(0.58 0.08 140 / 0.3)",
+    background: "linear-gradient(180deg, oklch(0.96 0.04 120) 0%, var(--card) 100%)",
+    icon: "linear-gradient(135deg, oklch(0.45 0.12 140), oklch(0.38 0.12 140))",
+    label: "oklch(0.35 0.12 140)",
+    badge: "oklch(0.95 0.04 120)",
+    badgeText: "white",
+  } : null;
   return (
         <div
           className="relative overflow-hidden rounded-2xl border p-5 md:p-6"
           style={{
-            borderColor: `oklch(from var(${s.phaseVar}) l c h / 0.3)`,
-            background: `linear-gradient(180deg, oklch(from var(${s.phaseVar}) 0.97 0.02 h) 0%, var(--card) 100%)`,
+            borderColor: warehouseAccent?.border ?? `oklch(from var(${s.phaseVar}) l c h / 0.3)`,
+            background: warehouseAccent?.background ?? `linear-gradient(180deg, oklch(from var(${s.phaseVar}) 0.97 0.02 h) 0%, var(--card) 100%)`,
           }}
         >
           {/* Decorative big icon */}
@@ -992,12 +1035,12 @@ function StageWarehouseColumn({
 
           <div
             className="mb-5 flex items-center gap-3 border-b pb-4"
-            style={{ borderColor: `oklch(from var(${s.phaseVar}) l c h / 0.2)` }}
+            style={{ borderColor: warehouseAccent?.border ?? `oklch(from var(${s.phaseVar}) l c h / 0.2)` }}
           >
             <div
               className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[var(--shadow-soft)]"
               style={{
-                background: `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.1) c h))`,
+                background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.1) c h))`,
               }}
             >
               <Warehouse className="h-5 w-5" />
@@ -1035,7 +1078,7 @@ function StageWarehouseColumn({
               )}
               <div
                 className="text-[10px] font-bold uppercase tracking-[0.2em]"
-                style={{ color: `var(${s.phaseVar})` }}
+                style={{ color: warehouseAccent?.label ?? `var(${s.phaseVar})` }}
               >
                 Qué pasa físicamente
               </div>
@@ -1044,9 +1087,9 @@ function StageWarehouseColumn({
 
             {/* Metric chips for visual balance */}
             <div className="grid grid-cols-3 gap-2">
-              <Chip phaseVar={s.phaseVar} value={s.activities.length} label="Pasos op." />
-              <Chip phaseVar={s.phaseVar} value={s.docs.length} label="Documentos" />
-              <Chip phaseVar={s.phaseVar} value={s.inputs.length} label="Entradas" />
+              <Chip phaseVar={s.phaseVar} phaseColor={s.phaseColor} value={s.activities.length} label="Pasos op." />
+              <Chip phaseVar={s.phaseVar} phaseColor={s.phaseColor} value={s.docs.length} label="Documentos" />
+              <Chip phaseVar={s.phaseVar} phaseColor={s.phaseColor} value={s.inputs.length} label="Entradas" />
             </div>
 
             {/* Visual flow strip */}
@@ -1092,7 +1135,7 @@ function StageWarehouseColumn({
               </span>
               <span
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white"
-                style={{ background: `var(${s.phaseVar})` }}
+                style={{ background: warehouseAccent?.badge ?? `var(${s.phaseVar})` }}
               >
                 {s.number}
               </span>
@@ -1102,7 +1145,7 @@ function StageWarehouseColumn({
             <button
               className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
               style={{
-                background: `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
+                background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
               }}
               onClick={() => (onOpenVideo ? onOpenVideo() : alert(`Video de la etapa: ${s.name}`))}
             >
@@ -1408,10 +1451,11 @@ function MiniList({
   );
 }
 
-function Chip({ phaseVar, value, label }: { phaseVar: string; value: number; label: string }) {
+function Chip({ phaseVar, phaseColor, value, label }: { phaseVar: string; phaseColor?: string; value: number; label: string }) {
+  const color = phaseColor === "green" ? "oklch(0.45 0.12 140)" : `var(${phaseVar})`;
   return (
     <div className="rounded-xl border border-border bg-card p-3 text-center">
-      <div className="text-2xl font-bold" style={{ color: `var(${phaseVar})` }}>
+      <div className="text-2xl font-bold" style={{ color }}>
         {value}
       </div>
       <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
