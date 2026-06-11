@@ -764,9 +764,109 @@ function StageBody({
       </div>
 
       {/* Two perspectives: Admin vs Warehouse */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* LEFT — Administración */}
-        <div className="relative rounded-2xl border border-border bg-card/60 p-4">
+      {s.id === "inbound" && (
+        <div
+          className="rounded-3xl border-2 p-4 md:p-5"
+          style={{
+            borderColor: "oklch(0.75 0.08 200 / 0.45)",
+            background:
+              "linear-gradient(180deg, oklch(0.98 0.015 200) 0%, oklch(1 0 0) 100%)",
+          }}
+        >
+          <div
+            className="mb-4 flex items-center gap-2 border-b pb-3"
+            style={{ borderColor: "oklch(0.75 0.08 200 / 0.35)" }}
+          >
+            <ClipboardList
+              className="h-5 w-5"
+              style={{ color: "oklch(0.45 0.13 200)" }}
+            />
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                Proceso
+              </div>
+              <h3 className="text-base font-bold" style={{ color: "oklch(0.35 0.13 200)" }}>
+                Creación de ASN
+              </h3>
+            </div>
+          </div>
+          <InboundAsnGrid
+            s={s}
+            onOpenVideo={onOpenVideo}
+            onOpenAsnVideo={onOpenAsnVideo}
+          />
+        </div>
+      )}
+
+      {s.id === "inbound" && (
+        <div
+          className="rounded-3xl border-2 p-4 md:p-5"
+          style={{
+            borderColor: "oklch(0.78 0.06 60 / 0.55)",
+            background:
+              "linear-gradient(180deg, oklch(0.97 0.025 65) 0%, oklch(1 0 0) 100%)",
+          }}
+        >
+          <div
+            className="mb-4 flex items-center gap-2 border-b pb-3"
+            style={{ borderColor: "oklch(0.78 0.06 60 / 0.4)" }}
+          >
+            <PackageOpen className="h-5 w-5" style={{ color: "oklch(0.5 0.09 55)" }} />
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                Proceso
+              </div>
+              <h3 className="text-base font-bold" style={{ color: "oklch(0.4 0.09 55)" }}>
+                Creación de Cartons
+              </h3>
+            </div>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <CartonsAdminBlock phaseVar={s.phaseVar} onOpenBoxVideo={onOpenBoxVideo} />
+            <CartonsWarehouseBlock phaseVar={s.phaseVar} />
+          </div>
+        </div>
+      )}
+
+      {s.id !== "inbound" && (
+        <div className="grid gap-6 lg:grid-cols-2">
+          <StageAdminColumn
+            s={s}
+            onOpenAsnVideo={onOpenAsnVideo}
+          />
+          <StageWarehouseColumn s={s} onOpenVideo={onOpenVideo} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function InboundAsnGrid({
+  s,
+  onOpenVideo,
+  onOpenAsnVideo,
+}: {
+  s: Stage;
+  onOpenVideo?: () => void;
+  onOpenAsnVideo?: () => void;
+}) {
+  return (
+    <div className="grid gap-6 lg:grid-cols-2">
+      <StageAdminColumn s={s} onOpenAsnVideo={onOpenAsnVideo} />
+      <StageWarehouseColumn s={s} onOpenVideo={onOpenVideo} />
+    </div>
+  );
+}
+
+function StageAdminColumn({
+  s,
+  onOpenAsnVideo,
+}: {
+  s: Stage;
+  onOpenAsnVideo?: () => void;
+}) {
+  return (
+    <div className="relative rounded-2xl border border-border bg-card/60 p-4">
           <div className="mb-4 flex items-center gap-2 border-b border-border pb-3">
             <div
               className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[var(--shadow-soft)]"
@@ -869,15 +969,20 @@ function StageBody({
                 </ul>
               </div>
             )}
-
-            {/* Creación de Cartons — bloque administrativo (solo Inbound) */}
-            {s.id === "inbound" && (
-              <CartonsAdminBlock phaseVar={s.phaseVar} onOpenBoxVideo={onOpenBoxVideo} />
-            )}
           </div>
         </div>
+  );
+}
 
-        {/* RIGHT — Warehouse */}
+function StageWarehouseColumn({
+  s,
+  onOpenVideo,
+}: {
+  s: Stage;
+  onOpenVideo?: () => void;
+}) {
+  const WhIcon = WAREHOUSE_ICONS[s.id] ?? Warehouse;
+  return (
         <div
           className="relative overflow-hidden rounded-2xl border p-5 md:p-6"
           style={{
@@ -1007,17 +1112,8 @@ function StageBody({
               <Play className="h-4 w-4 fill-current" />
               Ver Video
             </button>
-
-            {/* Creación de Cartons — bloque warehouse (solo Inbound) */}
-            {s.id === "inbound" && (
-              <div className="mt-0 lg:mt-45">
-                <CartonsWarehouseBlock phaseVar={s.phaseVar} />
-              </div>
-            )}
           </div>
         </div>
-      </div>
-    </div>
   );
 }
 
