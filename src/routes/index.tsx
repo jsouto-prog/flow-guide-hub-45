@@ -25,9 +25,17 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Proceso 5411 — Guía Interactiva Logística" },
-      { name: "description", content: "Guía interactiva del proceso operativo logístico 5411: inbound, outbound, shipping y returns paso a paso." },
+      {
+        name: "description",
+        content:
+          "Guía interactiva del proceso operativo logístico 5411: inbound, outbound, shipping y returns paso a paso.",
+      },
       { property: "og:title", content: "Proceso 5411 — Guía Interactiva" },
-      { property: "og:description", content: "Explorá el proceso 5411 fase por fase: roadmap, diagramas, responsables y documentación." },
+      {
+        property: "og:description",
+        content:
+          "Explorá el proceso 5411 fase por fase: roadmap, diagramas, responsables y documentación.",
+      },
     ],
   }),
   component: Index,
@@ -128,8 +136,7 @@ const STAGES: Stage[] = [
     docs: ["Slack thread", "Reporte de faltantes (si aplica)"],
     outputs: ["Validación completa de arribo", "Confirmación al cliente"],
     dependencies: ["Creación de cartons", "ASN en Mintsoft"],
-    warehouse:
-      "Reciben el camión, cuentan cajas y validan que coincidan con el ASN cargado.",
+    warehouse: "Reciben el camión, cuentan cajas y validan que coincidan con el ASN cargado.",
     critical: ["Detectar faltantes antes de confirmar al cliente"],
     phaseVar: "--phase-3",
   },
@@ -205,10 +212,7 @@ const STAGES: Stage[] = [
       {
         title: "Estado NEW",
         detail: "Stock asignado correctamente — todo listo para preparar.",
-        items: [
-          "Los productos ya están ubicados en estanterías",
-          "El sistema puede encontrarlos",
-        ],
+        items: ["Los productos ya están ubicados en estanterías", "El sistema puede encontrarlos"],
       },
       {
         title: "Estado ONBACKORDER",
@@ -250,10 +254,7 @@ const STAGES: Stage[] = [
       },
       {
         title: "3. Picking Types",
-        items: [
-          "Bulk Paperless — 1 sola orden",
-          "Multi Tote — múltiples órdenes",
-        ],
+        items: ["Bulk Paperless — 1 sola orden", "Multi Tote — múltiples órdenes"],
       },
       {
         title: "4. Print Batch PDF",
@@ -440,9 +441,13 @@ function Index() {
           className="absolute inset-0 opacity-20"
           style={{ background: "var(--gradient-hero)" }}
         />
-        <div className="absolute inset-0" style={{
-          backgroundImage: "radial-gradient(circle at 20% 30%, oklch(0.6 0.2 270 / 0.15), transparent 50%), radial-gradient(circle at 80% 70%, oklch(0.7 0.18 50 / 0.12), transparent 50%)"
-        }} />
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 20% 30%, oklch(0.6 0.2 270 / 0.15), transparent 50%), radial-gradient(circle at 80% 70%, oklch(0.7 0.18 50 / 0.12), transparent 50%)",
+          }}
+        />
         <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-28">
           {/* Floating hero image — desktop: absolute top-right; mobile/tablet: inline before CTAs */}
           <img
@@ -465,8 +470,8 @@ function Index() {
             </span>
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl">
-            Guía interactiva de principio a fin: desde el aviso del cliente hasta el despacho y
-            las devoluciones.
+            Guía interactiva de principio a fin: desde el aviso del cliente hasta el despacho y las
+            devoluciones.
           </p>
           {/* Inline image for mobile/tablet — placed above CTAs */}
           <img
@@ -492,7 +497,10 @@ function Index() {
           </div>
 
           {/* Phase pills */}
-          <div className="mt-24 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8" style={{ marginTop: "calc(6rem + 100px)" }}>
+          <div
+            className="mt-24 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8"
+            style={{ marginTop: "calc(6rem + 100px)" }}
+          >
             {STAGES.map((s) => (
               <button
                 key={s.id}
@@ -528,157 +536,171 @@ function Index() {
               className="w-full max-w-md rounded-lg border border-border bg-card px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
             <div className="flex gap-2 text-xs">
-              <a href="#horarios" className="rounded-lg border border-border bg-card px-3 py-2 font-medium hover:bg-secondary">Horarios</a>
-              <a href="#faq" className="rounded-lg border border-border bg-card px-3 py-2 font-medium hover:bg-secondary">FAQ</a>
+              <a
+                href="#horarios"
+                className="rounded-lg border border-border bg-card px-3 py-2 font-medium hover:bg-secondary"
+              >
+                Horarios
+              </a>
+              <a
+                href="#faq"
+                className="rounded-lg border border-border bg-card px-3 py-2 font-medium hover:bg-secondary"
+              >
+                FAQ
+              </a>
             </div>
           </div>
 
-            {/* Flow diagram */}
-            <section className="mb-16 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
-              <h2 className="mb-1 text-xl font-bold">Mapa del proceso</h2>
-              <p className="mb-6 text-sm text-muted-foreground">
-                Flujo end-to-end con dependencias entre etapas
-              </p>
-              <div className="flex flex-wrap items-center gap-2">
-                {STAGES.map((s, i) => (
-                  <div key={s.id} className="flex items-center gap-2">
-                    <button
-                      onClick={() => scrollTo(s.id)}
-                      className="group flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 transition-all hover:-translate-y-0.5 hover:shadow-md"
+          {/* Flow diagram */}
+          <section className="mb-16 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
+            <h2 className="mb-1 text-xl font-bold">Mapa del proceso</h2>
+            <p className="mb-6 text-sm text-muted-foreground">
+              Flujo end-to-end con dependencias entre etapas
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              {STAGES.map((s, i) => (
+                <div key={s.id} className="flex items-center gap-2">
+                  <button
+                    onClick={() => scrollTo(s.id)}
+                    className="group flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 transition-all hover:-translate-y-0.5 hover:shadow-md"
+                  >
+                    <span
+                      className="flex h-6 w-6 items-center justify-center rounded text-[11px] font-bold text-white"
+                      style={{ background: `var(${s.phaseVar})` }}
                     >
-                      <span
-                        className="flex h-6 w-6 items-center justify-center rounded text-[11px] font-bold text-white"
-                        style={{ background: `var(${s.phaseVar})` }}
+                      {s.number}
+                    </span>
+                    <span className="text-xs font-medium">{s.name}</span>
+                  </button>
+                  {i < STAGES.length - 1 && <span className="text-muted-foreground">→</span>}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Stages */}
+          <div className="space-y-12">
+            {filtered.map((s) => {
+              const isOpen = expanded[s.id] ?? true;
+              return (
+                <section
+                  key={s.id}
+                  id={s.id}
+                  className="scroll-mt-8 rounded-2xl border border-border bg-card overflow-hidden shadow-[var(--shadow-soft)]"
+                >
+                  {/* Header */}
+                  <div
+                    className="relative p-6 md:p-8"
+                    style={{
+                      background: `linear-gradient(135deg, var(${s.phaseVar}) 0%, oklch(from var(${s.phaseVar}) calc(l - 0.1) c h) 100%)`,
+                    }}
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-4 text-white">
+                      <div>
+                        <div className="text-xs font-semibold uppercase tracking-wider opacity-80">
+                          Etapa {s.number} de {STAGES.length}
+                        </div>
+                        <h2 className="mt-1 text-3xl font-bold md:text-4xl">{s.name}</h2>
+                        <p className="mt-2 text-base opacity-90">{s.short}</p>
+                      </div>
+                      <button
+                        onClick={() => setExpanded((prev) => ({ ...prev, [s.id]: !isOpen }))}
+                        className="rounded-lg bg-white/20 px-3 py-1.5 text-xs font-semibold backdrop-blur transition-colors hover:bg-white/30"
                       >
-                        {s.number}
+                        {isOpen ? "Contraer −" : "Expandir +"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {isOpen && (
+                    <StageBody
+                      stage={s}
+                      onOpenVideo={s.id === "inbound" ? () => setVideoOpen(true) : undefined}
+                      onOpenAsnVideo={s.id === "inbound" ? () => setAsnVideoOpen(true) : undefined}
+                      onOpenBoxVideo={s.id === "inbound" ? () => setBoxVideoOpen(true) : undefined}
+                    />
+                  )}
+                </section>
+              );
+            })}
+            {filtered.length === 0 && (
+              <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+                No se encontraron etapas para "{query}".
+              </div>
+            )}
+          </div>
+
+          {/* Horarios + Pack and Hold */}
+          <section id="horarios" className="mt-16 grid gap-6 md:grid-cols-2 scroll-mt-8">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
+              <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Horarios operativos
+              </div>
+              <h3 className="mt-1 text-2xl font-bold">Cutoffs & cierre</h3>
+              <div className="mt-6 space-y-3">
+                <Stat label="Warehouse closes" value="5:00 PM" />
+                <Stat label="Pickup cutoff" value="4:00 PM" />
+              </div>
+              <p className="mt-4 text-sm text-muted-foreground">
+                Si no está listo antes del cutoff, queda retenido para el día siguiente.
+              </p>
+            </div>
+            <div
+              className="rounded-2xl border border-border p-6 shadow-[var(--shadow-soft)]"
+              style={{
+                background: "linear-gradient(135deg, oklch(0.96 0.04 60), oklch(0.94 0.06 40))",
+              }}
+            >
+              <div
+                className="text-xs font-bold uppercase tracking-wider"
+                style={{ color: "var(--phase-7)" }}
+              >
+                Pack and Hold
+              </div>
+              <h3 className="mt-1 text-2xl font-bold">Preparar pero no despachar</h3>
+              <p className="mt-4 text-sm leading-relaxed">
+                Las cajas quedan armadas, etiquetadas y retenidas en custodia hasta recibir
+                autorización final del cliente.
+              </p>
+            </div>
+          </section>
+
+          {/* FAQ */}
+          <section id="faq" className="mt-16 scroll-mt-8">
+            <div className="mb-6">
+              <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                FAQ
+              </div>
+              <h2 className="mt-1 text-3xl font-bold">Preguntas frecuentes</h2>
+            </div>
+            <div className="space-y-2">
+              {FAQS.map((f, i) => {
+                const open = openFaq === i;
+                return (
+                  <div key={i} className="rounded-xl border border-border bg-card overflow-hidden">
+                    <button
+                      onClick={() => setOpenFaq(open ? null : i)}
+                      className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-secondary/40"
+                    >
+                      <span className="text-sm font-semibold">{f.q}</span>
+                      <span className={`text-xl transition-transform ${open ? "rotate-45" : ""}`}>
+                        +
                       </span>
-                      <span className="text-xs font-medium">{s.name}</span>
                     </button>
-                    {i < STAGES.length - 1 && (
-                      <span className="text-muted-foreground">→</span>
+                    {open && (
+                      <div className="border-t border-border bg-secondary/20 px-5 py-4 text-sm text-muted-foreground">
+                        {f.a}
+                      </div>
                     )}
                   </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Stages */}
-            <div className="space-y-12">
-              {filtered.map((s) => {
-                const isOpen = expanded[s.id] ?? true;
-                return (
-                  <section
-                    key={s.id}
-                    id={s.id}
-                    className="scroll-mt-8 rounded-2xl border border-border bg-card overflow-hidden shadow-[var(--shadow-soft)]"
-                  >
-                    {/* Header */}
-                    <div
-                      className="relative p-6 md:p-8"
-                      style={{
-                        background: `linear-gradient(135deg, var(${s.phaseVar}) 0%, oklch(from var(${s.phaseVar}) calc(l - 0.1) c h) 100%)`,
-                      }}
-                    >
-                      <div className="flex flex-wrap items-start justify-between gap-4 text-white">
-                        <div>
-                          <div className="text-xs font-semibold uppercase tracking-wider opacity-80">
-                            Etapa {s.number} de {STAGES.length}
-                          </div>
-                          <h2 className="mt-1 text-3xl font-bold md:text-4xl">{s.name}</h2>
-                          <p className="mt-2 text-base opacity-90">{s.short}</p>
-                        </div>
-                        <button
-                          onClick={() =>
-                            setExpanded((prev) => ({ ...prev, [s.id]: !isOpen }))
-                          }
-                          className="rounded-lg bg-white/20 px-3 py-1.5 text-xs font-semibold backdrop-blur transition-colors hover:bg-white/30"
-                        >
-                          {isOpen ? "Contraer −" : "Expandir +"}
-                        </button>
-                      </div>
-                    </div>
-
-                    {isOpen && (
-                     <StageBody
-                       stage={s}
-                       onOpenVideo={s.id === "inbound" ? () => setVideoOpen(true) : undefined}
-                       onOpenAsnVideo={s.id === "inbound" ? () => setAsnVideoOpen(true) : undefined}
-                       onOpenBoxVideo={s.id === "inbound" ? () => setBoxVideoOpen(true) : undefined}
-                     />
-                    )}
-                  </section>
                 );
               })}
-              {filtered.length === 0 && (
-                <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-                  No se encontraron etapas para "{query}".
-                </div>
-              )}
             </div>
+          </section>
 
-            {/* Horarios + Pack and Hold */}
-            <section id="horarios" className="mt-16 grid gap-6 md:grid-cols-2 scroll-mt-8">
-              <div className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
-                <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Horarios operativos
-                </div>
-                <h3 className="mt-1 text-2xl font-bold">Cutoffs & cierre</h3>
-                <div className="mt-6 space-y-3">
-                  <Stat label="Warehouse closes" value="5:00 PM" />
-                  <Stat label="Pickup cutoff" value="4:00 PM" />
-                </div>
-                <p className="mt-4 text-sm text-muted-foreground">
-                  Si no está listo antes del cutoff, queda retenido para el día siguiente.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border p-6 shadow-[var(--shadow-soft)]" style={{ background: "linear-gradient(135deg, oklch(0.96 0.04 60), oklch(0.94 0.06 40))" }}>
-                <div className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--phase-7)" }}>
-                  Pack and Hold
-                </div>
-                <h3 className="mt-1 text-2xl font-bold">Preparar pero no despachar</h3>
-                <p className="mt-4 text-sm leading-relaxed">
-                  Las cajas quedan armadas, etiquetadas y retenidas en custodia hasta recibir
-                  autorización final del cliente.
-                </p>
-              </div>
-            </section>
-
-            {/* FAQ */}
-            <section id="faq" className="mt-16 scroll-mt-8">
-              <div className="mb-6">
-                <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  FAQ
-                </div>
-                <h2 className="mt-1 text-3xl font-bold">Preguntas frecuentes</h2>
-              </div>
-              <div className="space-y-2">
-                {FAQS.map((f, i) => {
-                  const open = openFaq === i;
-                  return (
-                    <div key={i} className="rounded-xl border border-border bg-card overflow-hidden">
-                      <button
-                        onClick={() => setOpenFaq(open ? null : i)}
-                        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-secondary/40"
-                      >
-                        <span className="text-sm font-semibold">{f.q}</span>
-                        <span className={`text-xl transition-transform ${open ? "rotate-45" : ""}`}>
-                          +
-                        </span>
-                      </button>
-                      {open && (
-                        <div className="border-t border-border bg-secondary/20 px-5 py-4 text-sm text-muted-foreground">
-                          {f.a}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-
-            <footer className="mt-20 border-t border-border pt-8 text-center text-xs text-muted-foreground">
-              Proceso 5411 — Guía interactiva operativa
-            </footer>
+          <footer className="mt-20 border-t border-border pt-8 text-center text-xs text-muted-foreground">
+            Proceso 5411 — Guía interactiva operativa
+          </footer>
         </main>
       </div>
       <VideoModal open={videoOpen} onClose={() => setVideoOpen(false)} />
@@ -687,8 +709,6 @@ function Index() {
     </div>
   );
 }
-
-
 
 function MetaCard({ label, items }: { label: string; items: string[] }) {
   return (
@@ -730,7 +750,6 @@ function StageBody({
   onOpenAsnVideo?: () => void;
   onOpenBoxVideo?: () => void;
 }) {
-  const WhIcon = WAREHOUSE_ICONS[s.id] ?? Warehouse;
   return (
     <div className="space-y-8 p-6 md:p-8">
       {/* Objective banner — common to both areas */}
@@ -742,11 +761,109 @@ function StageBody({
       </div>
 
       {/* Two perspectives: Admin vs Warehouse */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* LEFT — Administración */}
+      {s.id === "inbound" && (
         <div
-          className="relative rounded-2xl border border-border bg-card/60 p-4"
+          className="rounded-3xl border-2 p-4 md:p-5"
+          style={{
+            borderColor: "oklch(0.75 0.08 200 / 0.45)",
+            background:
+              "linear-gradient(180deg, oklch(0.98 0.015 200) 0%, oklch(1 0 0) 100%)",
+          }}
         >
+          <div
+            className="mb-4 flex items-center gap-2 border-b pb-3"
+            style={{ borderColor: "oklch(0.75 0.08 200 / 0.35)" }}
+          >
+            <ClipboardList
+              className="h-5 w-5"
+              style={{ color: "oklch(0.45 0.13 200)" }}
+            />
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                Proceso
+              </div>
+              <h3 className="text-base font-bold" style={{ color: "oklch(0.35 0.13 200)" }}>
+                Creación de ASN
+              </h3>
+            </div>
+          </div>
+          <InboundAsnGrid
+            s={s}
+            onOpenVideo={onOpenVideo}
+            onOpenAsnVideo={onOpenAsnVideo}
+          />
+        </div>
+      )}
+
+      {s.id === "inbound" && (
+        <div
+          className="rounded-3xl border-2 p-4 md:p-5"
+          style={{
+            borderColor: "oklch(0.78 0.06 60 / 0.55)",
+            background:
+              "linear-gradient(180deg, oklch(0.97 0.025 65) 0%, oklch(1 0 0) 100%)",
+          }}
+        >
+          <div
+            className="mb-4 flex items-center gap-2 border-b pb-3"
+            style={{ borderColor: "oklch(0.78 0.06 60 / 0.4)" }}
+          >
+            <PackageOpen className="h-5 w-5" style={{ color: "oklch(0.5 0.09 55)" }} />
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                Proceso
+              </div>
+              <h3 className="text-base font-bold" style={{ color: "oklch(0.4 0.09 55)" }}>
+                Creación de Cartons
+              </h3>
+            </div>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <CartonsAdminBlock phaseVar={s.phaseVar} onOpenBoxVideo={onOpenBoxVideo} />
+            <CartonsWarehouseBlock phaseVar={s.phaseVar} />
+          </div>
+        </div>
+      )}
+
+      {s.id !== "inbound" && (
+        <div className="grid gap-6 lg:grid-cols-2">
+          <StageAdminColumn
+            s={s}
+            onOpenAsnVideo={onOpenAsnVideo}
+          />
+          <StageWarehouseColumn s={s} onOpenVideo={onOpenVideo} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function InboundAsnGrid({
+  s,
+  onOpenVideo,
+  onOpenAsnVideo,
+}: {
+  s: Stage;
+  onOpenVideo?: () => void;
+  onOpenAsnVideo?: () => void;
+}) {
+  return (
+    <div className="grid gap-6 lg:grid-cols-2">
+      <StageAdminColumn s={s} onOpenAsnVideo={onOpenAsnVideo} />
+      <StageWarehouseColumn s={s} onOpenVideo={onOpenVideo} />
+    </div>
+  );
+}
+
+function StageAdminColumn({
+  s,
+  onOpenAsnVideo,
+}: {
+  s: Stage;
+  onOpenAsnVideo?: () => void;
+}) {
+  return (
+    <div className="relative rounded-2xl border border-border bg-card/60 p-4">
           <div className="mb-4 flex items-center gap-2 border-b border-border pb-3">
             <div
               className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[var(--shadow-soft)]"
@@ -788,11 +905,7 @@ function StageBody({
 
             {/* Entradas + Dependencias */}
             <div className="grid gap-3 sm:grid-cols-2">
-              <MiniList
-                icon={<Inbox className="h-4 w-4" />}
-                label="Entradas"
-                items={s.inputs}
-              />
+              <MiniList icon={<Inbox className="h-4 w-4" />} label="Entradas" items={s.inputs} />
               <MiniList
                 icon={<Link2 className="h-4 w-4" />}
                 label="Dependencias"
@@ -853,13 +966,20 @@ function StageBody({
                 </ul>
               </div>
             )}
-
-            {/* Creación de Cartons — bloque administrativo (solo Inbound) */}
-            {s.id === "inbound" && <CartonsAdminBlock phaseVar={s.phaseVar} onOpenBoxVideo={onOpenBoxVideo} />}
           </div>
         </div>
+  );
+}
 
-        {/* RIGHT — Warehouse */}
+function StageWarehouseColumn({
+  s,
+  onOpenVideo,
+}: {
+  s: Stage;
+  onOpenVideo?: () => void;
+}) {
+  const WhIcon = WAREHOUSE_ICONS[s.id] ?? Warehouse;
+  return (
         <div
           className="relative overflow-hidden rounded-2xl border p-5 md:p-6"
           style={{
@@ -868,11 +988,12 @@ function StageBody({
           }}
         >
           {/* Decorative big icon */}
-          <WhIcon
-            className="pointer-events-none absolute -right-6 -top-6 h-44 w-44 opacity-[0.07]"
-          />
+          <WhIcon className="pointer-events-none absolute -right-6 -top-6 h-44 w-44 opacity-[0.07]" />
 
-          <div className="mb-5 flex items-center gap-3 border-b pb-4" style={{ borderColor: `oklch(from var(${s.phaseVar}) l c h / 0.2)` }}>
+          <div
+            className="mb-5 flex items-center gap-3 border-b pb-4"
+            style={{ borderColor: `oklch(from var(${s.phaseVar}) l c h / 0.2)` }}
+          >
             <div
               className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[var(--shadow-soft)]"
               style={{
@@ -923,21 +1044,9 @@ function StageBody({
 
             {/* Metric chips for visual balance */}
             <div className="grid grid-cols-3 gap-2">
-              <Chip
-                phaseVar={s.phaseVar}
-                value={s.activities.length}
-                label="Pasos op."
-              />
-              <Chip
-                phaseVar={s.phaseVar}
-                value={s.docs.length}
-                label="Documentos"
-              />
-              <Chip
-                phaseVar={s.phaseVar}
-                value={s.inputs.length}
-                label="Entradas"
-              />
+              <Chip phaseVar={s.phaseVar} value={s.activities.length} label="Pasos op." />
+              <Chip phaseVar={s.phaseVar} value={s.docs.length} label="Documentos" />
+              <Chip phaseVar={s.phaseVar} value={s.inputs.length} label="Entradas" />
             </div>
 
             {/* Visual flow strip */}
@@ -946,20 +1055,38 @@ function StageBody({
                 Flujo físico
               </div>
               <div className="flex items-center justify-between gap-2">
-                <FlowStep icon={<Truck className="h-4 w-4" />} label="Recepción" active={s.number <= 3} phaseVar={s.phaseVar} />
+                <FlowStep
+                  icon={<Truck className="h-4 w-4" />}
+                  label="Recepción"
+                  active={s.number <= 3}
+                  phaseVar={s.phaseVar}
+                />
                 <Dash phaseVar={s.phaseVar} />
-                <FlowStep icon={<Boxes className="h-4 w-4" />} label="Almacén" active={s.number >= 2 && s.number <= 6} phaseVar={s.phaseVar} />
+                <FlowStep
+                  icon={<Boxes className="h-4 w-4" />}
+                  label="Almacén"
+                  active={s.number >= 2 && s.number <= 6}
+                  phaseVar={s.phaseVar}
+                />
                 <Dash phaseVar={s.phaseVar} />
-                <FlowStep icon={<PackageOpen className="h-4 w-4" />} label="Picking" active={s.number >= 6 && s.number <= 7} phaseVar={s.phaseVar} />
+                <FlowStep
+                  icon={<PackageOpen className="h-4 w-4" />}
+                  label="Picking"
+                  active={s.number >= 6 && s.number <= 7}
+                  phaseVar={s.phaseVar}
+                />
                 <Dash phaseVar={s.phaseVar} />
-                <FlowStep icon={<Truck className="h-4 w-4" />} label="Despacho" active={s.number >= 7} phaseVar={s.phaseVar} />
+                <FlowStep
+                  icon={<Truck className="h-4 w-4" />}
+                  label="Despacho"
+                  active={s.number >= 7}
+                  phaseVar={s.phaseVar}
+                />
               </div>
             </div>
 
             {/* Etapa badge */}
-            <div
-              className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3"
-            >
+            <div className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3">
               <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Etapa operativa
               </span>
@@ -974,33 +1101,44 @@ function StageBody({
             {/* Ver Video */}
             <button
               className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
-              style={{ background: `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))` }}
-              onClick={() => onOpenVideo ? onOpenVideo() : alert(`Video de la etapa: ${s.name}`)}
+              style={{
+                background: `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
+              }}
+              onClick={() => (onOpenVideo ? onOpenVideo() : alert(`Video de la etapa: ${s.name}`))}
             >
               <Play className="h-4 w-4 fill-current" />
               Ver Video
             </button>
-
-            {/* Creación de Cartons — bloque warehouse (solo Inbound) */}
-            {s.id === "inbound" && (
-              <div className="mt-0 lg:mt-45">
-                <CartonsWarehouseBlock phaseVar={s.phaseVar} />
-              </div>
-            )}
           </div>
         </div>
-      </div>
-    </div>
   );
 }
 
-function CartonsAdminBlock({ phaseVar, onOpenBoxVideo }: { phaseVar: string; onOpenBoxVideo?: () => void }) {
+function CartonsAdminBlock({
+  phaseVar,
+  onOpenBoxVideo,
+}: {
+  phaseVar: string;
+  onOpenBoxVideo?: () => void;
+}) {
   const activities = [
-    { title: "1. Create New Carton", detail: "Ruta en Mintsoft:", items: ["Cartons → Cartons & Pallets → Create New Carton"] },
+    {
+      title: "1. Create New Carton",
+      detail: "Ruta en Mintsoft:",
+      items: ["Cartons → Cartons & Pallets → Create New Carton"],
+    },
     { title: "2. Configuración", items: ["Storage = Stock", "Location = RS In Transit"] },
-    { title: "3. Código del Carton", detail: "Formato: DOS PALABRAS + últimos 6 del tracking + número de caja", items: ["Ejemplo: POSSE468889-001"] },
+    {
+      title: "3. Código del Carton",
+      detail: "Formato: DOS PALABRAS + últimos 6 del tracking + número de caja",
+      items: ["Ejemplo: POSSE468889-001"],
+    },
     { title: "4. Print Labels PDF", items: ["Se imprimen labels", "Se genera PDF de etiquetas"] },
-    { title: "5. Mail al inbound team", detail: "Se envían labels al warehouse. Enviarlas cuando confirman por Slack que llegaron las cajas." },
+    {
+      title: "5. Mail al inbound team",
+      detail:
+        "Se envían labels al warehouse. Enviarlas cuando confirman por Slack que llegaron las cajas.",
+    },
   ];
   return (
     <div
@@ -1025,7 +1163,8 @@ function CartonsAdminBlock({ phaseVar, onOpenBoxVideo }: { phaseVar: string; onO
 
       <div className="rounded-lg border border-border bg-secondary/10 p-3">
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Registro anticipado de cajas físicas. Con el packing list registramos cuántas cajas van a venir antes de que lleguen físicamente al warehouse
+          Registro anticipado de cajas físicas. Con el packing list registramos cuántas cajas van a
+          venir antes de que lleguen físicamente al warehouse
         </p>
       </div>
 
@@ -1051,17 +1190,6 @@ function CartonsAdminBlock({ phaseVar, onOpenBoxVideo }: { phaseVar: string; onO
           items={["Inbound (ASN creado)"]}
         />
       </div>
-
-      {onOpenBoxVideo && (
-        <button
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
-          onClick={onOpenBoxVideo}
-        >
-          <PackageOpen className="h-4 w-4 text-primary" />
-          Como crear una caja
-        </button>
-      )}
-
       <div>
         <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
           <ListChecks className="h-4 w-4" /> Actividades administrativas
@@ -1071,6 +1199,17 @@ function CartonsAdminBlock({ phaseVar, onOpenBoxVideo }: { phaseVar: string; onO
             <Activity key={i} activity={a} phaseVar={phaseVar} />
           ))}
         </div>
+        {onOpenBoxVideo && (
+          <div className="mt-3">
+            <button
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
+              onClick={onOpenBoxVideo}
+            >
+              <PackageOpen className="h-4 w-4 text-primary" />
+              Como crear una caja
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -1269,21 +1408,10 @@ function MiniList({
   );
 }
 
-function Chip({
-  phaseVar,
-  value,
-  label,
-}: {
-  phaseVar: string;
-  value: number;
-  label: string;
-}) {
+function Chip({ phaseVar, value, label }: { phaseVar: string; value: number; label: string }) {
   return (
     <div className="rounded-xl border border-border bg-card p-3 text-center">
-      <div
-        className="text-2xl font-bold"
-        style={{ color: `var(${phaseVar})` }}
-      >
+      <div className="text-2xl font-bold" style={{ color: `var(${phaseVar})` }}>
         {value}
       </div>
       <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -1351,10 +1479,7 @@ function Activity({
         className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-secondary/40"
       >
         <div className="flex items-center gap-3">
-          <span
-            className="h-2 w-2 rounded-full"
-            style={{ background: `var(${phaseVar})` }}
-          />
+          <span className="h-2 w-2 rounded-full" style={{ background: `var(${phaseVar})` }} />
           <span className="text-sm font-semibold">{activity.title}</span>
         </div>
         {hasBody && (
@@ -1467,8 +1592,8 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
               5411 Logistics Flow
             </h2>
             <p className="mt-2 max-w-2xl text-sm text-muted-foreground md:text-base">
-              Recorrido físico de la mercadería dentro del warehouse, de izquierda a derecha.
-              Pasá el mouse o tocá cada etapa para ver el detalle y saltar a la sección operativa.
+              Recorrido físico de la mercadería dentro del warehouse, de izquierda a derecha. Pasá
+              el mouse o tocá cada etapa para ver el detalle y saltar a la sección operativa.
             </p>
           </div>
           <div className="hidden text-xs text-muted-foreground md:block">
@@ -1559,11 +1684,7 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
                   ? "border-transparent text-white shadow-[var(--shadow-soft)]"
                   : "border-border bg-card hover:bg-secondary"
               }`}
-              style={
-                active === h.number
-                  ? { background: `var(${h.phaseVar})` }
-                  : undefined
-              }
+              style={active === h.number ? { background: `var(${h.phaseVar})` } : undefined}
             >
               <span className="font-bold">{h.number}</span>
               <span>{h.title}</span>
