@@ -505,7 +505,7 @@ function Index() {
             className="mt-24 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8"
             style={{ marginTop: "calc(6rem + 100px)" }}
           >
-            {STAGES.map((s) => (
+            {STAGES.filter((s) => s.id !== "control-arribo").map((s) => (
               <button
                 key={s.id}
                 onClick={() => scrollTo(s.id)}
@@ -831,6 +831,7 @@ function StageBody({
 
       {s.id === "inbound" && CONTROL_ARRIBO_STAGE && (
         <div
+          id="control-arribo"
           className="rounded-3xl border-2 p-4 md:p-5"
           style={{
             borderColor: "oklch(0.58 0.08 140 / 0.45)",
