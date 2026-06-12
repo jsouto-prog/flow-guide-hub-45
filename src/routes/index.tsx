@@ -584,7 +584,7 @@ function Index() {
 
           {/* Stages */}
           <div className="space-y-12">
-            {filtered.map((s) => {
+            {filtered.filter((s) => s.id !== "control-arribo").map((s) => {
               const isOpen = expanded[s.id] ?? true;
               return (
                 <section
