@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import logisticsFlowAsset from "@/assets/logistics-flow.png.asset.json";
 import flujoHeroAsset from "@/assets/flujo-logistico-hero.png.asset.json";
+import slackConfirmaLlegadaAsset from "@/assets/slack-confirma-llegada.png.asset.json";
 import {
   ClipboardList,
   Warehouse,
@@ -1516,7 +1517,9 @@ function Activity({
   phaseVar: string;
 }) {
   const [open, setOpen] = useState(true);
+  const [imageOpen, setImageOpen] = useState(false);
   const hasBody = activity.detail || activity.items?.length;
+  const showSlackExample = activity.title === "1. Slack confirma llegada";
   return (
     <div className="rounded-xl border border-border bg-background overflow-hidden">
       <button
@@ -1548,8 +1551,67 @@ function Activity({
               ))}
             </ul>
           )}
+          {showSlackExample && (
+            <button
+              onClick={() => setImageOpen(true)}
+              className="mt-3 inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <ScanLine className="h-3.5 w-3.5 text-primary" />
+              Ver Ejemplo
+            </button>
+          )}
         </div>
       )}
+      {showSlackExample && (
+        <ImageModal
+          open={imageOpen}
+          onClose={() => setImageOpen(false)}
+          src={slackConfirmaLlegadaAsset.url}
+          alt="Ejemplo de confirmación en Slack"
+        />
+      )}
+    </div>
+  );
+}
+
+function ImageModal({
+  open,
+  onClose,
+  src,
+  alt,
+}: {
+  open: boolean;
+  onClose: () => void;
+  src: string;
+  alt: string;
+}) {
+  if (!open) return null;
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4 py-6"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-5xl rounded-2xl border border-border bg-card p-3 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute -top-3 -right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background border border-border text-foreground shadow hover:bg-secondary transition-colors"
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+        <div className="max-h-[85vh] w-full overflow-auto rounded-xl bg-black/5 flex items-center justify-center">
+          <img
+            src={src}
+            alt={alt}
+            className="h-auto w-full max-h-[85vh] object-contain"
+            draggable={false}
+            onContextMenu={(e) => e.preventDefault()}
+          />
+        </div>
+      </div>
     </div>
   );
 }
