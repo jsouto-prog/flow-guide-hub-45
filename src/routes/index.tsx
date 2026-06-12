@@ -310,7 +310,7 @@ const STAGES: Stage[] = [
       },
       {
         title: "C) TFORCE FREIGHT (PALLETS)",
-        detail: "Para cargas grandes, pallets y freight.",
+        detail: "Para cargas grandes, pallets y freighttttt.",
         items: [
           "BOL Documents",
           "Pallets",
