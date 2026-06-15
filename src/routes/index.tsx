@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import logisticsFlowAsset from "@/assets/logistics-flow.png.asset.json";
-import flujoHeroAsset from "@/assets/flujo-logistico-hero.png.asset.json";
+import logisticsFlowAsset from "@/assets/proceso5411.png";
+import heroImage from "@/assets/hero.png"; 
 import slackConfirmaLlegadaAsset from "@/assets/slack-confirma-llegada.png.asset.json";
 import {
   ClipboardList,
@@ -456,7 +456,7 @@ function Index() {
         <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-28">
           {/* Floating hero image — desktop: absolute top-right; mobile/tablet: inline before CTAs */}
           <img
-            src={flujoHeroAsset.url}
+            src={heroImage}
             alt="Flujo logístico 5411"
             className="pointer-events-none hidden lg:block absolute right-6 top-40 w-[46%] max-w-[640px] h-auto select-none"
             style={{ mixBlendMode: "multiply" }}
@@ -480,7 +480,7 @@ function Index() {
           </p>
           {/* Inline image for mobile/tablet — placed above CTAs */}
           <img
-            src={flujoHeroAsset.url}
+            src={heroImage}
             alt="Flujo logístico 5411"
             className="mt-8 block lg:hidden w-full max-w-2xl h-auto select-none"
             style={{ mixBlendMode: "multiply" }}
@@ -1323,8 +1323,7 @@ function CartonsWarehouseBlock({ phaseVar }: { phaseVar: string }) {
           Qué pasa físicamente
         </div>
         <p className="text-sm leading-relaxed">
-          Cuando llegan las cajas físicas: escanean etiquetas, las reconocen automáticamente,
-          validan ingreso más rápido y saben exactamente cuántas cajas deberían llegar.
+          En el warehouse entran a mintsoft y saben exactamente cuántas cajas deberían llegar.
         </p>
       </div>
     </div>
@@ -1710,7 +1709,7 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
 
         <div className="relative overflow-hidden rounded-2xl border border-border bg-white shadow-[var(--shadow-soft)]">
           <img
-            src={logisticsFlowAsset.url}
+            src={logisticsFlowAsset}
             alt="Flujo logístico 5411: inbound, recepción, escaneo, pick and pack, etiquetado y outbound"
             className="block w-full select-none"
             draggable={false}
