@@ -153,7 +153,7 @@ const STAGES: Stage[] = [
     responsible: "Equipo Outbound",
     inputs: ["Órdenes recibidas por mail", "Stock validado"],
     activities: [
-      { title: "1. Recepción de órdenes", detail: "Llegan por mail." },
+      { title: "1. Recepción de órdenes", detail: "Hay varias opciones:", items: ["Llegan por mail","Ya las tenes cuando te mandaron el cargamento", "Las tenes que buscar en la plataforma que usa la marca"] },
       {
         title: "2. Clasificación",
         items: ["Major", "Boutique"],
@@ -827,6 +827,15 @@ function StageBody({
             <CartonsAdminBlock phaseVar={s.phaseVar} onOpenBoxVideo={onOpenBoxVideo} />
             <CartonsWarehouseBlock phaseVar={s.phaseVar} />
           </div>
+        </div>
+      )}
+
+      {s.id === "inbound" && (
+        <div className="rounded-xl border border-border bg-background p-5">
+          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Transición
+          </div>
+          <p className="mt-2 text-base leading-relaxed">Llegan las cajas del cargamento al warehouse</p>
         </div>
       )}
 
