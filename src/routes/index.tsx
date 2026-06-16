@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import logisticsFlowAsset from "@/assets/proceso5411.png";
+import DependeMarca from "@/assets/DependeMarca.png";
 import heroImage from "@/assets/hero.png"; 
-import slackConfirmaLlegadaAsset from "@/assets/slack-confirma-llegada.png.asset.json";
+import slackConfirmaLlegadaAsset from "@/assets/Slack.png";
 import {
   ClipboardList,
   Warehouse,
@@ -102,7 +103,7 @@ const STAGES: Stage[] = [
     outputs: ["ASN cargado en Mintsoft", "Tracker actualizado"],
     dependencies: ["Aviso previo del cliente"],
     warehouse:
-      "El warehouse ve el ASN cargado en el sistema y ya sabe que la mercadería está en camino.",
+      "El cargamento llega al warehouse",
     critical: ["Validar SKU contra el catálogo", "1 ASN por PO — no mezclar"],
     phaseVar: "--phase-1",
   },
@@ -1525,9 +1526,25 @@ function Activity({
   phaseVar: string;
 }) {
   const [open, setOpen] = useState(true);
-  const [imageOpen, setImageOpen] = useState(false);
+  const [imageModal, setImageModal] = useState<{ src: string; alt: string } | null>(null);
   const hasBody = activity.detail || activity.items?.length;
   const showSlackExample = activity.title === "1. Slack confirma llegada";
+
+  const exampleItems: Record<string, { src: string; alt: string }> = {
+    "Llegan por mail": {
+      src: slackConfirmaLlegadaAsset,
+      alt: "Ejemplo de recepción por mail",
+    },
+    "Ya las tenes cuando te mandaron el cargamento": {
+      src: slackConfirmaLlegadaAsset,
+      alt: "Ejemplo de envío de cargamento",
+    },
+    "Las tenes que buscar en la plataforma que usa la marca": {
+      src: slackConfirmaLlegadaAsset,
+      alt: "Ejemplo de plataforma de la marca",
+    },
+  };
+
   return (
     <div className="rounded-xl border border-border bg-background overflow-hidden">
       <button
@@ -1551,17 +1568,36 @@ function Activity({
           )}
           {activity.items && (
             <ul className="mt-2 space-y-1.5">
-              {activity.items.map((it, i) => (
-                <li key={i} className="flex gap-2 text-sm">
-                  <span className="text-primary">•</span>
-                  <span>{it}</span>
-                </li>
-              ))}
+              {activity.items.map((it, i) => {
+                const itemExample = exampleItems[it];
+                return (
+                  <li key={i} className="flex items-start justify-between gap-3 text-sm">
+                    <div className="flex min-w-0 items-start gap-2">
+                      <span className="mt-1 text-primary">•</span>
+                      <span className="min-w-0 break-words">{it}</span>
+                    </div>
+                    {itemExample && (
+                      <button
+                        type="button"
+                        onClick={() => setImageModal(itemExample)}
+                        className="rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
+                      >
+                        Ver Ejemplo
+                      </button>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           )}
           {showSlackExample && (
             <button
-              onClick={() => setImageOpen(true)}
+              onClick={() =>
+                setImageModal({
+                  src: slackConfirmaLlegadaAsset,
+                  alt: "Ejemplo de confirmación en Slack",
+                })
+              }
               className="mt-3 inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
             >
               <ScanLine className="h-3.5 w-3.5 text-primary" />
@@ -1570,12 +1606,12 @@ function Activity({
           )}
         </div>
       )}
-      {showSlackExample && (
+      {imageModal && (
         <ImageModal
-          open={imageOpen}
-          onClose={() => setImageOpen(false)}
-          src={slackConfirmaLlegadaAsset.url}
-          alt="Ejemplo de confirmación en Slack"
+          open={true}
+          onClose={() => setImageModal(null)}
+          src={imageModal.src}
+          alt={imageModal.alt}
         />
       )}
     </div>
@@ -1692,6 +1728,7 @@ const FLOW_HOTSPOTS: {
 
 function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
   const [hovered, setHovered] = useState<number | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
   const active = hovered ?? 1;
   const activeHotspot = FLOW_HOTSPOTS.find((h) => h.number === active)!;
 
@@ -1745,6 +1782,27 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
                       : "transparent",
                   }}
                 >
+                  {h.number === 4 && (
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        setModalOpen(true);
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          setModalOpen(true);
+                        }
+                      }}
+                      aria-label="Depende de la Marca. Abrir modal"
+                      className="absolute left-1/2 top-60 z-10 -translate-x-1/2 flex items-center gap-2 rounded-full border border-primary/20 bg-primary px-8 py-3 text-sm font-bold text-primary-foreground whitespace-nowrap shadow-lg shadow-primary/20 transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 hover:shadow-xl hover:shadow-primary/30 active:scale-95 cursor-pointer"                    >
+                      Depende de la Marca
+                    </div>
+                  )}
                   <span
                     className="pointer-events-none absolute inset-y-0 left-0 w-px opacity-30"
                     style={{ background: `var(${h.phaseVar})` }}
@@ -1762,6 +1820,15 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
             })}
           </div>
         </div>
+
+        {modalOpen && (
+          <ImageModal
+            open={modalOpen}
+            onClose={() => setModalOpen(false)}
+            src={DependeMarca}
+            alt="Depende de la Marca"
+          />
+        )}
 
         {/* Stage detail panel under image */}
         <div className="mt-6 grid gap-4 md:grid-cols-[auto_1fr_auto] md:items-center">
