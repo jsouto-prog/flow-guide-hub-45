@@ -54,7 +54,7 @@ type Stage = {
   activities: {
     title: string;
     detail?: string;
-    blocks?: { type: "text" | "button"; content?: string; action?: "asn" | "box" }[];
+    blocks?: { type: "text" | "button"; content?: string; action?: "asn" | "box" | "labels"}[];
     items?: string[];
   }[];
   docs: string[];
@@ -81,9 +81,9 @@ const STAGES: Stage[] = [
         title: "1. Recepción del Packing List",
         blocks: [
           { type: "text", content: "La marca envía mail con tracking # + Packing List." },
-          { type: "text", content: "Con este documento creamos el ASN (Advanced Shipping Notice)..." },
+          { type: "text", content: " Con este documento creamos el ASN = significa Advanced Shipping Notice (Aviso de Envío Anticipado) " },
           { type: "button", action: "asn", content: "Como crear un ASN" },
-          { type: "text", content: "Y también creamos las CAJAS en Mintsoft." },
+          { type: "text", content: "Y también creamos las CAJAS en Mintsoft. Para que el warehouse sepa cuantas cajas hay en el cargamento." },
           { type: "button", action: "box", content: "Como crear una caja" },
           { type: "text", content: "Lo ideal es cargarlo antes de que la mercadería llegue al warehouse para avisarle al sistema y al equipo de Dallas que hay un cargamento próximo a llegar." }
         ]
@@ -96,8 +96,17 @@ const STAGES: Stage[] = [
       },
       {
         title: "3. Cargamento",
-        detail:
-          "Una vez que se recibe la foto de camilo por el grupo, validamos en la foto con el Tracking y hacemos el envío de las carton labes (email INBOUND con el nombre de la marca, el número de cargamento y carton labels",
+        blocks: [
+          {
+            type: "text",
+            content: "Una vez que se recibe la foto de camilo por el grupo, validamos en la foto con el Tracking y hacemos el envío de las carton labes (email INBOUND con el nombre de la marca, el número de cargamento y carton labels)."
+          },
+          {
+            type: "button",
+            action: "labels",
+            content: "Como Enviar labels"
+          }
+        ]
       },
       {
         title: "4. Respuesta a la marca",
@@ -108,7 +117,7 @@ const STAGES: Stage[] = [
     outputs: ["ASN cargado en Mintsoft", "Tracker actualizado"],
     dependencies: ["Aviso previo del cliente"],
     warehouse:
-      "Arribo de la mercadería (Camilo) Recepciona la mercadería y sube las fotos de los cargamentos a Slack. Al grupo de la marca. (Poner boton de slack)(Video Camilo)",
+      "Arribo de la mercadería. Camilo Recepciona la mercadería y sube las fotos de los cargamentos a Slack al grupo de la marca.",
     critical: ["Es importante que se tenga filtrado por el Cliente que se esté generando el ASN. Si el producto no está creado incluir los barcodes al momento de subir el ASN. Que este el estado del ASN en AWAITING DELIVERY porque sino Samuel no lo ve! Recordatorio: Al crear las cajas elegir RS Transit."],
     phaseVar: "--phase-1",
   },
@@ -405,6 +414,7 @@ function Index() {
   const [videoOpen, setVideoOpen] = useState(false);
   const [asnVideoOpen, setAsnVideoOpen] = useState(false);
   const [boxVideoOpen, setBoxVideoOpen] = useState(false);
+  const [labelsVideoOpen, setLabelsVideoOpen] = useState(false);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -629,6 +639,7 @@ function Index() {
                       onOpenVideo={s.id === "inbound" ? () => setVideoOpen(true) : undefined}
                       onOpenAsnVideo={s.id === "inbound" ? () => setAsnVideoOpen(true) : undefined}
                       onOpenBoxVideo={s.id === "inbound" ? () => setBoxVideoOpen(true) : undefined}
+                      onOpenLabelsVideo={s.id === "inbound" ? () => setLabelsVideoOpen(true) : undefined}
                     />
                   )}
                 </section>
@@ -717,6 +728,7 @@ function Index() {
       <VideoModal open={videoOpen} onClose={() => setVideoOpen(false)} />
       <AsnVideoModal open={asnVideoOpen} onClose={() => setAsnVideoOpen(false)} />
       <BoxVideoModal open={boxVideoOpen} onClose={() => setBoxVideoOpen(false)} />
+      <LabelsVideoModal open={labelsVideoOpen} onClose={() => setLabelsVideoOpen(false)} />
     </div>
   );
 }
@@ -755,11 +767,13 @@ function StageBody({
   onOpenVideo,
   onOpenAsnVideo,
   onOpenBoxVideo,
+  onOpenLabelsVideo,
 }: {
   stage: Stage;
   onOpenVideo?: () => void;
   onOpenAsnVideo?: () => void;
   onOpenBoxVideo?: () => void;
+  onOpenLabelsVideo?: () => void;
 }) {
   return (
     <div className="space-y-8 p-6 md:p-8">
@@ -803,6 +817,7 @@ function StageBody({
             onOpenVideo={onOpenVideo}
             onOpenAsnVideo={onOpenAsnVideo}
             onOpenBoxVideo={onOpenBoxVideo}
+            onOpenLabelsVideo={onOpenLabelsVideo}
           />
         </div>
       )}
@@ -835,7 +850,7 @@ function StageBody({
           </div>
           <div className="grid gap-6 lg:grid-cols-2">
             <StageAdminColumn s={CONTROL_ARRIBO_STAGE} />
-            <StageWarehouseColumn s={CONTROL_ARRIBO_STAGE} onOpenVideo={onOpenVideo} />
+            <StageWarehouseColumn s={CONTROL_ARRIBO_STAGE} onOpenVideo={onOpenVideo} onOpenLabelsVideo={onOpenLabelsVideo} />
           </div>
         </div>
       )}
@@ -845,6 +860,7 @@ function StageBody({
           <StageAdminColumn
             s={s}
             onOpenAsnVideo={onOpenAsnVideo}
+            onOpenLabelsVideo={onOpenLabelsVideo} // <-- Agregá esta línea
           />
           <StageWarehouseColumn s={s} onOpenVideo={onOpenVideo} />
         </div>
@@ -852,21 +868,28 @@ function StageBody({
     </div>
   );
 }
-
 function InboundAsnGrid({
   s,
   onOpenVideo,
   onOpenAsnVideo,
   onOpenBoxVideo,
+  onOpenLabelsVideo,
 }: {
   s: Stage;
   onOpenVideo?: () => void;
   onOpenAsnVideo?: () => void;
   onOpenBoxVideo?: () => void;
+  onOpenLabelsVideo?: () => void;
 }) {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <StageAdminColumn s={s} onOpenAsnVideo={onOpenAsnVideo} onOpenBoxVideo={onOpenBoxVideo} />
+      {/* AGREGADO: Pasamos onOpenLabelsVideo acá adentro */}
+      <StageAdminColumn
+        s={s}
+        onOpenAsnVideo={onOpenAsnVideo}
+        onOpenBoxVideo={onOpenBoxVideo}
+        onOpenLabelsVideo={onOpenLabelsVideo}
+      />
       <StageWarehouseColumn s={s} onOpenVideo={onOpenVideo} />
     </div>
   );
@@ -876,10 +899,12 @@ function StageAdminColumn({
   s,
   onOpenAsnVideo,
   onOpenBoxVideo,
+  onOpenLabelsVideo,
 }: {
   s: Stage;
   onOpenAsnVideo?: () => void;
   onOpenBoxVideo?: () => void;
+  onOpenLabelsVideo?: () => void;
 }) {
   const adminIconBg = s.phaseColor === "green" ? "oklch(0.45 0.12 140)" : "var(--gradient-hero)";
   return (
@@ -940,7 +965,7 @@ function StageAdminColumn({
           </div>
           <div className="space-y-2">
             {s.activities.map((a, i) => (
-              <Activity key={i} activity={a} phaseVar={s.phaseVar} onOpenAsnVideo={onOpenAsnVideo} onOpenBoxVideo={onOpenBoxVideo} />
+              <Activity key={i} activity={a} phaseVar={s.phaseVar} onOpenAsnVideo={onOpenAsnVideo} onOpenBoxVideo={onOpenBoxVideo} onOpenLabelsVideo={onOpenLabelsVideo} />
             ))}
           </div>
         </div>
@@ -984,11 +1009,17 @@ function StageAdminColumn({
 function StageWarehouseColumn({
   s,
   onOpenVideo,
+  onOpenLabelsVideo,
 }: {
   s: Stage;
   onOpenVideo?: () => void;
+  onOpenLabelsVideo?: () => void;
 }) {
   const WhIcon = WAREHOUSE_ICONS[s.id] ?? Warehouse;
+
+  // Estado local para controlar el modal de la imagen de Slack
+  const [imageModal, setImageModal] = useState<{ src: string; alt: string } | null>(null);
+
   const warehouseAccent = s.phaseColor === "green" ? {
     border: "oklch(0.58 0.08 140 / 0.3)",
     background: "linear-gradient(180deg, oklch(0.96 0.04 120) 0%, var(--card) 100%)",
@@ -997,6 +1028,7 @@ function StageWarehouseColumn({
     badge: "oklch(0.95 0.04 120)",
     badgeText: "white",
   } : null;
+
   return (
     <div
       className="relative overflow-hidden rounded-2xl border p-5 md:p-6"
@@ -1057,7 +1089,39 @@ function StageWarehouseColumn({
           >
             Qué pasa físicamente
           </div>
+
           <p className="text-sm leading-relaxed">{s.warehouse}</p>
+
+          {/* NUEVOS BOTONES INSERTADOS INMEDIATAMENTE DEBAJO DEL TEXTO EXPLICATIVO (SOLO PARA INBOUND) */}
+          {s.id === "inbound" && (
+            <div className="w-full mt-2 space-y-2">
+              <button
+                type="button"
+                onClick={() =>
+                  setImageModal({
+                    src: slackConfirmaLlegadaAsset,
+                    alt: "Ejemplo de confirmación en Slack",
+                  })
+                }
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <ScanLine className="h-4 w-4 text-primary" />
+                Ver foto de Slack
+              </button>
+
+              <button
+                type="button"
+                onClick={() => (onOpenVideo ? onOpenVideo() : alert(`Video de la etapa: ${s.name}`))}
+                className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
+                style={{
+                  background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
+                }}
+              >
+                <Play className="h-4 w-4 fill-current" />
+                Video del Warehouse
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Metric chips for visual balance */}
@@ -1116,18 +1180,30 @@ function StageWarehouseColumn({
           </span>
         </div>
 
-        {/* Ver Video */}
-        <button
-          className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
-          style={{
-            background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
-          }}
-          onClick={() => (onOpenVideo ? onOpenVideo() : alert(`Video de la etapa: ${s.name}`))}
-        >
-          <Play className="h-4 w-4 fill-current" />
-          Ver Video
-        </button>
+        {/* Botón original del final "Ver Video" (Se oculta en Inbound para no duplicar funciones) */}
+        {s.id !== "inbound" && (
+          <button
+            className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
+            style={{
+              background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
+            }}
+            onClick={() => (onOpenVideo ? onOpenVideo() : alert(`Video de la etapa: ${s.name}`))}
+          >
+            <Play className="h-4 w-4 fill-current" />
+            Ver Video
+          </button>
+        )}
       </div>
+
+      {/* Renderizado condicional del modal de imagen de Slack */}
+      {imageModal && (
+        <ImageModal
+          open={true}
+          onClose={() => setImageModal(null)}
+          src={imageModal.src}
+          alt={imageModal.alt}
+        />
+      )}
     </div>
   );
 }
@@ -1317,6 +1393,7 @@ function Activity({
   phaseVar,
   onOpenAsnVideo,
   onOpenBoxVideo,
+  onOpenLabelsVideo,
 }: {
   activity: {
     title: string;
@@ -1327,6 +1404,7 @@ function Activity({
   phaseVar: string;
   onOpenAsnVideo?: () => void;
   onOpenBoxVideo?: () => void;
+  onOpenLabelsVideo?: () => void;
 }) {
   const [open, setOpen] = useState(true);
   const [imageModal, setImageModal] = useState<{ src: string; alt: string } | null>(null);
@@ -1380,7 +1458,12 @@ function Activity({
                   );
                 }
                 if (block.type === "button") {
-                  const onClick = block.action === "asn" ? onOpenAsnVideo : onOpenBoxVideo;
+                  const onClick =
+                    block.action === "asn"
+                      ? onOpenAsnVideo
+                      : block.action === "labels"
+                        ? onOpenLabelsVideo
+                        : onOpenBoxVideo;;
                   const Icon = block.action === "box" ? PackageOpen : ClipboardList;
                   return (
                     <button
@@ -1556,6 +1639,39 @@ const FLOW_HOTSPOTS: {
       phaseVar: "--phase-8",
     },
   ];
+
+
+function LabelsVideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  if (!open) return null;
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-3xl rounded-2xl border border-border bg-card p-3 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute -top-3 -right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background border border-border text-foreground shadow hover:bg-secondary transition-colors"
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+        <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
+          <iframe
+            className="h-full w-full"
+            src="https://www.youtube.com/watch?v=isVVGW7MBas"
+            title="Como enviar labels"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
   const [hovered, setHovered] = useState<number | null>(null);
