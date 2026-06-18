@@ -1662,7 +1662,8 @@ function LabelsVideoModal({ open, onClose }: { open: boolean; onClose: () => voi
         <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
           <iframe
             className="h-full w-full"
-            src="https://www.youtube.com/watch?v=isVVGW7MBas"
+            // REEMPLAZÁ TU SRC POR ESTE EXACTAMENTE:
+            src="Video de como mandar labels"
             title="Como enviar labels"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
