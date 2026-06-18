@@ -92,14 +92,14 @@ const STAGES: Stage[] = [
         title: "2. Tracker de la marca",
         detail:
           "Cada marca tiene si tracker donde ponemos la información de las órdenes y los cargamentos. Una vez generado el ASN debemos anotarlo en la hoja de cargamentos (ASN# +tracking, unidades, caja y ETA).",
-        items: [],
+        blocks: [{ type: "button", action: "box", content: "Explicación de Tracker" }],//esto hay que cambiarlo por su video
       },
       {
         title: "3. Cargamento",
         blocks: [
           {
             type: "text",
-            content: "Una vez que se recibe la foto de camilo por el grupo, validamos en la foto con el Tracking y hacemos el envío de las carton labes (email INBOUND con el nombre de la marca, el número de cargamento y carton labels)."
+            content: "Una vez que se recibe la foto de camilo por el grupo, anotamos en el Tracking y hacemos el envío de las carton labes (email INBOUND con el nombre de la marca, el número de cargamento y carton labels). Si hay cajas faltantes esperar a que llegue el restante y hablar con la marca si hace falta."
           },
           {
             type: "button",
@@ -109,54 +109,28 @@ const STAGES: Stage[] = [
         ]
       },
       {
-        title: "4. Respuesta a la marca",
-        detail: "Una vez que finaliza el escaneo, se le envía a la marca el ASN REPORT.",
+        title: "4. Validación Tracking vs ASN",
+        detail:
+          "Se compara el tracking físico contra el ASN cargado en el sistema.",
+        blocks: [{ type: "button", action: "box", content: "Explicación de Tracker" }],//esto hay que cambiarlo por su video      
+        },
+      {
+        title: "5. Respuesta a la marca",
+        detail: "Una vez que finaliza el escaneo, se le envía a la marca el ASN REPORT.(Si es que lo pide)",
       },
     ],
     docs: ["Packing List", "ASN Template", "Tracker de la marca"],
     outputs: ["ASN cargado en Mintsoft", "Tracker actualizado"],
     dependencies: ["Aviso previo del cliente"],
     warehouse:
-      "Arribo de la mercadería. Camilo Recepciona la mercadería y sube las fotos de los cargamentos a Slack al grupo de la marca.",
-    critical: ["Es importante que se tenga filtrado por el Cliente que se esté generando el ASN. Si el producto no está creado incluir los barcodes al momento de subir el ASN. Que este el estado del ASN en AWAITING DELIVERY porque sino Samuel no lo ve! Recordatorio: Al crear las cajas elegir RS Transit."],
-    phaseVar: "--phase-1",
-  },
-  {
-    id: "control-arribo",
-    number: 2,
-    name: "Control de Arribo",
-    short: "Confirmación física de llegada",
-    objective: "Validar físicamente que la mercadería que llegó coincide con el ASN cargado.",
-    responsible: "Warehouse + Equipo Inbound",
-    inputs: ["ASN cargado", "Cajas físicas en warehouse"],
-    activities: [
-      {
-        title: "1. Slack confirma llegada",
-        items: ["Ejemplo: Llegaron 35/50", "Ejemplo: Llegaron 50/50"],
-      },
-      {
-        title: "2. Validación Tracking vs ASN",
-        detail: "Se compara el tracking físico contra el ASN cargado en el sistema.",
-      },
-      {
-        title: "3. Investigación de cajas faltantes",
-        items: ["Slack thread interno", "Escalación con cliente si hace falta"],
-      },
-      {
-        title: "4. Confirmación final al cliente",
-        items: [
-          "Todo OK (si el cliente no pide confirmación expresa)",
-          "o reporte de faltantes detectados",
-        ],
-      },
+      "1. Camilo recepciona la mercadería y sube las fotos de los cargamentos a Slack al grupo de la marca.",
+    critical: [
+      "Verificar que el ASN se esté generando para el cliente correcto. Siempre filtrar al cliente antes de empezar a cargar.",
+      "Si un producto no está creado, incluir sus códigos de barras (barcodes) al cargar el ASN.",
+      "Confirmar que el ASN se encuentre en estado 'AWAITING DELIVERY'; de lo contrario, Samuel no podrá visualizarlo.",
+      "Al crear las cajas, seleccionar siempre la opción 'RS Transit'."
     ],
-    docs: ["Slack thread", "Reporte de faltantes (si aplica)"],
-    outputs: ["Validación completa de arribo", "Confirmación al cliente"],
-    dependencies: ["Creación de cartons", "ASN en Mintsoft"],
-    warehouse: "Reciben el camión, cuentan cajas y validan que coincidan con el ASN cargado.",
-    critical: ["Detectar faltantes antes de confirmar al cliente"],
-    phaseColor: "green",
-    phaseVar: "--phase-3",
+    phaseVar: "--phase-1",
   },
   {
     id: "outbound",
@@ -921,18 +895,7 @@ function StageAdminColumn({
             Perspectiva
           </div>
           <h3 className="text-lg font-bold">Administración</h3>
-          {s.id === "inbound" && (
-            <div
-              className="mt-1 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.15em]"
-              style={{
-                color: "oklch(0.55 0.13 200)",
-                background: "oklch(0.95 0.04 200)",
-                border: "1px solid oklch(0.75 0.08 200 / 0.4)",
-              }}
-            >
-              <ClipboardList className="h-3 w-3" /> Creación de ASN
-            </div>
-          )}
+          
         </div>
       </div>
 
@@ -1062,27 +1025,16 @@ function StageWarehouseColumn({
 
       <div className="relative space-y-5">
         {/* Hero icon + warehouse statement */}
-        <div className="flex flex-col items-center gap-3 rounded-xl bg-card p-5 text-center shadow-sm">
+        <div className="flex flex-col items-center gap-4 rounded-2xl border border-border/50 bg-card p-6 text-center shadow-md">
           <div
-            className="flex h-16 w-16 items-center justify-center rounded-2xl text-white"
+            className="flex h-16 w-16 items-center justify-center rounded-2xl text-white shadow-md"
             style={{
               background: `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
             }}
           >
             <WhIcon className="h-8 w-8" />
           </div>
-          {s.id === "inbound" && (
-            <div
-              className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.15em]"
-              style={{
-                color: "oklch(0.55 0.13 200)",
-                background: "oklch(0.95 0.04 200)",
-                border: "1px solid oklch(0.75 0.08 200 / 0.4)",
-              }}
-            >
-              <ClipboardList className="h-3 w-3" /> Creación de ASN
-            </div>
-          )}
+
           <div
             className="text-[10px] font-bold uppercase tracking-[0.2em]"
             style={{ color: warehouseAccent?.label ?? `var(${s.phaseVar})` }}
@@ -1090,81 +1042,115 @@ function StageWarehouseColumn({
             Qué pasa físicamente
           </div>
 
+          <div className="py-2 text-center text-xl font-extrabold text-blue-600">
+            Etapa Camilo
+          </div>
+
           <p className="text-sm leading-relaxed">{s.warehouse}</p>
 
-          {/* NUEVOS BOTONES INSERTADOS INMEDIATAMENTE DEBAJO DEL TEXTO EXPLICATIVO (SOLO PARA INBOUND) */}
           {s.id === "inbound" && (
-            <div className="w-full mt-2 space-y-2">
+            <div className="w-full mt-3 space-y-4">
+              {/* Video */}
               <button
                 type="button"
                 onClick={() =>
-                  setImageModal({
-                    src: slackConfirmaLlegadaAsset,
-                    alt: "Ejemplo de confirmación en Slack",
-                  })
+                  onOpenVideo
+                    ? onOpenVideo()
+                    : alert(`Video de la etapa: ${s.name}`)
                 }
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
-              >
-                <ScanLine className="h-4 w-4 text-primary" />
-                Ver foto de Slack
-              </button>
-
-              <button
-                type="button"
-                onClick={() => (onOpenVideo ? onOpenVideo() : alert(`Video de la etapa: ${s.name}`))}
-                className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{
-                  background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
+                  background:
+                    warehouseAccent?.icon ??
+                    `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
                 }}
               >
                 <Play className="h-4 w-4 fill-current" />
                 Video del Warehouse
               </button>
+
+              {/* Ejemplo */}
+              <div className="border-t pt-4">
+                <div className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  Ejemplo
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setImageModal({
+                      src: slackConfirmaLlegadaAsset,
+                      alt: "Ejemplo de confirmación en Slack",
+                    })
+                  }
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-3 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <ScanLine className="h-4 w-4 text-primary" />
+                  Ver foto de Slack
+                </button>
+              </div>
+
+              {/* Audio */}
+              <div className="border-t pt-4">
+                <div className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  Audio de Camilo explicando el proceso
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setImageModal({
+                      src: slackConfirmaLlegadaAsset,
+                      alt: "Ejemplo de confirmación en Slack",
+                    })
+                  }
+                  className="flex w-full items-center gap-3 rounded-2xl border border-border bg-muted/20 px-4 py-3 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02]"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                    🎤
+                  </div>
+
+                  <div className="flex-1 text-left">
+                    <div className="font-semibold">
+                      Perspectiva de Camilo
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Explicación del proceso
+                    </div>
+                  </div>
+
+                  <span className="text-xs text-muted-foreground">
+                    ▶ Audio
+                  </span>
+                </button>
+              </div>
+
+              {/* Separador */}
+              <div className="my-2 border-t border-border" />
+
+              {/* Samuel */}
+              <div className="pt-2 text-center text-xl font-extrabold text-green-600">
+                Etapa Samuel
+              </div>
+
+              <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">
+                2. De acuerdo con las prioridades, Samuel retira las cajas de RS y las lleva a su mesa de trabajo. Luego imprime las etiquetas (labels), organiza las cajas en el orden correspondiente, coloca las etiquetas y comienza el proceso de escaneo.
+              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  onOpenVideo
+                    ? onOpenVideo()
+                    : alert(`Video de la etapa: ${s.name}`)
+                }
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <Play className="h-4 w-4 fill-current" />
+                Video de Samuel
+              </button>
             </div>
           )}
-        </div>
-
-        {/* Metric chips for visual balance */}
-        <div className="grid grid-cols-3 gap-2">
-          <Chip phaseVar={s.phaseVar} phaseColor={s.phaseColor} value={s.activities.length} label="Pasos op." />
-          <Chip phaseVar={s.phaseVar} phaseColor={s.phaseColor} value={s.docs.length} label="Documentos" />
-          <Chip phaseVar={s.phaseVar} phaseColor={s.phaseColor} value={s.inputs.length} label="Entradas" />
-        </div>
-
-        {/* Visual flow strip */}
-        <div className="rounded-xl border border-border bg-card p-4">
-          <div className="mb-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            Flujo físico
-          </div>
-          <div className="flex items-center justify-between gap-2">
-            <FlowStep
-              icon={<Truck className="h-4 w-4" />}
-              label="Recepción"
-              active={s.number <= 3}
-              phaseVar={s.phaseVar}
-            />
-            <Dash phaseVar={s.phaseVar} />
-            <FlowStep
-              icon={<Boxes className="h-4 w-4" />}
-              label="Almacén"
-              active={s.number >= 2 && s.number <= 6}
-              phaseVar={s.phaseVar}
-            />
-            <Dash phaseVar={s.phaseVar} />
-            <FlowStep
-              icon={<PackageOpen className="h-4 w-4" />}
-              label="Picking"
-              active={s.number >= 6 && s.number <= 7}
-              phaseVar={s.phaseVar}
-            />
-            <Dash phaseVar={s.phaseVar} />
-            <FlowStep
-              icon={<Truck className="h-4 w-4" />}
-              label="Despacho"
-              active={s.number >= 7}
-              phaseVar={s.phaseVar}
-            />
-          </div>
         </div>
 
         {/* Etapa badge */}
