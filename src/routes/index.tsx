@@ -69,34 +69,28 @@ const STAGES: Stage[] = [
     short: "Entrada de mercadería al warehouse",
     objective:
       "El cliente avisa que viene mercadería en camino y se prepara el sistema para recibirla correctamente en el warehouse.",
-    responsible: "Equipo Inbound / Operaciones",
+    responsible: "Equipo BS AS / Operaciones",
     inputs: ["Mail del cliente con Tracking", "Excel o PDF con Packing List"],
     activities: [
       {
         title: "1. Recepción del Packing List",
         detail:
-          "El cliente envía mail con Tracking + Excel/PDF + Packing List. Se crea o abre el tracker de la marca (Excel que reúne todos los cargamentos y órdenes).",
-        items: [
-          "Cada orden puede incluir varias cajas de ropa",
-          "El tracker muestra etapa de cada orden (ingresada, autorización, salida)",
-          "Incluye valor de la orden, cantidad de unidades y tipo",
-          "Se actualiza continuamente a medida que la orden avanza",
-        ],
+          "La marca  envía mail con tracking # +  Packing List. Con este documento creamos el ASN (ASN=significa Advanced Shipping Notice (Aviso de Envío Anticipado) y las CAJAS en Mintsoft. (ver video). Lo ideal es cargarlo antes de que la mercadería llegue al warehouse para avisarle al sistema y al equipo de Dallas que hay un cargamento próximo a llegar.",
       },
       {
-        title: "2. Creamos un ASN",
+        title: "TRACKER DE LA MARCA",
         detail:
-          "¿Qué es un ASN? Un ASN significa Advanced Shipping Notice (Aviso de Envío Anticipado). Es un documento que se crea en Mintsoft antes de que la mercadería llegue al warehouse para avisarle al sistema y al equipo de Dallas que hay un cargamento en camino.",
+          "Cada marca tiene si tracker donde ponemos la información de las órdenes y los cargamentos. Una vez generado el ASN debemos anotarlo en la hoja de cargamentos (ASN# +tracking, unidades, caja y ETA).",
         items: [],
       },
       {
-        title: "3. Adaptación al ASN Template",
-        items: ["Se usa template ASN", "1 ASN por cada PO", "Validación SKU"],
+        title: "CARGAMENTO",
+        detail:
+          "Una vez que se recibe la foto de camilo por el grupo, validamos en la foto con el Tracking y hacemos el envío de las carton labes (email INBOUND con el nombre de la marca, el número de cargamento y carton labels",
       },
       {
-        title: "4. Upload ASN en Mintsoft",
-        detail: "Estados posibles del ASN:",
-        items: ["New", "Awaiting Delivery", "Booked In", "Complete / Awaiting Putaway"],
+        title: "Respuesta a la marca",
+        detail: "Una vez que finaliza el escaneo, se le envía a la marca el ASN REPORT.",
       },
     ],
     docs: ["Packing List", "ASN Template", "Tracker de la marca"],
@@ -104,7 +98,7 @@ const STAGES: Stage[] = [
     dependencies: ["Aviso previo del cliente"],
     warehouse:
       "El cargamento llega al warehouse",
-    critical: ["Validar SKU contra el catálogo", "1 ASN por PO — no mezclar"],
+    critical: ["Validar SKU contra el catálogo", "1 ASN por PO — no mezclar, Es importante que se tenga filtrado por el Cliente que se esté generando el ASN. Si el producto no está creado incluir los barcodes al momento de subir el ASN. Que este el estado del ASN en AWAITING DELIVERY porque sino Samuel no lo ve! Recordatorio: Al crear las cajas elegir RS Transit."],
     phaseVar: "--phase-1",
   },
   {
