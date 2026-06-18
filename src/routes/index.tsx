@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import logisticsFlowAsset from "@/assets/proceso5411.png";
 import DependeMarca from "@/assets/DependeMarca.png";
-import heroImage from "@/assets/hero.png"; 
+import heroImage from "@/assets/hero.png";
 import slackConfirmaLlegadaAsset from "@/assets/Slack.png";
 import {
   ClipboardList,
@@ -51,7 +51,12 @@ type Stage = {
   objective: string;
   responsible: string;
   inputs: string[];
-  activities: { title: string; detail?: string; items?: string[] }[];
+  activities: {
+    title: string;
+    detail?: string;
+    blocks?: { type: "text" | "button"; content?: string; action?: "asn" | "box" }[];
+    items?: string[];
+  }[];
   docs: string[];
   outputs: string[];
   dependencies: string[];
@@ -74,22 +79,28 @@ const STAGES: Stage[] = [
     activities: [
       {
         title: "1. Recepción del Packing List",
-        detail:
-          "La marca  envía mail con tracking # +  Packing List. Con este documento creamos el ASN (ASN=significa Advanced Shipping Notice (Aviso de Envío Anticipado) y las CAJAS en Mintsoft. (ver video). Lo ideal es cargarlo antes de que la mercadería llegue al warehouse para avisarle al sistema y al equipo de Dallas que hay un cargamento próximo a llegar.",
+        blocks: [
+          { type: "text", content: "La marca envía mail con tracking # + Packing List." },
+          { type: "text", content: "Con este documento creamos el ASN (Advanced Shipping Notice)..." },
+          { type: "button", action: "asn", content: "Como crear un ASN" },
+          { type: "text", content: "Y también creamos las CAJAS en Mintsoft." },
+          { type: "button", action: "box", content: "Como crear una caja" },
+          { type: "text", content: "Lo ideal es cargarlo antes de que la mercadería llegue al warehouse para avisarle al sistema y al equipo de Dallas que hay un cargamento próximo a llegar." }
+        ]
       },
       {
-        title: "TRACKER DE LA MARCA",
+        title: "2. Tracker de la marca",
         detail:
           "Cada marca tiene si tracker donde ponemos la información de las órdenes y los cargamentos. Una vez generado el ASN debemos anotarlo en la hoja de cargamentos (ASN# +tracking, unidades, caja y ETA).",
         items: [],
       },
       {
-        title: "CARGAMENTO",
+        title: "3. Cargamento",
         detail:
           "Una vez que se recibe la foto de camilo por el grupo, validamos en la foto con el Tracking y hacemos el envío de las carton labes (email INBOUND con el nombre de la marca, el número de cargamento y carton labels",
       },
       {
-        title: "Respuesta a la marca",
+        title: "4. Respuesta a la marca",
         detail: "Una vez que finaliza el escaneo, se le envía a la marca el ASN REPORT.",
       },
     ],
@@ -97,8 +108,8 @@ const STAGES: Stage[] = [
     outputs: ["ASN cargado en Mintsoft", "Tracker actualizado"],
     dependencies: ["Aviso previo del cliente"],
     warehouse:
-      "El cargamento llega al warehouse",
-    critical: ["Validar SKU contra el catálogo", "1 ASN por PO — no mezclar, Es importante que se tenga filtrado por el Cliente que se esté generando el ASN. Si el producto no está creado incluir los barcodes al momento de subir el ASN. Que este el estado del ASN en AWAITING DELIVERY porque sino Samuel no lo ve! Recordatorio: Al crear las cajas elegir RS Transit."],
+      "Arribo de la mercadería (Camilo) Recepciona la mercadería y sube las fotos de los cargamentos a Slack. Al grupo de la marca. (Poner boton de slack)(Video Camilo)",
+    critical: ["Es importante que se tenga filtrado por el Cliente que se esté generando el ASN. Si el producto no está creado incluir los barcodes al momento de subir el ASN. Que este el estado del ASN en AWAITING DELIVERY porque sino Samuel no lo ve! Recordatorio: Al crear las cajas elegir RS Transit."],
     phaseVar: "--phase-1",
   },
   {
@@ -148,7 +159,7 @@ const STAGES: Stage[] = [
     responsible: "Equipo Outbound",
     inputs: ["Órdenes recibidas por mail", "Stock validado"],
     activities: [
-      { title: "1. Recepción de órdenes", detail: "Hay varias opciones:", items: ["Llegan por mail","Ya las tenes cuando te mandaron el cargamento", "Las tenes que buscar en la plataforma que usa la marca"] },
+      { title: "1. Recepción de órdenes", detail: "Hay varias opciones:", items: ["Llegan por mail", "Ya las tenes cuando te mandaron el cargamento", "Las tenes que buscar en la plataforma que usa la marca"] },
       {
         title: "2. Clasificación",
         items: ["Major", "Boutique"],
@@ -449,7 +460,7 @@ function Index() {
           }}
         />
         <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-28">
-          {/* Floating hero image — desktop: absolute top-right; mobile/tablet: inline before CTAs */}
+          {/* Floating hero image */}
           <img
             src={heroImage}
             alt="Flujo logístico 5411"
@@ -473,7 +484,7 @@ function Index() {
             Guía interactiva de principio a fin: desde el aviso del cliente hasta el despacho y las
             devoluciones.
           </p>
-          {/* Inline image for mobile/tablet — placed above CTAs */}
+          {/* Inline image for mobile/tablet */}
           <img
             src={heroImage}
             alt="Flujo logístico 5411"
@@ -791,48 +802,12 @@ function StageBody({
             s={s}
             onOpenVideo={onOpenVideo}
             onOpenAsnVideo={onOpenAsnVideo}
+            onOpenBoxVideo={onOpenBoxVideo}
           />
         </div>
       )}
 
-      {s.id === "inbound" && (
-        <div
-          className="rounded-3xl border-2 p-4 md:p-5"
-          style={{
-            borderColor: "oklch(0.78 0.06 60 / 0.55)",
-            background:
-              "linear-gradient(180deg, oklch(0.97 0.025 65) 0%, oklch(1 0 0) 100%)",
-          }}
-        >
-          <div
-            className="mb-4 flex items-center gap-2 border-b pb-3"
-            style={{ borderColor: "oklch(0.78 0.06 60 / 0.4)" }}
-          >
-            <PackageOpen className="h-5 w-5" style={{ color: "oklch(0.5 0.09 55)" }} />
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                Proceso
-              </div>
-              <h3 className="text-base font-bold" style={{ color: "oklch(0.4 0.09 55)" }}>
-                Creación de Cartons
-              </h3>
-            </div>
-          </div>
-          <div className="grid gap-6 lg:grid-cols-2">
-            <CartonsAdminBlock phaseVar={s.phaseVar} onOpenBoxVideo={onOpenBoxVideo} />
-            <CartonsWarehouseBlock phaseVar={s.phaseVar} />
-          </div>
-        </div>
-      )}
-
-      {s.id === "inbound" && (
-        <div className="rounded-xl border border-border bg-background p-5">
-          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Transición
-          </div>
-          <p className="mt-2 text-base leading-relaxed">Llegan las cajas del cargamento al warehouse</p>
-        </div>
-      )}
+      
 
       {s.id === "inbound" && CONTROL_ARRIBO_STAGE && (
         <div
@@ -882,14 +857,16 @@ function InboundAsnGrid({
   s,
   onOpenVideo,
   onOpenAsnVideo,
+  onOpenBoxVideo,
 }: {
   s: Stage;
   onOpenVideo?: () => void;
   onOpenAsnVideo?: () => void;
+  onOpenBoxVideo?: () => void;
 }) {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <StageAdminColumn s={s} onOpenAsnVideo={onOpenAsnVideo} />
+      <StageAdminColumn s={s} onOpenAsnVideo={onOpenAsnVideo} onOpenBoxVideo={onOpenBoxVideo} />
       <StageWarehouseColumn s={s} onOpenVideo={onOpenVideo} />
     </div>
   );
@@ -898,117 +875,109 @@ function InboundAsnGrid({
 function StageAdminColumn({
   s,
   onOpenAsnVideo,
+  onOpenBoxVideo,
 }: {
   s: Stage;
   onOpenAsnVideo?: () => void;
+  onOpenBoxVideo?: () => void;
 }) {
   const adminIconBg = s.phaseColor === "green" ? "oklch(0.45 0.12 140)" : "var(--gradient-hero)";
   return (
     <div className="relative rounded-2xl border border-border bg-card/60 p-4">
-          <div className="mb-4 flex items-center gap-2 border-b border-border pb-3">
-            <div
-              className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[var(--shadow-soft)]"
-              style={{ background: adminIconBg }}
-            >
-              <ClipboardList className="h-5 w-5" />
-            </div>
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                Perspectiva
-              </div>
-              <h3 className="text-lg font-bold">Administración</h3>
-              {s.id === "inbound" && (
-                <div
-                  className="mt-1 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.15em]"
-                  style={{
-                    color: "oklch(0.55 0.13 200)",
-                    background: "oklch(0.95 0.04 200)",
-                    border: "1px solid oklch(0.75 0.08 200 / 0.4)",
-                  }}
-                >
-                  <ClipboardList className="h-3 w-3" /> Creación de ASN
-                </div>
-              )}
-            </div>
+      <div className="mb-4 flex items-center gap-2 border-b border-border pb-3">
+        <div
+          className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[var(--shadow-soft)]"
+          style={{ background: adminIconBg }}
+        >
+          <ClipboardList className="h-5 w-5" />
+        </div>
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+            Perspectiva
           </div>
-
-          <div className="space-y-4">
-            {/* Responsable */}
-            <div className="flex items-start gap-3 rounded-lg bg-secondary/40 p-3">
-              <Users className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Responsable
-                </div>
-                <div className="text-sm font-medium">{s.responsible}</div>
-              </div>
+          <h3 className="text-lg font-bold">Administración</h3>
+          {s.id === "inbound" && (
+            <div
+              className="mt-1 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.15em]"
+              style={{
+                color: "oklch(0.55 0.13 200)",
+                background: "oklch(0.95 0.04 200)",
+                border: "1px solid oklch(0.75 0.08 200 / 0.4)",
+              }}
+            >
+              <ClipboardList className="h-3 w-3" /> Creación de ASN
             </div>
+          )}
+        </div>
+      </div>
 
-            {/* Entradas + Dependencias */}
-            <div className="grid gap-3 sm:grid-cols-2">
-              <MiniList icon={<Inbox className="h-4 w-4" />} label="Entradas" items={s.inputs} />
-              <MiniList
-                icon={<Link2 className="h-4 w-4" />}
-                label="Dependencias"
-                items={s.dependencies}
-              />
+      <div className="space-y-4">
+        {/* Responsable */}
+        <div className="flex items-start gap-3 rounded-lg bg-secondary/40 p-3">
+          <Users className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Responsable
             </div>
-
-            {/* Actividades */}
-            <div>
-              <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                <ListChecks className="h-4 w-4" /> Actividades administrativas
-              </div>
-              <div className="space-y-2">
-                {s.activities.map((a, i) => (
-                  <Activity key={i} activity={a} phaseVar={s.phaseVar} />
-                ))}
-              </div>
-            </div>
-
-            {/* Como crear un ASN (solo Inbound) */}
-            {s.id === "inbound" && (
-              <button
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
-                onClick={() => onOpenAsnVideo?.()}
-              >
-                <ClipboardList className="h-4 w-4 text-primary" />
-                Como crear un ASN
-              </button>
-            )}
-
-            {/* Documentación + Salidas */}
-            <div className="grid gap-3 sm:grid-cols-2">
-              <MiniList
-                icon={<FileText className="h-4 w-4" />}
-                label="Documentación"
-                items={s.docs}
-              />
-              <MiniList
-                icon={<PackageCheck className="h-4 w-4" />}
-                label="Salidas"
-                items={s.outputs}
-              />
-            </div>
-
-            {/* Críticos */}
-            {s.critical && (
-              <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-destructive">
-                  <AlertTriangle className="h-4 w-4" /> Puntos críticos / Validaciones
-                </div>
-                <ul className="mt-2 space-y-1 text-sm">
-                  {s.critical.map((c, i) => (
-                    <li key={i} className="flex gap-2">
-                      <span className="text-destructive">•</span>
-                      <span>{c}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            <div className="text-sm font-medium">{s.responsible}</div>
           </div>
         </div>
+
+        {/* Entradas + Dependencias */}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <MiniList icon={<Inbox className="h-4 w-4" />} label="Entradas" items={s.inputs} />
+          <MiniList
+            icon={<Link2 className="h-4 w-4" />}
+            label="Dependencias"
+            items={s.dependencies}
+          />
+        </div>
+
+        {/* Actividades */}
+        <div>
+          <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            <ListChecks className="h-4 w-4" /> Actividades administrativas
+          </div>
+          <div className="space-y-2">
+            {s.activities.map((a, i) => (
+              <Activity key={i} activity={a} phaseVar={s.phaseVar} onOpenAsnVideo={onOpenAsnVideo} onOpenBoxVideo={onOpenBoxVideo} />
+            ))}
+          </div>
+        </div>
+
+        {/* Documentación + Salidas */}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <MiniList
+            icon={<FileText className="h-4 w-4" />}
+            label="Documentación"
+            items={s.docs}
+          />
+          <MiniList
+            icon={<PackageCheck className="h-4 w-4" />}
+            label="Salidas"
+            items={s.outputs}
+          />
+        </div>
+
+        {/* Críticos */}
+        {s.critical && (
+          <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-destructive">
+              <AlertTriangle className="h-4 w-4" /> Puntos críticos / Validaciones
+            </div>
+            <ul className="mt-2 space-y-1 text-sm">
+              {s.critical.map((c, i) => (
+                <li key={i} className="flex gap-2">
+                  <span className="text-destructive">•</span>
+                  <span>{c}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+      </div>
+    </div>
   );
 }
 
@@ -1029,310 +998,141 @@ function StageWarehouseColumn({
     badgeText: "white",
   } : null;
   return (
+    <div
+      className="relative overflow-hidden rounded-2xl border p-5 md:p-6"
+      style={{
+        borderColor: warehouseAccent?.border ?? `oklch(from var(${s.phaseVar}) l c h / 0.3)`,
+        background: warehouseAccent?.background ?? `linear-gradient(180deg, oklch(from var(${s.phaseVar}) 0.97 0.02 h) 0%, var(--card) 100%)`,
+      }}
+    >
+      {/* Decorative big icon */}
+      <WhIcon className="pointer-events-none absolute -right-6 -top-6 h-44 w-44 opacity-[0.07]" />
+
+      <div
+        className="mb-5 flex items-center gap-3 border-b pb-4"
+        style={{ borderColor: warehouseAccent?.border ?? `oklch(from var(${s.phaseVar}) l c h / 0.2)` }}
+      >
         <div
-          className="relative overflow-hidden rounded-2xl border p-5 md:p-6"
+          className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[var(--shadow-soft)]"
           style={{
-            borderColor: warehouseAccent?.border ?? `oklch(from var(${s.phaseVar}) l c h / 0.3)`,
-            background: warehouseAccent?.background ?? `linear-gradient(180deg, oklch(from var(${s.phaseVar}) 0.97 0.02 h) 0%, var(--card) 100%)`,
+            background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.1) c h))`,
           }}
         >
-          {/* Decorative big icon */}
-          <WhIcon className="pointer-events-none absolute -right-6 -top-6 h-44 w-44 opacity-[0.07]" />
+          <Warehouse className="h-5 w-5" />
+        </div>
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+            Perspectiva
+          </div>
+          <h3 className="text-lg font-bold">Warehouse</h3>
+        </div>
+      </div>
 
+      <div className="relative space-y-5">
+        {/* Hero icon + warehouse statement */}
+        <div className="flex flex-col items-center gap-3 rounded-xl bg-card p-5 text-center shadow-sm">
           <div
-            className="mb-5 flex items-center gap-3 border-b pb-4"
-            style={{ borderColor: warehouseAccent?.border ?? `oklch(from var(${s.phaseVar}) l c h / 0.2)` }}
+            className="flex h-16 w-16 items-center justify-center rounded-2xl text-white"
+            style={{
+              background: `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
+            }}
           >
+            <WhIcon className="h-8 w-8" />
+          </div>
+          {s.id === "inbound" && (
             <div
-              className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[var(--shadow-soft)]"
+              className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.15em]"
               style={{
-                background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.1) c h))`,
+                color: "oklch(0.55 0.13 200)",
+                background: "oklch(0.95 0.04 200)",
+                border: "1px solid oklch(0.75 0.08 200 / 0.4)",
               }}
             >
-              <Warehouse className="h-5 w-5" />
+              <ClipboardList className="h-3 w-3" /> Creación de ASN
             </div>
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                Perspectiva
-              </div>
-              <h3 className="text-lg font-bold">Warehouse</h3>
-            </div>
+          )}
+          <div
+            className="text-[10px] font-bold uppercase tracking-[0.2em]"
+            style={{ color: warehouseAccent?.label ?? `var(${s.phaseVar})` }}
+          >
+            Qué pasa físicamente
           </div>
+          <p className="text-sm leading-relaxed">{s.warehouse}</p>
+        </div>
 
-          <div className="relative space-y-5">
-            {/* Hero icon + warehouse statement */}
-            <div className="flex flex-col items-center gap-3 rounded-xl bg-card p-5 text-center shadow-sm">
-              <div
-                className="flex h-16 w-16 items-center justify-center rounded-2xl text-white"
-                style={{
-                  background: `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
-                }}
-              >
-                <WhIcon className="h-8 w-8" />
-              </div>
-              {s.id === "inbound" && (
-                <div
-                  className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.15em]"
-                  style={{
-                    color: "oklch(0.55 0.13 200)",
-                    background: "oklch(0.95 0.04 200)",
-                    border: "1px solid oklch(0.75 0.08 200 / 0.4)",
-                  }}
-                >
-                  <ClipboardList className="h-3 w-3" /> Creación de ASN
-                </div>
-              )}
-              <div
-                className="text-[10px] font-bold uppercase tracking-[0.2em]"
-                style={{ color: warehouseAccent?.label ?? `var(${s.phaseVar})` }}
-              >
-                Qué pasa físicamente
-              </div>
-              <p className="text-sm leading-relaxed">{s.warehouse}</p>
-            </div>
+        {/* Metric chips for visual balance */}
+        <div className="grid grid-cols-3 gap-2">
+          <Chip phaseVar={s.phaseVar} phaseColor={s.phaseColor} value={s.activities.length} label="Pasos op." />
+          <Chip phaseVar={s.phaseVar} phaseColor={s.phaseColor} value={s.docs.length} label="Documentos" />
+          <Chip phaseVar={s.phaseVar} phaseColor={s.phaseColor} value={s.inputs.length} label="Entradas" />
+        </div>
 
-            {/* Metric chips for visual balance */}
-            <div className="grid grid-cols-3 gap-2">
-              <Chip phaseVar={s.phaseVar} phaseColor={s.phaseColor} value={s.activities.length} label="Pasos op." />
-              <Chip phaseVar={s.phaseVar} phaseColor={s.phaseColor} value={s.docs.length} label="Documentos" />
-              <Chip phaseVar={s.phaseVar} phaseColor={s.phaseColor} value={s.inputs.length} label="Entradas" />
-            </div>
-
-            {/* Visual flow strip */}
-            <div className="rounded-xl border border-border bg-card p-4">
-              <div className="mb-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                Flujo físico
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <FlowStep
-                  icon={<Truck className="h-4 w-4" />}
-                  label="Recepción"
-                  active={s.number <= 3}
-                  phaseVar={s.phaseVar}
-                />
-                <Dash phaseVar={s.phaseVar} />
-                <FlowStep
-                  icon={<Boxes className="h-4 w-4" />}
-                  label="Almacén"
-                  active={s.number >= 2 && s.number <= 6}
-                  phaseVar={s.phaseVar}
-                />
-                <Dash phaseVar={s.phaseVar} />
-                <FlowStep
-                  icon={<PackageOpen className="h-4 w-4" />}
-                  label="Picking"
-                  active={s.number >= 6 && s.number <= 7}
-                  phaseVar={s.phaseVar}
-                />
-                <Dash phaseVar={s.phaseVar} />
-                <FlowStep
-                  icon={<Truck className="h-4 w-4" />}
-                  label="Despacho"
-                  active={s.number >= 7}
-                  phaseVar={s.phaseVar}
-                />
-              </div>
-            </div>
-
-            {/* Etapa badge */}
-            <div className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Etapa operativa
-              </span>
-              <span
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white"
-                style={{ background: warehouseAccent?.badge ?? `var(${s.phaseVar})` }}
-              >
-                {s.number}
-              </span>
-            </div>
-
-            {/* Ver Video */}
-            <button
-              className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
-              style={{
-                background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
-              }}
-              onClick={() => (onOpenVideo ? onOpenVideo() : alert(`Video de la etapa: ${s.name}`))}
-            >
-              <Play className="h-4 w-4 fill-current" />
-              Ver Video
-            </button>
+        {/* Visual flow strip */}
+        <div className="rounded-xl border border-border bg-card p-4">
+          <div className="mb-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            Flujo físico
+          </div>
+          <div className="flex items-center justify-between gap-2">
+            <FlowStep
+              icon={<Truck className="h-4 w-4" />}
+              label="Recepción"
+              active={s.number <= 3}
+              phaseVar={s.phaseVar}
+            />
+            <Dash phaseVar={s.phaseVar} />
+            <FlowStep
+              icon={<Boxes className="h-4 w-4" />}
+              label="Almacén"
+              active={s.number >= 2 && s.number <= 6}
+              phaseVar={s.phaseVar}
+            />
+            <Dash phaseVar={s.phaseVar} />
+            <FlowStep
+              icon={<PackageOpen className="h-4 w-4" />}
+              label="Picking"
+              active={s.number >= 6 && s.number <= 7}
+              phaseVar={s.phaseVar}
+            />
+            <Dash phaseVar={s.phaseVar} />
+            <FlowStep
+              icon={<Truck className="h-4 w-4" />}
+              label="Despacho"
+              active={s.number >= 7}
+              phaseVar={s.phaseVar}
+            />
           </div>
         </div>
-  );
-}
 
-function CartonsAdminBlock({
-  phaseVar,
-  onOpenBoxVideo,
-}: {
-  phaseVar: string;
-  onOpenBoxVideo?: () => void;
-}) {
-  const activities = [
-    {
-      title: "1. Create New Carton",
-      detail: "Ruta en Mintsoft:",
-      items: ["Cartons → Cartons & Pallets → Create New Carton"],
-    },
-    { title: "2. Configuración", items: ["Storage = Stock", "Location = RS In Transit"] },
-    {
-      title: "3. Código del Carton",
-      detail: "Formato: DOS PALABRAS + últimos 6 del tracking + número de caja",
-      items: ["Ejemplo: POSSE468889-001"],
-    },
-    { title: "4. Print Labels PDF", items: ["Se imprimen labels", "Se genera PDF de etiquetas"] },
-    {
-      title: "5. Mail al inbound team",
-      detail:
-        "Se envían labels al warehouse. Enviarlas cuando confirman por Slack que llegaron las cajas.",
-    },
-  ];
-  return (
-    <div
-      className="space-y-4 rounded-2xl border p-4"
-      style={{
-        borderColor: "oklch(0.78 0.06 60 / 0.5)",
-        background: "linear-gradient(180deg, oklch(0.94 0.04 65) 0%, oklch(0.97 0.02 65) 100%)",
-      }}
-    >
-      <div
-        className="flex items-center gap-2 border-b pb-3"
-        style={{ borderColor: "oklch(0.78 0.06 60 / 0.4)" }}
-      >
-        <PackageOpen className="h-4 w-4" style={{ color: "oklch(0.5 0.09 55)" }} />
-        <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-            Creación de Cartons
-          </div>
-          <h4 className="text-sm font-bold">Administración</h4>
+        {/* Etapa badge */}
+        <div className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3">
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Etapa operativa
+          </span>
+          <span
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white"
+            style={{ background: warehouseAccent?.badge ?? `var(${s.phaseVar})` }}
+          >
+            {s.number}
+          </span>
         </div>
-      </div>
 
-      <div className="rounded-lg border border-border bg-secondary/10 p-3">
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          Registro anticipado de cajas físicas. Con el packing list registramos cuántas cajas van a
-          venir antes de que lleguen físicamente al warehouse
-        </p>
-      </div>
-
-      <div className="flex items-start gap-3 rounded-lg bg-secondary/40 p-3">
-        <Users className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
-        <div>
-          <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            Responsable
-          </div>
-          <div className="text-sm font-medium">Equipo Inbound</div>
-        </div>
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-2">
-        <MiniList
-          icon={<Inbox className="h-4 w-4" />}
-          label="Entradas"
-          items={["Packing List confirmado", "Tracking number"]}
-        />
-        <MiniList
-          icon={<Link2 className="h-4 w-4" />}
-          label="Dependencias"
-          items={["Inbound (ASN creado)"]}
-        />
-      </div>
-      <div>
-        <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          <ListChecks className="h-4 w-4" /> Actividades administrativas
-        </div>
-        <div className="space-y-2">
-          {activities.map((a, i) => (
-            <Activity key={i} activity={a} phaseVar={phaseVar} />
-          ))}
-        </div>
-        {onOpenBoxVideo && (
-          <div className="mt-3">
-            <button
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
-              onClick={onOpenBoxVideo}
-            >
-              <PackageOpen className="h-4 w-4 text-primary" />
-              Como crear una caja
-            </button>
-          </div>
-        )}
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-2">
-        <MiniList
-          icon={<FileText className="h-4 w-4" />}
-          label="Documentación"
-          items={["PDF de etiquetas", "Códigos de carton"]}
-        />
-        <MiniList
-          icon={<PackageCheck className="h-4 w-4" />}
-          label="Salidas"
-          items={["Cartons pre-registrados en Mintsoft", "Labels listas para escaneo"]}
-        />
-      </div>
-
-      <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-destructive">
-          <AlertTriangle className="h-4 w-4" /> Puntos críticos / Validaciones
-        </div>
-        <ul className="mt-2 space-y-1 text-sm">
-          <li className="flex gap-2">
-            <span className="text-destructive">•</span>
-            <span>Enviar labels solo tras confirmación por Slack</span>
-          </li>
-        </ul>
-      </div>
-    </div>
-  );
-}
-
-function CartonsWarehouseBlock({ phaseVar }: { phaseVar: string }) {
-  return (
-    <div
-      className="space-y-4 rounded-2xl border p-4"
-      style={{
-        borderColor: "oklch(0.78 0.06 60 / 0.5)",
-        background: "linear-gradient(180deg, oklch(0.94 0.04 65) 0%, oklch(0.97 0.02 65) 100%)",
-      }}
-    >
-      <div
-        className="flex items-center gap-2 border-b pb-3"
-        style={{ borderColor: "oklch(0.78 0.06 60 / 0.4)" }}
-      >
-        <PackageOpen className="h-4 w-4" style={{ color: "oklch(0.5 0.09 55)" }} />
-        <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-            Creación de Cartons
-          </div>
-          <h4 className="text-sm font-bold">Warehouse</h4>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center gap-3 rounded-xl bg-card p-5 text-center shadow-sm">
-        <div
-          className="flex h-14 w-14 items-center justify-center rounded-2xl text-white"
+        {/* Ver Video */}
+        <button
+          className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
           style={{
-            background: "linear-gradient(135deg, oklch(0.6 0.1 55), oklch(0.45 0.08 50))",
+            background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
           }}
+          onClick={() => (onOpenVideo ? onOpenVideo() : alert(`Video de la etapa: ${s.name}`))}
         >
-          <PackageOpen className="h-7 w-7" />
-        </div>
-        <div
-          className="text-[10px] font-bold uppercase tracking-[0.2em]"
-          style={{ color: "oklch(0.5 0.09 55)" }}
-        >
-          Qué pasa físicamente
-        </div>
-        <p className="text-sm leading-relaxed">
-          En el warehouse entran a mintsoft y saben exactamente cuántas cajas deberían llegar.
-        </p>
+          <Play className="h-4 w-4 fill-current" />
+          Ver Video
+        </button>
       </div>
     </div>
   );
 }
+
+
 
 function VideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   if (!open) return null;
@@ -1515,13 +1315,22 @@ function Dash({ phaseVar }: { phaseVar: string }) {
 function Activity({
   activity,
   phaseVar,
+  onOpenAsnVideo,
+  onOpenBoxVideo,
 }: {
-  activity: { title: string; detail?: string; items?: string[] };
+  activity: {
+    title: string;
+    detail?: string;
+    blocks?: { type: string; content?: string; action?: string }[];
+    items?: string[];
+  };
   phaseVar: string;
+  onOpenAsnVideo?: () => void;
+  onOpenBoxVideo?: () => void;
 }) {
   const [open, setOpen] = useState(true);
   const [imageModal, setImageModal] = useState<{ src: string; alt: string } | null>(null);
-  const hasBody = activity.detail || activity.items?.length;
+  const hasBody = activity.detail || activity.items?.length || activity.blocks?.length;
   const showSlackExample = activity.title === "1. Slack confirma llegada";
 
   const exampleItems: Record<string, { src: string; alt: string }> = {
@@ -1559,6 +1368,34 @@ function Activity({
         <div className="border-t border-border px-4 py-3">
           {activity.detail && (
             <p className="text-sm leading-relaxed text-muted-foreground">{activity.detail}</p>
+          )}
+          {activity.blocks && (
+            <div className="space-y-3">
+              {activity.blocks.map((block, idx) => {
+                if (block.type === "text") {
+                  return (
+                    <p key={idx} className="text-sm leading-relaxed text-muted-foreground">
+                      {block.content}
+                    </p>
+                  );
+                }
+                if (block.type === "button") {
+                  const onClick = block.action === "asn" ? onOpenAsnVideo : onOpenBoxVideo;
+                  const Icon = block.action === "box" ? PackageOpen : ClipboardList;
+                  return (
+                    <button
+                      key={idx}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
+                      onClick={onClick}
+                    >
+                      <Icon className="h-4 w-4 text-primary" />
+                      {block.content}
+                    </button>
+                  );
+                }
+                return null;
+              })}
+            </div>
           )}
           {activity.items && (
             <ul className="mt-2 space-y-1.5">
@@ -1670,55 +1507,55 @@ const FLOW_HOTSPOTS: {
   targetId: string;
   phaseVar: string;
 }[] = [
-  {
-    number: 1,
-    title: "Llega el camión / avión",
-    description:
-      "Inbound: DHL, UPS o freight entregan la mercadería. El cliente envió previamente el Packing List y se creó el ASN en Mintsoft.",
-    targetId: "inbound",
-    phaseVar: "--phase-1",
-  },
-  {
-    number: 2,
-    title: "Llega al depósito",
-    description:
-      "Descarga de cajas en el warehouse 5411. Verificación física de cantidades y comparación contra el ASN cargado.",
-    targetId: "inbound",
-    phaseVar: "--phase-2",
-  },
-  {
-    number: 3,
-    title: "Escanean las cajas",
-    description:
-      "Escaneo de labels y registro en sistema. Validación de tracking number y SKU contra el catálogo.",
-    targetId: "control-arribo",
-    phaseVar: "--phase-3",
-  },
-  {
-    number: 4,
-    title: "Rearman las cajas",
-    description:
-      "Pick & Pack: apertura de cajas, búsqueda de productos y armado de nuevas cajas según órdenes Major y Boutique.",
-    targetId: "batches",
-    phaseVar: "--phase-5",
-  },
-  {
-    number: 5,
-    title: "Etiquetan y preparan envío",
-    description:
-      "Generación de labels, tracking number y commercial invoice. Preparación de las cajas para el pickup del carrier.",
-    targetId: "outbound",
-    phaseVar: "--phase-6",
-  },
-  {
-    number: 6,
-    title: "Despachan las cajas",
-    description:
-      "Shipping outbound: UPS, TForce Freight u otro carrier retira la mercadería. Salida del warehouse rumbo al cliente final.",
-    targetId: "shipping",
-    phaseVar: "--phase-8",
-  },
-];
+    {
+      number: 1,
+      title: "Llega el camión / avión",
+      description:
+        "Inbound: DHL, UPS o freight entregan la mercadería. El cliente envió previamente el Packing List y se creó el ASN en Mintsoft.",
+      targetId: "inbound",
+      phaseVar: "--phase-1",
+    },
+    {
+      number: 2,
+      title: "Llega al depósito",
+      description:
+        "Descarga de cajas en el warehouse 5411. Verificación física de cantidades y comparación contra el ASN cargado.",
+      targetId: "inbound",
+      phaseVar: "--phase-2",
+    },
+    {
+      number: 3,
+      title: "Escanean las cajas",
+      description:
+        "Escaneo de labels y registro en sistema. Validación de tracking number y SKU contra el catálogo.",
+      targetId: "control-arribo",
+      phaseVar: "--phase-3",
+    },
+    {
+      number: 4,
+      title: "Rearman las cajas",
+      description:
+        "Pick & Pack: apertura de cajas, búsqueda de productos y armado de nuevas cajas según órdenes Major y Boutique.",
+      targetId: "batches",
+      phaseVar: "--phase-5",
+    },
+    {
+      number: 5,
+      title: "Etiquetan y preparan envío",
+      description:
+        "Generación de labels, tracking number y commercial invoice. Preparación de las cajas para el pickup del carrier.",
+      targetId: "outbound",
+      phaseVar: "--phase-6",
+    },
+    {
+      number: 6,
+      title: "Despachan las cajas",
+      description:
+        "Shipping outbound: UPS, TForce Freight u otro carrier retira la mercadería. Salida del warehouse rumbo al cliente final.",
+      targetId: "shipping",
+      phaseVar: "--phase-8",
+    },
+  ];
 
 function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
   const [hovered, setHovered] = useState<number | null>(null);
@@ -1802,9 +1639,8 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
                     style={{ background: `var(${h.phaseVar})` }}
                   />
                   <span
-                    className={`pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full px-2 py-0.5 text-[10px] font-bold text-white transition-opacity ${
-                      isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                    }`}
+                    className={`pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full px-2 py-0.5 text-[10px] font-bold text-white transition-opacity ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                      }`}
                     style={{ background: `var(${h.phaseVar})` }}
                   >
                     Ver paso {h.number} →
@@ -1855,11 +1691,10 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
               onMouseEnter={() => setHovered(h.number)}
               onFocus={() => setHovered(h.number)}
               onClick={() => onJump(h.targetId)}
-              className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
-                active === h.number
+              className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${active === h.number
                   ? "border-transparent text-white shadow-[var(--shadow-soft)]"
                   : "border-border bg-card hover:bg-secondary"
-              }`}
+                }`}
               style={active === h.number ? { background: `var(${h.phaseVar})` } : undefined}
             >
               <span className="font-bold">{h.number}</span>
