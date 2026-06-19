@@ -44,7 +44,7 @@ export const Route = createFileRoute("/")({
 });
 
 // Definición de tipos para soportar acciones multimedia específicas
-type ActionType = "asn" | "box" | "labels" | "tracker" | "compare_tracking";
+type ActionType = "asn" | "box" | "labels" | "tracker" | "compare_tracking" | "recepcion_ordenes"| "cargar_orden_mintsoft";
 
 type Stage = {
   id: string;
@@ -79,7 +79,18 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio"; 
   warehouse_camilo: { title: "Video del Warehouse - Camilo", type: "video", src: "https://www.youtube.com/embed/0MqtGJ3c_pY" },
   audio_camilo: { title: "Perspectiva de Camilo - Audio", type: "audio", src: "audio camilo" },
   samuel_inbound: { title: "Video de Samuel", type: "video", src: "https://www.youtube.com/embed/_46d3mhvRwI" },
-  generic_warehouse: { title: "Video del Warehouse", type: "video", src: "https://www.youtube.com/embed/eJvWNrbTwZc?autoplay=1&rel=0" }
+  generic_warehouse: { title: "Video del Warehouse", type: "video", src: "https://www.youtube.com/embed/eJvWNrbTwZc?autoplay=1&rel=0" },
+  recepcion_ordenes: {
+    title: "Recepción de órdenes",
+    type: "video",
+    src: "URL_DEL_VIDEO_O_GUIA"
+  },
+
+  cargar_orden_mintsoft: {
+    title: "Cómo cargar una orden",
+    type: "video",
+    src: "URL_DEL_VIDEO_O_GUIA"
+  },
 };
 
 const STAGES: Stage[] = [
@@ -157,38 +168,67 @@ const STAGES: Stage[] = [
     inputs: ["Órdenes recibidas por mail", "Stock validado"],
     activities: [
       {
-        title: "1. Recepción de órdenes",
-        detail:
-          "Las órdenes pueden llegar por distintas vías según la modalidad de trabajo con cada marca.",
-        items: [
-          "Por correo electrónico",
-          "Incluidas dentro de la información enviada al momento de asignar el cargamento",
-          "Buscándolas directamente en la plataforma que utiliza la marca para gestionar sus pedidos",
-          "Ingresar todas las órdenes en el Tracker para su seguimiento operativo"
-        ],
-      },
-      {
-        title: "2. Clasificación",
-        detail:
-          "Las órdenes se clasifican según su tipo.",
-        items: [
-          "Major",
-          "Boutique"
+        title: "Proceso de recepción y preparación de órdenes",
+        blocks: [
+          {
+            type: "text",
+            content: "Las órdenes pueden recibirse por distintas vías según la modalidad de trabajo con cada marca."
+          },
+          {
+            type: "text",
+            content: "• Por correo electrónico."
+          },
+          {
+            type: "text",
+            content: "• Incluidas dentro de la información enviada al momento de asignar el cargamento."
+          },
+          {
+            type: "text",
+            content: "• Buscándolas directamente en la plataforma utilizada por la marca."
+          },
+          {
+            type: "text",
+            content: "Una vez recibidas, todas las órdenes deben ingresarse en el Tracker para realizar su seguimiento operativo."
+          },
+          {
+            type: "button",
+            action: "recepcion_ordenes",
+            content: "Ver recepción de órdenes"
+          },
+          {
+            type: "text",
+            content: "Las órdenes se clasifican según su tipo:"
+          },
+          {
+            type: "text",
+            content: "• Major"
+          },
+          {
+            type: "text",
+            content: "• Boutique"
+          },
+          {
+            type: "text",
+            content: "Luego se define la modalidad operativa:"
+          },
+          {
+            type: "text",
+            content: "• Cross Dock: ingreso y despacho inmediato de la mercadería."
+          },
+          {
+            type: "text",
+            content: "• Pick & Pack: preparación de pedidos a partir de la mercadería recibida."
+          },
+          {
+            type: "text",
+            content: "Finalizada la verificación, la orden se carga en Mintsoft utilizando el template SOL X TEST para su correcta gestión y seguimiento."
+          },
+          {
+            type: "button",
+            action: "cargar_orden_mintsoft",
+            content: "Cómo cargar una orden"
+          }
         ]
-      },
-      {
-        title: "3. Tipo operativo",
-        items: [
-          "Cross Dock — ingreso y despacho inmediato de la mercadería",
-          "Pick & Pack — preparación de pedidos a partir de la mercadería recibida"
-        ]
-      },
-      {
-        title: "4. Carga en Mintsoft",
-        detail:
-          "Finalizada la verificación, la orden se carga en Mintsoft utilizando el template SOL X TEST para su correcta gestión y seguimiento.",
-          
-        
       }
     ],
     docs: ["Packing list de outbound", "Mail con orden original"],
