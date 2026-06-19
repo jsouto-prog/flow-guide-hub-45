@@ -74,8 +74,8 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio"; 
   asn: { title: "Cómo crear un ASN", type: "video", src: "https://www.youtube.com/embed/y7goZ96k0eY?autoplay=1&rel=0" },
   box: { title: "Cómo crear una caja", type: "video", src: "https://www.youtube.com/embed/doRO4KPgpFo?autoplay=1&rel=0" },
   tracker: { title: "Explicación de Tracker", type: "video", src: "video de tracker" },
-  labels: { title: "Cómo Enviar labels", type: "video", src: "video de labels" },
-  compare_tracking: { title: "Comparar tracking y ASN", type: "video", src: "video track y asn" },
+  labels: { title: "Cómo Enviar labels", type: "video", src: "https://www.youtube.com/embed/Ox7jbakLZK8" },
+  compare_tracking: { title: "ASN REPORT", type: "video", src: "https://www.youtube.com/embed/98-NbpaRlWw" },
   warehouse_camilo: { title: "Video del Warehouse - Camilo", type: "video", src: "https://www.youtube.com/embed/0MqtGJ3c_pY" },
   audio_camilo: { title: "Perspectiva de Camilo - Audio", type: "audio", src: "audio camilo" },
   samuel_inbound: { title: "Video de Samuel", type: "video", src: "https://www.youtube.com/embed/_46d3mhvRwI" },
@@ -135,13 +135,9 @@ const STAGES: Stage[] = [
         ]
       },
       {
-        title: "4. Validation Tracking vs ASN",
-        detail: "Se compara el tracking físico contra el ASN cargado en el sistema.",
-        blocks: [{ type: "button", action: "compare_tracking", content: "Comparar tracking y ASN" }],
-      },
-      {
-        title: "5. Respuesta a la marca",
-        detail: "Una vez que finaliza el escaneo, se le envía a la marca el ASN REPORT.(Si es que lo pide)",
+        title: "4. Validation Tracking vs ASN -  Respuesta a la marca",
+        detail: "Se compara el tracking físico contra el ASN cargado en el sistema. Una vez que finaliza el escaneo, se le envía a la marca el ASN REPORT.(Si es que lo pide)",
+        blocks: [{ type: "button", action: "compare_tracking", content: "ASN REPORT" }],
       },
     ],
     docs: ["Packing List", "ASN Template", "Tracker de la marca"],
