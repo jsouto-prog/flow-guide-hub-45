@@ -4,6 +4,8 @@ import logisticsFlowAsset from "@/assets/proceso5411.png";
 import DependeMarca from "@/assets/DependeMarca.png";
 import heroImage from "@/assets/hero.png";
 import slackConfirmaLlegadaAsset from "@/assets/Slack.png";
+import cajaArmada from "@/assets/cajaArmada.png";
+import pedirAprobacion from "@/assets/Autorizacion.png";
 import {
   ClipboardList,
   Warehouse,
@@ -44,7 +46,7 @@ export const Route = createFileRoute("/")({
 });
 
 // Definición de tipos para soportar acciones multimedia específicas
-type ActionType = "asn" | "box" | "labels" | "tracker" | "compare_tracking" | "recepcion_ordenes"| "cargar_orden_mintsoft";
+type ActionType = "asn" | "box" | "labels" | "tracker" | "compare_tracking" | "recepcion_ordenes" | "cargar_orden_mintsoft" | "mandar_a_armar_orden" | "caja_armada_ejemplo" | "explicacion_ups_tracker" | "ejemplo_autorizacion";
 
 type Stage = {
   id: string;
@@ -70,7 +72,7 @@ type Stage = {
 };
 
 // Configuración centralizada de recursos multimedia para evitar lógica dura repetitiva
-const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio"; src: string }> = {
+const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio" | "image"; src: string }> = {
   asn: { title: "Cómo crear un ASN", type: "video", src: "https://www.youtube.com/embed/y7goZ96k0eY?autoplay=1&rel=0" },
   box: { title: "Cómo crear una caja", type: "video", src: "https://www.youtube.com/embed/doRO4KPgpFo?autoplay=1&rel=0" },
   tracker: { title: "Explicación de Tracker", type: "video", src: "video de tracker" },
@@ -90,6 +92,27 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio"; 
     title: "Cómo cargar una orden",
     type: "video",
     src: "URL_DEL_VIDEO_O_GUIA"
+  },
+  mandar_a_armar_orden: {
+    title: "Cómo mandar a armar una orden",
+    type: "video",
+    src: "URL_DEL_VIDEO_O_GUIA"
+  },
+  caja_armada_ejemplo: {
+    title: "Caja armada - Ejemplo",
+    type: "image",
+    src: cajaArmada,
+  },
+
+  explicacion_ups_tracker: {
+    title: "Explicación UPS y Tracker",
+    type: "video",
+    src: "URL_DEL_VIDEO_O_GUIA"
+  },
+  ejemplo_autorizacion: {
+    title: "Ejemplo de autorización",
+    type: "image",
+    src: pedirAprobacion
   },
 };
 
@@ -223,6 +246,122 @@ const STAGES: Stage[] = [
             type: "button",
             action: "cargar_orden_mintsoft",
             content: "Cómo cargar una orden"
+          }
+        ]
+        
+      },
+      {
+        title: "Mandar a armar las órdenes",
+        blocks: [
+          {
+            type: "text",
+            content:
+              "Mandar a armar una orden significa que se debe solicitar al warehouse que prepare y arme la caja correspondiente a la orden. Una vez finalizado el armado, el warehouse enviará una fotografía donde se visualizan las medidas de la caja."
+          },
+          {
+            type: "text",
+            content:
+              "Las órdenes de Boutique y Major tienen procesos distintos y es importante respetar las reglas de armado."
+          },
+          {
+            type: "text",
+            content:
+              "BOUTIQUES"
+          },
+          {
+            type: "text",
+            content:
+              "• Crear batches de hasta 50 unidades o 5 órdenes."
+          },
+          {
+            type: "text",
+            content:
+              "• Utilizar como referencia: 'Boutique - Fecha de hoy'."
+          },
+          {
+            type: "text",
+            content:
+              "• Si una orden tiene prioridad sobre otra, crearla en un batch separado y avisar la prioridad al warehouse."
+          },
+          {
+            type: "text",
+            content:
+              "MAJORS"
+          },
+          {
+            type: "text",
+            content:
+              "• Crear 1 batch por orden."
+          },
+          {
+            type: "text",
+            content:
+              "• Si la orden tiene stores, incluir hasta 2 stores por batch."
+          },
+          {
+            type: "text",
+            content:
+              "• Utilizar como referencia: 'MAJOR - #PO'."
+          },
+          {
+            type: "text",
+            content:
+              "Recordatorio: Anotar en el Tracker que la orden entro a Mintsoft"
+          },
+          {
+            type: "button",
+            action: "mandar_a_armar_orden",
+            content: "Cómo mandar a armar una orden"
+          }
+        ]
+      },
+      {
+        title: "Sacar órdenes",
+        blocks: [
+          {
+            type: "text",
+            content:
+              "Cuando se solicita 'sacá esta orden', significa que la orden ya fue preparada por el warehouse y se encuentra lista para ser despachada a su destino correspondiente, ya sea una Boutique o un Major."
+          },
+          {
+            type: "text",
+            content:
+              "La recepción de la foto enviada por el warehouse confirma que la caja ya fue armada y está lista para los siguientes pasos del proceso."
+          },
+          {
+            type: "button",
+            action: "caja_armada_ejemplo",
+            content: "Caja armada - Ejemplo"
+          },
+          {
+            type: "text",
+            content:
+              "En algunos casos, aunque la orden esté preparada, no puede despacharse inmediatamente. Es necesario contar con la autorización del cliente, del Major o de la Boutique antes de coordinar la salida desde el warehouse."
+          },
+          {
+            type: "button",
+            action: "ejemplo_autorizacion",
+            content: "Autorización - Ver ejemplo"
+          },
+          {
+            type: "text",
+            content:
+              "Una vez solicitada la autorización, se debe actualizar el Tracker indicando que la orden se encuentra 'routeada'. Esto significa que ya se notificó al cliente que la caja está lista para salir del warehouse y que se está esperando la aprobación final para proceder con el despacho."
+          },
+          {
+            type: "text",
+            content:
+              "Cuando se recibe la autorización, o cuando la orden no requiere aprobación previa, se puede proceder con el despacho. Este proceso puede realizarse de forma manual a través de UPS o de forma automática cuando la integración entre Mintsoft y UPS ya se encuentra configurada."
+          },
+          {
+            type: "button",
+            action: "explicacion_ups_tracker",
+            content: "Explicación UPS y Tracker"
+          },
+          {
+            type: "text",
+            content:
+              "Una vez despachada la orden, se debe registrar el Tracking Number en el Tracker y actualizar el estado de la orden para reflejar que el envío ya fue realizado."
           }
         ]
       }
@@ -1150,54 +1289,87 @@ function StageWarehouseColumn({
 // Componente Core Unificado para Multimedia (Mantiene intacta la UI/UX/Layout original)
 function MediaModal({ resourceKey, onClose }: { resourceKey: string | null; onClose: () => void }) {
   if (!resourceKey) return null;
+
   const resource = MEDIA_RESOURCES[resourceKey];
   if (!resource) return null;
 
   const isAudio = resource.type === "audio";
+  const isImage = resource.type === "image";
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4 py-6"
       onClick={onClose}
     >
-      <div
-        className={`relative w-full ${isAudio ? 'max-w-md' : 'max-w-3xl'} rounded-2xl border border-border bg-card p-4 shadow-2xl transition-all`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          className="absolute -top-3 -right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background border border-border text-foreground shadow hover:bg-secondary transition-colors"
-          aria-label="Cerrar"
+      {/* 1. RENDERIZADO EXCLUSIVO PARA IMÁGENES (Aislado para evitar herencia de tamaños de video) */}
+      {isImage ? (
+        <div
+          className="relative w-auto max-w-[95vw] md:max-w-4xl rounded-2xl border border-border bg-card p-3 shadow-2xl transition-all"
+          onClick={(e) => e.stopPropagation()}
         >
-          ×
-        </button>
+          <button
+            onClick={onClose}
+            className="absolute -top-3 -right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background border border-border text-foreground shadow hover:bg-secondary transition-colors"
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
 
-        <div className="mb-2 text-sm font-bold px-1 text-muted-foreground">
-          {resource.title}
+          <div className="mb-2 text-sm font-bold px-1 text-muted-foreground">
+            {resource.title}
+          </div>
+
+          <div className="max-h-[80vh] overflow-auto rounded-xl bg-black/5 flex items-center justify-center">
+            <img
+              src={resource.src}
+              alt={resource.title}
+              className="h-auto max-h-[70vh] w-auto max-w-full object-contain block mx-auto rounded-lg shadow-sm"
+              draggable={false}
+              onContextMenu={(e) => e.preventDefault()}
+            />
+          </div>
         </div>
+      ) : (
+        /* 2. RENDERIZADO PARA VIDEOS Y AUDIOS (Mantiene intacto tu layout original de la plataforma) */
+        <div
+          className={`relative w-full ${isAudio ? 'max-w-md' : 'max-w-3xl'} rounded-2xl border border-border bg-card p-4 shadow-2xl transition-all`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={onClose}
+            className="absolute -top-3 -right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background border border-border text-foreground shadow hover:bg-secondary transition-colors"
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
 
-        {isAudio ? (
-          <div className="flex flex-col items-center justify-center rounded-xl bg-muted/30 p-6 border border-border/40">
-            <div className="mb-4 text-4xl animate-pulse">🎤</div>
-            <audio
-              className="w-full h-12 accent-primary"
-              src={resource.src}
-              controls
-              autoPlay
-            />
+          <div className="mb-2 text-sm font-bold px-1 text-muted-foreground">
+            {resource.title}
           </div>
-        ) : (
-          <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
-            <iframe
-              className="h-full w-full"
-              src={resource.src}
-              title={resource.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        )}
-      </div>
+
+          {isAudio ? (
+            <div className="flex flex-col items-center justify-center rounded-xl bg-muted/30 p-6 border border-border/40">
+              <div className="mb-4 text-4xl animate-pulse">🎤</div>
+              <audio
+                className="w-full h-12 accent-primary"
+                src={resource.src}
+                controls
+                autoPlay
+              />
+            </div>
+          ) : (
+            <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
+              <iframe
+                className="h-full w-full"
+                src={resource.src}
+                title={resource.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -1285,7 +1457,12 @@ function Activity({
                   );
                 }
                 if (block.type === "button" && block.action) {
-                  const Icon = block.action === "box" ? PackageOpen : ClipboardList;
+                  const currentResource = MEDIA_RESOURCES[block.action];
+                  const resourceType = currentResource ? currentResource.type : undefined;
+                  const Icon = block.action === "box" ? PackageOpen
+                    : resourceType === "image"
+                      ? ScanLine
+                      : ClipboardList;
                   return (
                     <button
                       key={idx}
