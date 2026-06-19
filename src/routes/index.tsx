@@ -43,6 +43,9 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
+// Definición de tipos para soportar acciones multimedia específicas
+type ActionType = "asn" | "box" | "labels" | "tracker" | "compare_tracking";
+
 type Stage = {
   id: string;
   number: number;
@@ -54,7 +57,7 @@ type Stage = {
   activities: {
     title: string;
     detail?: string;
-    blocks?: { type: "text" | "button"; content?: string; action?: "asn" | "box" | "labels"}[];
+    blocks?: { type: "text" | "button"; content?: string; action?: ActionType }[];
     items?: string[];
   }[];
   docs: string[];
@@ -64,6 +67,19 @@ type Stage = {
   critical?: string[];
   phaseColor?: string;
   phaseVar: string;
+};
+
+// Configuración centralizada de recursos multimedia para evitar lógica dura repetitiva
+const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio"; src: string }> = {
+  asn: { title: "Cómo crear un ASN", type: "video", src: "https://www.youtube.com/embed/y7goZ96k0eY?autoplay=1&rel=0" },
+  box: { title: "Cómo crear una caja", type: "video", src: "https://www.youtube.com/embed/doRO4KPgpFo?autoplay=1&rel=0" },
+  tracker: { title: "Explicación de Tracker", type: "video", src: "video de tracker" },
+  labels: { title: "Cómo Enviar labels", type: "video", src: "video de labels" },
+  compare_tracking: { title: "Comparar tracking y ASN", type: "video", src: "video track y asn" },
+  warehouse_camilo: { title: "Video del Warehouse - Camilo", type: "video", src: "https://www.youtube.com/embed/0MqtGJ3c_pY" },
+  audio_camilo: { title: "Perspectiva de Camilo - Audio", type: "audio", src: "audio camilo" },
+  samuel_inbound: { title: "Video de Samuel", type: "video", src: "https://www.youtube.com/embed/_46d3mhvRwI" },
+  generic_warehouse: { title: "Video del Warehouse", type: "video", src: "https://www.youtube.com/embed/eJvWNrbTwZc?autoplay=1&rel=0" }
 };
 
 const STAGES: Stage[] = [
@@ -90,16 +106,15 @@ const STAGES: Stage[] = [
       },
       {
         title: "2. Tracker de la marca",
-        detail:
-          "Cada marca tiene si tracker donde ponemos la información de las órdenes y los cargamentos. Una vez generado el ASN debemos anotarlo en la hoja de cargamentos (ASN# +tracking, unidades, caja y ETA).",
-        blocks: [{ type: "button", action: "box", content: "Explicación de Tracker" }],//esto hay que cambiarlo por su video
+        detail: "Cada marca tiene si tracker donde ponemos la información de las órdenes y los cargamentos. Una vez generado el ASN debemos anotarlo en la hoja de cargamentos (ASN# +tracking, unidades, caja y ETA).",
+        blocks: [{ type: "button", action: "tracker", content: "Explicación de Tracker" }],
       },
       {
         title: "3. Cargamento",
         blocks: [
           {
             type: "text",
-            content: "Una vez que se recibe la foto de camilo por el grupo, anotamos en el Tracking y hacemos el envío de las carton labes (email INBOUND con el nombre de la marca, el número de cargamento y carton labels). Si hay cajas faltantes esperar a que llegue el restante y hablar con la marca si hace falta."
+            content: "Una vez que se recibe la foto de camilo por el grupo, anotamos en el Tracking and hacemos el envío de las carton labes (email INBOUND con el nombre de la marca, el número de cargamento y carton labels). Si hay cajas faltantes esperar a que llegue el restante y hablar con la marca si hace falta."
           },
           {
             type: "button",
@@ -109,11 +124,10 @@ const STAGES: Stage[] = [
         ]
       },
       {
-        title: "4. Validación Tracking vs ASN",
-        detail:
-          "Se compara el tracking físico contra el ASN cargado en el sistema.",
-        blocks: [{ type: "button", action: "box", content: "Explicación de Tracker" }],//esto hay que cambiarlo por su video      
-        },
+        title: "4. Validation Tracking vs ASN",
+        detail: "Se compara el tracking físico contra el ASN cargado en el sistema.",
+        blocks: [{ type: "button", action: "compare_tracking", content: "Comparar tracking y ASN" }],
+      },
       {
         title: "5. Respuesta a la marca",
         detail: "Una vez que finaliza el escaneo, se le envía a la marca el ASN REPORT.(Si es que lo pide)",
@@ -139,29 +153,49 @@ const STAGES: Stage[] = [
     short: "Preparación de órdenes de salida",
     objective:
       "Procesar los pedidos que van a salir del warehouse hacia boutiques o majors. Una orden es un pedido de productos a preparar y enviar.",
-    responsible: "Equipo Outbound",
+    responsible: "Equipo BS AS",
     inputs: ["Órdenes recibidas por mail", "Stock validado"],
     activities: [
-      { title: "1. Recepción de órdenes", detail: "Hay varias opciones:", items: ["Llegan por mail", "Ya las tenes cuando te mandaron el cargamento", "Las tenes que buscar en la plataforma que usa la marca"] },
+      {
+        title: "1. Recepción de órdenes",
+        detail:
+          "Las órdenes pueden llegar por distintas vías según la modalidad de trabajo con cada marca.",
+        items: [
+          "Por correo electrónico",
+          "Incluidas dentro de la información enviada al momento de asignar el cargamento",
+          "Buscándolas directamente en la plataforma que utiliza la marca para gestionar sus pedidos",
+          "Ingresar todas las órdenes en el Tracker para su seguimiento operativo"
+        ],
+      },
       {
         title: "2. Clasificación",
-        items: ["Major", "Boutique"],
+        detail:
+          "Las órdenes se clasifican según su tipo.",
+        items: [
+          "Major",
+          "Boutique"
+        ]
       },
       {
         title: "3. Tipo operativo",
         items: [
-          "Cross Dock — la caja entra y sale rápido sin almacenarse",
-          "Pick & Pack — el warehouse abre cajas, busca productos y arma nuevas cajas",
-        ],
+          "Cross Dock — ingreso y despacho inmediato de la mercadería",
+          "Pick & Pack — preparación de pedidos a partir de la mercadería recibida"
+        ]
       },
-      { title: "4. Transformación de datos", detail: "Armamos la packing list." },
-      { title: "5. Verificación SKU en Mintsoft" },
+      {
+        title: "4. Carga en Mintsoft",
+        detail:
+          "Finalizada la verificación, la orden se carga en Mintsoft utilizando el template SOL X TEST para su correcta gestión y seguimiento.",
+          
+        
+      }
     ],
     docs: ["Packing list de outbound", "Mail con orden original"],
     outputs: ["Órdenes clasificadas y listas para cargar"],
     dependencies: ["Stock disponible (Gestión de Stock)"],
     warehouse:
-      "El warehouse entiende qué órdenes preparar, qué productos buscar y si deben rearmar cajas o despachar directo.",
+      "1. El warehouse entiende qué órdenes preparar, qué productos buscar y si deben rearmar cajas o despachar directo.",
     critical: ["Identificar correctamente Cross Dock vs Pick & Pack"],
     phaseVar: "--phase-4",
   },
@@ -199,7 +233,7 @@ const STAGES: Stage[] = [
     short: "Validación de inventario real",
     objective: "Verificar que el stock esté correctamente ubicado y alocado en el sistema.",
     responsible: "Equipo Stock + Warehouse (Samu)",
-    inputs: ["Orden cargada en Mintsoft"],
+    inputs: ["Orden cargada in Mintsoft"],
     activities: [
       {
         title: "Estado NEW",
@@ -361,7 +395,7 @@ const FAQS = [
     a: "Boutique: máximo 5 órdenes por batch. Major: 1 orden por batch.",
   },
   {
-    q: "¿Cuáles son los estados de una orden?",
+    q: "Cuáles son los estados de una orden?",
     a: "Entered → Packing → Packed → Routed → Shipped.",
   },
   {
@@ -385,10 +419,9 @@ function Index() {
   );
   const [query, setQuery] = useState("");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [videoOpen, setVideoOpen] = useState(false);
-  const [asnVideoOpen, setAsnVideoOpen] = useState(false);
-  const [boxVideoOpen, setBoxVideoOpen] = useState(false);
-  const [labelsVideoOpen, setLabelsVideoOpen] = useState(false);
+
+  // Estado único para controlar la apertura de cualquier contenido multimedia dinámico
+  const [activeMediaKey, setActiveMediaKey] = useState<string | null>(null);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -610,10 +643,7 @@ function Index() {
                   {isOpen && (
                     <StageBody
                       stage={s}
-                      onOpenVideo={s.id === "inbound" ? () => setVideoOpen(true) : undefined}
-                      onOpenAsnVideo={s.id === "inbound" ? () => setAsnVideoOpen(true) : undefined}
-                      onOpenBoxVideo={s.id === "inbound" ? () => setBoxVideoOpen(true) : undefined}
-                      onOpenLabelsVideo={s.id === "inbound" ? () => setLabelsVideoOpen(true) : undefined}
+                      onTriggerMedia={(key) => setActiveMediaKey(key)}
                     />
                   )}
                 </section>
@@ -699,28 +729,9 @@ function Index() {
           </footer>
         </main>
       </div>
-      <VideoModal open={videoOpen} onClose={() => setVideoOpen(false)} />
-      <AsnVideoModal open={asnVideoOpen} onClose={() => setAsnVideoOpen(false)} />
-      <BoxVideoModal open={boxVideoOpen} onClose={() => setBoxVideoOpen(false)} />
-      <LabelsVideoModal open={labelsVideoOpen} onClose={() => setLabelsVideoOpen(false)} />
-    </div>
-  );
-}
 
-function MetaCard({ label, items }: { label: string; items: string[] }) {
-  return (
-    <div className="rounded-xl border border-border bg-background p-4">
-      <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-        {label}
-      </div>
-      <ul className="mt-2 space-y-1">
-        {items.map((it, i) => (
-          <li key={i} className="flex gap-2 text-sm">
-            <span className="text-primary">›</span>
-            <span>{it}</span>
-          </li>
-        ))}
-      </ul>
+      {/* Único modal dinámico e independiente para audios y videos */}
+      <MediaModal resourceKey={activeMediaKey} onClose={() => setActiveMediaKey(null)} />
     </div>
   );
 }
@@ -738,16 +749,10 @@ const WAREHOUSE_ICONS: Record<string, React.ComponentType<{ className?: string }
 
 function StageBody({
   stage: s,
-  onOpenVideo,
-  onOpenAsnVideo,
-  onOpenBoxVideo,
-  onOpenLabelsVideo,
+  onTriggerMedia,
 }: {
   stage: Stage;
-  onOpenVideo?: () => void;
-  onOpenAsnVideo?: () => void;
-  onOpenBoxVideo?: () => void;
-  onOpenLabelsVideo?: () => void;
+  onTriggerMedia: (key: string) => void;
 }) {
   return (
     <div className="space-y-8 p-6 md:p-8">
@@ -781,22 +786,14 @@ function StageBody({
               <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                 Proceso
               </div>
-              <h3 className="text-base font-bold" style={{ color: "oklch(0.35 0.13 200)" }}>
-                Creación de ASN
-              </h3>
             </div>
           </div>
-          <InboundAsnGrid
-            s={s}
-            onOpenVideo={onOpenVideo}
-            onOpenAsnVideo={onOpenAsnVideo}
-            onOpenBoxVideo={onOpenBoxVideo}
-            onOpenLabelsVideo={onOpenLabelsVideo}
-          />
+          <div className="grid gap-6 lg:grid-cols-2">
+            <StageAdminColumn s={s} onTriggerMedia={onTriggerMedia} />
+            <StageWarehouseColumn s={s} onTriggerMedia={onTriggerMedia} />
+          </div>
         </div>
       )}
-
-      
 
       {s.id === "inbound" && CONTROL_ARRIBO_STAGE && (
         <div
@@ -823,62 +820,28 @@ function StageBody({
             </div>
           </div>
           <div className="grid gap-6 lg:grid-cols-2">
-            <StageAdminColumn s={CONTROL_ARRIBO_STAGE} />
-            <StageWarehouseColumn s={CONTROL_ARRIBO_STAGE} onOpenVideo={onOpenVideo} onOpenLabelsVideo={onOpenLabelsVideo} />
+            <StageAdminColumn s={CONTROL_ARRIBO_STAGE} onTriggerMedia={onTriggerMedia} />
+            <StageWarehouseColumn s={CONTROL_ARRIBO_STAGE} onTriggerMedia={onTriggerMedia} />
           </div>
         </div>
       )}
 
       {s.id !== "inbound" && (
         <div className="grid gap-6 lg:grid-cols-2">
-          <StageAdminColumn
-            s={s}
-            onOpenAsnVideo={onOpenAsnVideo}
-            onOpenLabelsVideo={onOpenLabelsVideo} // <-- Agregá esta línea
-          />
-          <StageWarehouseColumn s={s} onOpenVideo={onOpenVideo} />
+          <StageAdminColumn s={s} onTriggerMedia={onTriggerMedia} />
+          <StageWarehouseColumn s={s} onTriggerMedia={onTriggerMedia} />
         </div>
       )}
-    </div>
-  );
-}
-function InboundAsnGrid({
-  s,
-  onOpenVideo,
-  onOpenAsnVideo,
-  onOpenBoxVideo,
-  onOpenLabelsVideo,
-}: {
-  s: Stage;
-  onOpenVideo?: () => void;
-  onOpenAsnVideo?: () => void;
-  onOpenBoxVideo?: () => void;
-  onOpenLabelsVideo?: () => void;
-}) {
-  return (
-    <div className="grid gap-6 lg:grid-cols-2">
-      {/* AGREGADO: Pasamos onOpenLabelsVideo acá adentro */}
-      <StageAdminColumn
-        s={s}
-        onOpenAsnVideo={onOpenAsnVideo}
-        onOpenBoxVideo={onOpenBoxVideo}
-        onOpenLabelsVideo={onOpenLabelsVideo}
-      />
-      <StageWarehouseColumn s={s} onOpenVideo={onOpenVideo} />
     </div>
   );
 }
 
 function StageAdminColumn({
   s,
-  onOpenAsnVideo,
-  onOpenBoxVideo,
-  onOpenLabelsVideo,
+  onTriggerMedia,
 }: {
   s: Stage;
-  onOpenAsnVideo?: () => void;
-  onOpenBoxVideo?: () => void;
-  onOpenLabelsVideo?: () => void;
+  onTriggerMedia: (key: string) => void;
 }) {
   const adminIconBg = s.phaseColor === "green" ? "oklch(0.45 0.12 140)" : "var(--gradient-hero)";
   return (
@@ -895,7 +858,6 @@ function StageAdminColumn({
             Perspectiva
           </div>
           <h3 className="text-lg font-bold">Administración</h3>
-          
         </div>
       </div>
 
@@ -928,23 +890,9 @@ function StageAdminColumn({
           </div>
           <div className="space-y-2">
             {s.activities.map((a, i) => (
-              <Activity key={i} activity={a} phaseVar={s.phaseVar} onOpenAsnVideo={onOpenAsnVideo} onOpenBoxVideo={onOpenBoxVideo} onOpenLabelsVideo={onOpenLabelsVideo} />
+              <Activity key={i} activity={a} phaseVar={s.phaseVar} onTriggerMedia={onTriggerMedia} />
             ))}
           </div>
-        </div>
-
-        {/* Documentación + Salidas */}
-        <div className="grid gap-3 sm:grid-cols-2">
-          <MiniList
-            icon={<FileText className="h-4 w-4" />}
-            label="Documentación"
-            items={s.docs}
-          />
-          <MiniList
-            icon={<PackageCheck className="h-4 w-4" />}
-            label="Salidas"
-            items={s.outputs}
-          />
         </div>
 
         {/* Críticos */}
@@ -963,7 +911,6 @@ function StageAdminColumn({
             </ul>
           </div>
         )}
-
       </div>
     </div>
   );
@@ -971,16 +918,12 @@ function StageAdminColumn({
 
 function StageWarehouseColumn({
   s,
-  onOpenVideo,
-  onOpenLabelsVideo,
+  onTriggerMedia,
 }: {
   s: Stage;
-  onOpenVideo?: () => void;
-  onOpenLabelsVideo?: () => void;
+  onTriggerMedia: (key: string) => void;
 }) {
   const WhIcon = WAREHOUSE_ICONS[s.id] ?? Warehouse;
-
-  // Estado local para controlar el modal de la imagen de Slack
   const [imageModal, setImageModal] = useState<{ src: string; alt: string } | null>(null);
 
   const warehouseAccent = s.phaseColor === "green" ? {
@@ -1000,7 +943,6 @@ function StageWarehouseColumn({
         background: warehouseAccent?.background ?? `linear-gradient(180deg, oklch(from var(${s.phaseVar}) 0.97 0.02 h) 0%, var(--card) 100%)`,
       }}
     >
-      {/* Decorative big icon */}
       <WhIcon className="pointer-events-none absolute -right-6 -top-6 h-44 w-44 opacity-[0.07]" />
 
       <div
@@ -1010,7 +952,7 @@ function StageWarehouseColumn({
         <div
           className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[var(--shadow-soft)]"
           style={{
-            background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.1) c h))`,
+            background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
           }}
         >
           <Warehouse className="h-5 w-5" />
@@ -1024,7 +966,6 @@ function StageWarehouseColumn({
       </div>
 
       <div className="relative space-y-5">
-        {/* Hero icon + warehouse statement */}
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-border/50 bg-card p-6 text-center shadow-md">
           <div
             className="flex h-16 w-16 items-center justify-center rounded-2xl text-white shadow-md"
@@ -1042,22 +983,16 @@ function StageWarehouseColumn({
             Qué pasa físicamente
           </div>
 
-          <div className="py-2 text-center text-xl font-extrabold text-blue-600">
-            Etapa Camilo
-          </div>
-
-          <p className="text-sm leading-relaxed">{s.warehouse}</p>
-
-          {s.id === "inbound" && (
+             {s.id === "inbound" && ( //WAREHOUSE ETAPA INBOUND EDITAR ACA
             <div className="w-full mt-3 space-y-4">
-              {/* Video */}
+              <div className="py-2 text-center text-xl font-extrabold text-blue-600">
+                Etapa Camilo
+              </div>
+              <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">{s.warehouse}</p>
+              {/* Video Camilo */}
               <button
                 type="button"
-                onClick={() =>
-                  onOpenVideo
-                    ? onOpenVideo()
-                    : alert(`Video de la etapa: ${s.name}`)
-                }
+                onClick={() => onTriggerMedia("warehouse_camilo")}
                 className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{
                   background:
@@ -1069,7 +1004,7 @@ function StageWarehouseColumn({
                 Video del Warehouse
               </button>
 
-              {/* Ejemplo */}
+              {/* Ejemplo Slack */}
               <div className="border-t pt-4">
                 <div className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   Ejemplo
@@ -1090,7 +1025,7 @@ function StageWarehouseColumn({
                 </button>
               </div>
 
-              {/* Audio */}
+              {/* Audio Camilo Independiente */}
               <div className="border-t pt-4">
                 <div className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   Audio de Camilo explicando el proceso
@@ -1098,12 +1033,7 @@ function StageWarehouseColumn({
 
                 <button
                   type="button"
-                  onClick={() =>
-                    setImageModal({
-                      src: slackConfirmaLlegadaAsset,
-                      alt: "Ejemplo de confirmación en Slack",
-                    })
-                  }
+                  onClick={() => onTriggerMedia("audio_camilo")}
                   className="flex w-full items-center gap-3 rounded-2xl border border-border bg-muted/20 px-4 py-3 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02]"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
@@ -1125,10 +1055,9 @@ function StageWarehouseColumn({
                 </button>
               </div>
 
-              {/* Separador */}
               <div className="my-2 border-t border-border" />
 
-              {/* Samuel */}
+              {/* Samuel Section */}
               <div className="pt-2 text-center text-xl font-extrabold text-green-600">
                 Etapa Samuel
               </div>
@@ -1137,13 +1066,10 @@ function StageWarehouseColumn({
                 2. De acuerdo con las prioridades, Samuel retira las cajas de RS y las lleva a su mesa de trabajo. Luego imprime las etiquetas (labels), organiza las cajas en el orden correspondiente, coloca las etiquetas y comienza el proceso de escaneo.
               </div>
 
+              {/* Video Samuel Independiente con Estilo Solicitado */}
               <button
                 type="button"
-                onClick={() =>
-                  onOpenVideo
-                    ? onOpenVideo()
-                    : alert(`Video de la etapa: ${s.name}`)
-                }
+                onClick={() => onTriggerMedia("samuel_inbound")}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 <Play className="h-4 w-4 fill-current" />
@@ -1151,37 +1077,28 @@ function StageWarehouseColumn({
               </button>
             </div>
           )}
+          {s.id === "outbound" && ( //ACA EDITAR OUTBOUND WAREHOUSE
+            <div className="w-full mt-3 space-y-4">
+              <div className="py-2 text-center text-xl font-extrabold text-blue-600">
+                Etapa quien?
+              </div>
+              <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">{s.warehouse}</p>
+              {/* Ejemplo: Si querés disparar un video o audio de esta etapa */}
+              <button
+                type="button"
+                onClick={() => onTriggerMedia("tu_recurso_multimedia_aca")}
+                className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
+                style={{
+                  background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
+                }}
+              >
+                <Play className="h-4 w-4 fill-current" />
+                Ver Video Operativo Outbound
+              </button>
+            </div>
+          )}
         </div>
-
-        {/* Etapa badge */}
-        <div className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3">
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Etapa operativa
-          </span>
-          <span
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white"
-            style={{ background: warehouseAccent?.badge ?? `var(${s.phaseVar})` }}
-          >
-            {s.number}
-          </span>
-        </div>
-
-        {/* Botón original del final "Ver Video" (Se oculta en Inbound para no duplicar funciones) */}
-        {s.id !== "inbound" && (
-          <button
-            className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
-            style={{
-              background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
-            }}
-            onClick={() => (onOpenVideo ? onOpenVideo() : alert(`Video de la etapa: ${s.name}`))}
-          >
-            <Play className="h-4 w-4 fill-current" />
-            Ver Video
-          </button>
-        )}
       </div>
-
-      {/* Renderizado condicional del modal de imagen de Slack */}
       {imageModal && (
         <ImageModal
           open={true}
@@ -1194,49 +1111,21 @@ function StageWarehouseColumn({
   );
 }
 
+// Componente Core Unificado para Multimedia (Mantiene intacta la UI/UX/Layout original)
+function MediaModal({ resourceKey, onClose }: { resourceKey: string | null; onClose: () => void }) {
+  if (!resourceKey) return null;
+  const resource = MEDIA_RESOURCES[resourceKey];
+  if (!resource) return null;
 
+  const isAudio = resource.type === "audio";
 
-function VideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  if (!open) return null;
   return (
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-sm rounded-2xl border border-border bg-card p-3 shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          className="absolute -top-3 -right-3 flex h-8 w-8 items-center justify-center rounded-full bg-background border border-border text-foreground shadow hover:bg-secondary transition-colors"
-          aria-label="Cerrar"
-        >
-          ×
-        </button>
-        <div className="aspect-[9/16] w-full overflow-hidden rounded-xl bg-black">
-          <iframe
-            className="h-full w-full"
-            src="https://www.youtube.com/embed/eJvWNrbTwZc?autoplay=1&rel=0"
-            title="Video Inbond"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AsnVideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  if (!open) return null;
-  return (
-    <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
-      onClick={onClose}
-    >
-      <div
-        className="relative w-full max-w-3xl rounded-2xl border border-border bg-card p-3 shadow-2xl"
+        className={`relative w-full ${isAudio ? 'max-w-md' : 'max-w-3xl'} rounded-2xl border border-border bg-card p-4 shadow-2xl transition-all`}
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -1246,47 +1135,32 @@ function AsnVideoModal({ open, onClose }: { open: boolean; onClose: () => void }
         >
           ×
         </button>
-        <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
-          <iframe
-            className="h-full w-full"
-            src="https://www.youtube.com/embed/y7goZ96k0eY?autoplay=1&rel=0"
-            title="Como crear un ASN"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
 
-function BoxVideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  if (!open) return null;
-  return (
-    <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
-      onClick={onClose}
-    >
-      <div
-        className="relative w-full max-w-3xl rounded-2xl border border-border bg-card p-3 shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          className="absolute -top-3 -right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background border border-border text-foreground shadow hover:bg-secondary transition-colors"
-          aria-label="Cerrar"
-        >
-          ×
-        </button>
-        <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
-          <iframe
-            className="h-full w-full"
-            src="https://www.youtube.com/embed/doRO4KPgpFo?autoplay=1&rel=0"
-            title="Como crear una caja"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
+        <div className="mb-2 text-sm font-bold px-1 text-muted-foreground">
+          {resource.title}
         </div>
+
+        {isAudio ? (
+          <div className="flex flex-col items-center justify-center rounded-xl bg-muted/30 p-6 border border-border/40">
+            <div className="mb-4 text-4xl animate-pulse">🎤</div>
+            <audio
+              className="w-full h-12 accent-primary"
+              src={resource.src}
+              controls
+              autoPlay
+            />
+          </div>
+        ) : (
+          <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
+            <iframe
+              className="h-full w-full"
+              src={resource.src}
+              title={resource.title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1318,79 +1192,19 @@ function MiniList({
   );
 }
 
-function Chip({ phaseVar, phaseColor, value, label }: { phaseVar: string; phaseColor?: string; value: number; label: string }) {
-  const color = phaseColor === "green" ? "oklch(0.45 0.12 140)" : `var(${phaseVar})`;
-  return (
-    <div className="rounded-xl border border-border bg-card p-3 text-center">
-      <div className="text-2xl font-bold" style={{ color }}>
-        {value}
-      </div>
-      <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-        {label}
-      </div>
-    </div>
-  );
-}
-
-function FlowStep({
-  icon,
-  label,
-  active,
-  phaseVar,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  active: boolean;
-  phaseVar: string;
-}) {
-  return (
-    <div className="flex flex-1 flex-col items-center gap-1">
-      <div
-        className="flex h-8 w-8 items-center justify-center rounded-lg transition-all"
-        style={{
-          background: active ? `var(${phaseVar})` : "var(--secondary)",
-          color: active ? "white" : "var(--muted-foreground)",
-          boxShadow: active ? "var(--shadow-soft)" : undefined,
-        }}
-      >
-        {icon}
-      </div>
-      <div
-        className="text-[9px] font-semibold uppercase tracking-wider"
-        style={{ color: active ? `var(${phaseVar})` : "var(--muted-foreground)" }}
-      >
-        {label}
-      </div>
-    </div>
-  );
-}
-
-function Dash({ phaseVar }: { phaseVar: string }) {
-  return (
-    <div
-      className="h-px flex-1"
-      style={{ background: `oklch(from var(${phaseVar}) l c h / 0.3)` }}
-    />
-  );
-}
-
 function Activity({
   activity,
   phaseVar,
-  onOpenAsnVideo,
-  onOpenBoxVideo,
-  onOpenLabelsVideo,
+  onTriggerMedia,
 }: {
   activity: {
     title: string;
     detail?: string;
-    blocks?: { type: string; content?: string; action?: string }[];
+    blocks?: { type: string; content?: string; action?: ActionType }[];
     items?: string[];
   };
   phaseVar: string;
-  onOpenAsnVideo?: () => void;
-  onOpenBoxVideo?: () => void;
-  onOpenLabelsVideo?: () => void;
+  onTriggerMedia: (key: string) => void;
 }) {
   const [open, setOpen] = useState(true);
   const [imageModal, setImageModal] = useState<{ src: string; alt: string } | null>(null);
@@ -1398,18 +1212,9 @@ function Activity({
   const showSlackExample = activity.title === "1. Slack confirma llegada";
 
   const exampleItems: Record<string, { src: string; alt: string }> = {
-    "Llegan por mail": {
-      src: slackConfirmaLlegadaAsset,
-      alt: "Ejemplo de recepción por mail",
-    },
-    "Ya las tenes cuando te mandaron el cargamento": {
-      src: slackConfirmaLlegadaAsset,
-      alt: "Ejemplo de envío de cargamento",
-    },
-    "Las tenes que buscar en la plataforma que usa la marca": {
-      src: slackConfirmaLlegadaAsset,
-      alt: "Ejemplo de plataforma de la marca",
-    },
+    "Llegan por mail": { src: slackConfirmaLlegadaAsset, alt: "Ejemplo de recepción por mail" },
+    "Ya las tenes cuando te mandaron el cargamento": { src: slackConfirmaLlegadaAsset, alt: "Ejemplo de envío de cargamento" },
+    "Las tenes que buscar en la plataforma que usa la marca": { src: slackConfirmaLlegadaAsset, alt: "Ejemplo de plataforma de la marca" },
   };
 
   return (
@@ -1443,19 +1248,13 @@ function Activity({
                     </p>
                   );
                 }
-                if (block.type === "button") {
-                  const onClick =
-                    block.action === "asn"
-                      ? onOpenAsnVideo
-                      : block.action === "labels"
-                        ? onOpenLabelsVideo
-                        : onOpenBoxVideo;;
+                if (block.type === "button" && block.action) {
                   const Icon = block.action === "box" ? PackageOpen : ClipboardList;
                   return (
                     <button
                       key={idx}
                       className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
-                      onClick={onClick}
+                      onClick={() => onTriggerMedia(block.action!)}
                     >
                       <Icon className="h-4 w-4 text-primary" />
                       {block.content}
@@ -1626,40 +1425,6 @@ const FLOW_HOTSPOTS: {
     },
   ];
 
-
-function LabelsVideoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  if (!open) return null;
-  return (
-    <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
-      onClick={onClose}
-    >
-      <div
-        className="relative w-full max-w-3xl rounded-2xl border border-border bg-card p-3 shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          className="absolute -top-3 -right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background border border-border text-foreground shadow hover:bg-secondary transition-colors"
-          aria-label="Cerrar"
-        >
-          ×
-        </button>
-        <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
-          <iframe
-            className="h-full w-full"
-            // REEMPLAZÁ TU SRC POR ESTE EXACTAMENTE:
-            src="Video de como mandar labels"
-            title="Como enviar labels"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
   const [hovered, setHovered] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -1695,7 +1460,6 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
             draggable={false}
           />
 
-          {/* 6 hotspot columns overlayed */}
           <div className="absolute inset-0 grid grid-cols-6">
             {FLOW_HOTSPOTS.map((h) => {
               const isActive = active === h.number;
@@ -1763,7 +1527,6 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
           />
         )}
 
-        {/* Stage detail panel under image */}
         <div className="mt-6 grid gap-4 md:grid-cols-[auto_1fr_auto] md:items-center">
           <div
             className="flex h-14 w-14 items-center justify-center rounded-xl text-2xl font-bold text-white shadow-[var(--shadow-soft)] transition-colors"
@@ -1786,7 +1549,6 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
           </button>
         </div>
 
-        {/* Mobile-friendly chip nav */}
         <div className="mt-6 flex flex-wrap gap-2">
           {FLOW_HOTSPOTS.map((h) => (
             <button
@@ -1795,8 +1557,8 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
               onFocus={() => setHovered(h.number)}
               onClick={() => onJump(h.targetId)}
               className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${active === h.number
-                  ? "border-transparent text-white shadow-[var(--shadow-soft)]"
-                  : "border-border bg-card hover:bg-secondary"
+                ? "border-transparent text-white shadow-[var(--shadow-soft)]"
+                : "border-border bg-card hover:bg-secondary"
                 }`}
               style={active === h.number ? { background: `var(${h.phaseVar})` } : undefined}
             >
