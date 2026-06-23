@@ -80,7 +80,7 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio" |
   compare_tracking: { title: "ASN REPORT", type: "video", src: "https://www.youtube.com/embed/98-NbpaRlWw" },
   warehouse_camilo: { title: "Video del Warehouse - Camilo", type: "video", src: "https://www.youtube.com/embed/0MqtGJ3c_pY" },
   audio_camilo: { title: "Perspectiva de Camilo - Audio", type: "audio", src: "audio camilo" },
-  samuel_inbound: { title: "Video de Samuel", type: "video", src: "https://www.youtube.com/embed/_46d3mhvRwI" },
+  samuel_inbound: { title: "Video de Samuel", type: "video", src: "https://www.youtube.com/embed/Uu0Lnk4ikEU" },
   generic_warehouse: { title: "Video del Warehouse", type: "video", src: "https://www.youtube.com/embed/eJvWNrbTwZc?autoplay=1&rel=0" },
   recepcion_ordenes: {
     title: "Recepción de órdenes",
@@ -1048,15 +1048,7 @@ function StageAdminColumn({
           </div>
         </div>
 
-        {/* Entradas + Dependencias */}
-        <div className="grid gap-3 sm:grid-cols-2">
-          <MiniList icon={<Inbox className="h-4 w-4" />} label="Entradas" items={s.inputs} />
-          <MiniList
-            icon={<Link2 className="h-4 w-4" />}
-            label="Dependencias"
-            items={s.dependencies}
-          />
-        </div>
+        
 
         {/* Actividades */}
         <div>
