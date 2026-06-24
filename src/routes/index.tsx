@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import logisticsFlowAsset from "@/assets/proceso5411.png";
 import DependeMarca from "@/assets/DependeMarca.png";
 import heroImage from "@/assets/hero.png";
+import hero from "@/assets/hero.png";
 import slackConfirmaLlegadaAsset from "@/assets/Slack.png";
 import cajaArmada from "@/assets/cajaArmada.png";
 import pedirAprobacion from "@/assets/Autorizacion.png";
@@ -1638,6 +1639,7 @@ const FLOW_HOTSPOTS: {
 function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
   const [hovered, setHovered] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [activeModalImage, setActiveModalImage] = useState<"marca" | "envio" | null>(null);
   const active = hovered ?? 1;
   const activeHotspot = FLOW_HOTSPOTS.find((h) => h.number === active)!;
 
@@ -1697,76 +1699,45 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
                       onClick={(event) => {
                         event.stopPropagation();
                         event.preventDefault();
-                        setModalOpen(true);
+                        setActiveModalImage("marca");
                       }}
                       onKeyDown={(event) => {
                         if (event.key === "Enter" || event.key === " ") {
                           event.preventDefault();
                           event.stopPropagation();
-                          setModalOpen(true);
+                          setActiveModalImage("marca");
                         }
                       }}
                       aria-label="Depende de la Marca. Abrir modal"
-                      className="absolute left-1/2 top-60 z-10 -translate-x-1/2 flex items-center gap-2 rounded-full border border-primary/20 bg-primary px-8 py-3 text-sm font-bold text-primary-foreground whitespace-nowrap shadow-lg shadow-primary/20 transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 hover:shadow-xl hover:shadow-primary/30 active:scale-95 cursor-pointer"                    >
+                      className="absolute left-1/2 top-60 z-10 -translate-x-1/2 flex items-center gap-2 rounded-full border border-primary/20 bg-primary px-8 py-3 text-sm font-bold text-primary-foreground whitespace-nowrap shadow-lg shadow-primary/20 transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 hover:shadow-xl hover:shadow-primary/30 active:scale-95 cursor-pointer"
+                    >
                       Depende de la Marca
                     </div>
                   )}
-                  <span
-                    className="pointer-events-none absolute inset-y-0 left-0 w-px opacity-30"
-                    style={{ background: `var(${h.phaseVar})` }}
-                  />
-                  <span
-                    className={`pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full px-2 py-0.5 text-[10px] font-bold text-white transition-opacity ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                      }`}
-                    style={{ background: `var(${h.phaseVar})` }}
-                  >
-                    Ver paso {h.number} →
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-           <div className="absolute inset-0 grid grid-cols-6">
-            {FLOW_HOTSPOTS.map((h) => {
-              const isActive = active === h.number;
-              return (
-                <button
-                  key={h.number}
-                  type="button"
-                  onMouseEnter={() => setHovered(h.number)}
-                  onMouseLeave={() => setHovered(null)}
-                  onFocus={() => setHovered(h.number)}
-                  onBlur={() => setHovered(null)}
-                  onClick={() => onJump(h.targetId)}
-                  aria-label={`Etapa ${h.number}: ${h.title}. Ir a la sección`}
-                  className="group relative cursor-pointer transition-colors"
-                  style={{
-                    background: isActive
-                      ? `linear-gradient(180deg, color-mix(in oklch, var(${h.phaseVar}) 18%, transparent), transparent 70%)`
-                      : "transparent",
-                  }}
-                >
-                  {h.number === 4 && (
+
+                  {h.number === 1 && (
                     <div
                       role="button"
                       tabIndex={0}
                       onClick={(event) => {
                         event.stopPropagation();
                         event.preventDefault();
-                        setModalOpen(true);
+                        setActiveModalImage("envio");
                       }}
                       onKeyDown={(event) => {
                         if (event.key === "Enter" || event.key === " ") {
                           event.preventDefault();
                           event.stopPropagation();
-                          setModalOpen(true);
+                          setActiveModalImage("envio");
                         }
                       }}
-                      aria-label="Depende de la Marca. Abrir modal"
-                      className="absolute left-1/2 top-60 z-10 -translate-x-1/2 flex items-center gap-2 rounded-full border border-primary/20 bg-primary px-8 py-3 text-sm font-bold text-primary-foreground whitespace-nowrap shadow-lg shadow-primary/20 transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 hover:shadow-xl hover:shadow-primary/30 active:scale-95 cursor-pointer"                    >
-                      Depende de la Marca
+                      aria-label="La marca envía un cargamento. Abrir modal"
+                      className="absolute left-1/2 top-63 z-10 -translate-x-1/2 flex items-center gap-2 rounded-full border border-primary/20 bg-primary px-8 py-3 text-sm font-bold text-primary-foreground whitespace-nowrap shadow-lg shadow-primary/20 transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 hover:shadow-xl hover:shadow-primary/30 active:scale-95 cursor-pointer"
+                    >
+                      Comunicación
                     </div>
                   )}
+
                   <span
                     className="pointer-events-none absolute inset-y-0 left-0 w-px opacity-30"
                     style={{ background: `var(${h.phaseVar})` }}
@@ -1784,12 +1755,16 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
           </div>
         </div>
 
-        {modalOpen && (
+        {activeModalImage && (
           <ImageModal
-            open={modalOpen}
-            onClose={() => setModalOpen(false)}
-            src={DependeMarca}
-            alt="Depende de la Marca"
+            open={!!activeModalImage}
+            onClose={() => setActiveModalImage(null)}
+            src={activeModalImage === "marca" ? DependeMarca : hero}
+            alt={
+              activeModalImage === "marca"
+                ? "Depende de la Marca"
+                : "La marca envía un cargamento"
+            }
           />
         )}
 
