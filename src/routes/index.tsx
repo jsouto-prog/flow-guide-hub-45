@@ -114,6 +114,11 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio" |
     type: "image",
     src: pedirAprobacion
   },
+  Video_operativo_outbound: {
+    title: "Video_operativo_outbound",
+    type: "video",
+    src: "URL_DEL_VIDEO_O_GUIA" // Video operativo outbound
+  },
 };
 
 const STAGES: Stage[] = [
@@ -240,7 +245,7 @@ const STAGES: Stage[] = [
           },
           {
             type: "text",
-            content: "Finalizada la verificación, la orden se carga en Mintsoft utilizando el template SOL X TEST para su correcta gestión y seguimiento."
+            content: "SE CARGAN LAS ORDENES EN MINTSOFT"
           },
           {
             type: "button",
@@ -370,7 +375,7 @@ const STAGES: Stage[] = [
     outputs: ["Órdenes clasificadas y listas para cargar"],
     dependencies: ["Stock disponible (Gestión de Stock)"],
     warehouse:
-      "1. El warehouse entiende qué órdenes preparar, qué productos buscar y si deben rearmar cajas o despachar directo.",
+      "1. El warehouse entiende qué órdenes preparar, qué productos buscar y si deben rearmar cajas o despachar directo.", 
     critical: ["Identificar correctamente Cross Dock vs Pick & Pack"],
     phaseVar: "--phase-4",
   },
@@ -1253,7 +1258,7 @@ function StageWarehouseColumn({
               {/* Ejemplo: Si querés disparar un video o audio de esta etapa */}
               <button
                 type="button"
-                onClick={() => onTriggerMedia("tu_recurso_multimedia_aca")}
+                onClick={() => onTriggerMedia("Video_operativo_outbound")}
                 className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{
                   background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
@@ -1666,6 +1671,62 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
           />
 
           <div className="absolute inset-0 grid grid-cols-6">
+            {FLOW_HOTSPOTS.map((h) => {
+              const isActive = active === h.number;
+              return (
+                <button
+                  key={h.number}
+                  type="button"
+                  onMouseEnter={() => setHovered(h.number)}
+                  onMouseLeave={() => setHovered(null)}
+                  onFocus={() => setHovered(h.number)}
+                  onBlur={() => setHovered(null)}
+                  onClick={() => onJump(h.targetId)}
+                  aria-label={`Etapa ${h.number}: ${h.title}. Ir a la sección`}
+                  className="group relative cursor-pointer transition-colors"
+                  style={{
+                    background: isActive
+                      ? `linear-gradient(180deg, color-mix(in oklch, var(${h.phaseVar}) 18%, transparent), transparent 70%)`
+                      : "transparent",
+                  }}
+                >
+                  {h.number === 4 && (
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        setModalOpen(true);
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          setModalOpen(true);
+                        }
+                      }}
+                      aria-label="Depende de la Marca. Abrir modal"
+                      className="absolute left-1/2 top-60 z-10 -translate-x-1/2 flex items-center gap-2 rounded-full border border-primary/20 bg-primary px-8 py-3 text-sm font-bold text-primary-foreground whitespace-nowrap shadow-lg shadow-primary/20 transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 hover:shadow-xl hover:shadow-primary/30 active:scale-95 cursor-pointer"                    >
+                      Depende de la Marca
+                    </div>
+                  )}
+                  <span
+                    className="pointer-events-none absolute inset-y-0 left-0 w-px opacity-30"
+                    style={{ background: `var(${h.phaseVar})` }}
+                  />
+                  <span
+                    className={`pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full px-2 py-0.5 text-[10px] font-bold text-white transition-opacity ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                      }`}
+                    style={{ background: `var(${h.phaseVar})` }}
+                  >
+                    Ver paso {h.number} →
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+           <div className="absolute inset-0 grid grid-cols-6">
             {FLOW_HOTSPOTS.map((h) => {
               const isActive = active === h.number;
               return (
