@@ -78,7 +78,7 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio" |
   box: { title: "Cómo crear una caja", type: "video", src: "https://www.youtube.com/embed/doRO4KPgpFo?autoplay=1&rel=0" },
   tracker: { title: "Explicación de Tracker", type: "video", src: "video de tracker" },
   labels: { title: "Cómo Enviar labels", type: "video", src: "https://www.youtube.com/embed/Ox7jbakLZK8" },
-  compare_tracking: { title: "ASN REPORT", type: "video", src: "https://www.youtube.com/embed/98-NbpaRlWw" },
+  compare_tracking: { title: "ASN REPORT", type: "video", src: "https://www.youtube.com/embed/HiEPR1qTa6E" }, 
   warehouse_camilo: { title: "Video del Warehouse - Camilo", type: "video", src: "https://www.youtube.com/embed/0MqtGJ3c_pY" },
   audio_camilo: { title: "Perspectiva de Camilo - Audio", type: "audio", src: "audio camilo" },
   samuel_inbound: { title: "Video de Samuel", type: "video", src: "https://www.youtube.com/embed/Uu0Lnk4ikEU" },
@@ -379,104 +379,6 @@ const STAGES: Stage[] = [
       "1. El warehouse entiende qué órdenes preparar, qué productos buscar y si deben rearmar cajas o despachar directo.", 
     critical: ["Identificar correctamente Cross Dock vs Pick & Pack"],
     phaseVar: "--phase-4",
-  },
-  {
-    id: "ordenes-mintsoft",
-    number: 4,
-    name: "Órdenes en Mintsoft",
-    short: "Carga formal de órdenes",
-    objective: "Cargar formalmente las órdenes en Mintsoft para que el warehouse pueda verlas.",
-    responsible: "Equipo Outbound",
-    inputs: ["Packing list outbound", "Template de Sol"],
-    activities: [
-      {
-        title: "1. Upload New Order",
-        items: ["Ruta: Orders → Upload New Order"],
-      },
-      { title: "2. Selección de cliente" },
-      { title: "3. Template de Sol" },
-      { title: "4. Channel", items: ["Major", "Boutique"] },
-      {
-        title: "Estados de órdenes (en el Excel tracker)",
-        items: ["Entered", "Packing", "Packed", "Routed", "Shipped"],
-      },
-    ],
-    docs: ["Template de Sol", "Tracker Excel"],
-    outputs: ["Orden cargada y visible en Mintsoft"],
-    dependencies: ["Outbound (clasificación lista)"],
-    warehouse: "La orden aparece en el sistema y el warehouse puede verla y prepararla.",
-    phaseVar: "--phase-5",
-  },
-  {
-    id: "stock",
-    number: 5,
-    name: "Gestión de Stock",
-    short: "Validación de inventario real",
-    objective: "Verificar que el stock esté correctamente ubicado y alocado en el sistema.",
-    responsible: "Equipo Stock + Warehouse (Samu)",
-    inputs: ["Orden cargada in Mintsoft"],
-    activities: [
-      {
-        title: "Estado NEW",
-        detail: "Stock asignado correctamente — todo listo para preparar.",
-        items: ["Los productos ya están ubicados en estanterías", "El sistema puede encontrarlos"],
-      },
-      {
-        title: "Estado ONBACKORDER",
-        detail:
-          "El stock existe físicamente PERO no está ubicado correctamente — el sistema no puede alocarlo.",
-        items: [
-          "Acción: contactar warehouse (Samu)",
-          "Ubicar cajas físicamente",
-          "Registrar posiciones",
-          "Hacer Reprocess manual",
-        ],
-      },
-    ],
-    docs: ["Reporte de stock por orden"],
-    outputs: ["Stock alocado y listo para batch"],
-    dependencies: ["Órdenes en Mintsoft"],
-    warehouse:
-      "Mueven cajas, las registran en picking shelves y actualizan la ubicación para que Mintsoft pueda alocar el stock.",
-    critical: ["ONBACKORDER bloquea la preparación hasta hacer Reprocess manual"],
-    phaseVar: "--phase-6",
-  },
-  {
-    id: "batches",
-    number: 6,
-    name: "Batches y Preparación",
-    short: "Liberación para armado físico",
-    objective:
-      "Crear batches significa mandar las órdenes a armar: le decimos al warehouse 'empiecen a preparar, busquen productos y armen físicamente los pedidos'.",
-    responsible: "Equipo Outbound + Warehouse",
-    inputs: ["Stock en estado NEW"],
-    activities: [
-      {
-        title: "1. Create Batch",
-        items: ["Ruta: Orders → Overview → Create Batch"],
-      },
-      {
-        title: "2. Reglas de agrupación",
-        items: ["Boutique: máximo 5 órdenes", "Major: 1 orden por batch"],
-      },
-      {
-        title: "3. Picking Types",
-        items: ["Bulk Paperless — 1 sola orden", "Multi Tote — múltiples órdenes"],
-      },
-      {
-        title: "4. Print Batch PDF",
-        items: ["Packing instructions", "Picking summary"],
-      },
-      { title: "5. Mail al warehouse", detail: "Envío del PDF operativo." },
-      { title: "6. Estado tracker", items: ["Packing"] },
-    ],
-    docs: ["Batch PDF", "Packing instructions", "Picking summary"],
-    outputs: ["Pedidos físicamente armados y etiquetados, listos para shipping"],
-    dependencies: ["Gestión de Stock (estado NEW)"],
-    warehouse:
-      "Los operarios imprimen el batch, buscan productos, arman cajas, etiquetan y dejan pedidos listos para shipping.",
-    critical: ["Respetar reglas de agrupación (Boutique 5 / Major 1)"],
-    phaseVar: "--phase-7",
   },
   {
     id: "shipping",
@@ -806,9 +708,6 @@ function Index() {
                   >
                     <div className="flex flex-wrap items-start justify-between gap-4 text-white">
                       <div>
-                        <div className="text-xs font-semibold uppercase tracking-wider opacity-80">
-                          Etapa {s.number} de {STAGES.length}
-                        </div>
                         <h2 className="mt-1 text-3xl font-bold md:text-4xl">{s.name}</h2>
                         <p className="mt-2 text-base opacity-90">{s.short}</p>
                       </div>
