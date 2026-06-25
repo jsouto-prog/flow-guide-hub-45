@@ -47,7 +47,7 @@ export const Route = createFileRoute("/")({
 });
 
 // Definición de tipos para soportar acciones multimedia específicas
-type ActionType = "asn" | "box" | "labels" | "tracker" | "compare_tracking" | "recepcion_ordenes" | "cargar_orden_mintsoft" | "mandar_a_armar_orden" | "caja_armada_ejemplo" | "explicacion_ups_tracker" | "ejemplo_autorizacion";
+type ActionType = "asn" | "box" | "labels" | "tracker" | "compare_tracking" | "recepcion_ordenes" | "cargar_orden_mintsoft" | "mandar_a_armar_orden" | "caja_armada_ejemplo" | "explicacion_ups_tracker" | "ejemplo_autorizacion" | "crossDockGuide";;
 
 type Stage = {
   id: string;
@@ -119,6 +119,11 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio" |
     title: "Video_operativo_outbound",
     type: "video",
     src: "URL_DEL_VIDEO_O_GUIA" // Video operativo outbound
+  },
+  crossDockGuide: {
+    title: "Guía de Cross Dock",
+    type: "video",
+    src: "https://app.notion.com/p/Armado-de-Ordenes-3183d576fa0280848566d0081bb6b3cc",
   },
 };
 
@@ -213,6 +218,10 @@ const STAGES: Stage[] = [
           },
           {
             type: "text",
+            content: "• Migradas desde otras plataformas o sistemas integrados (por ejemplo Shipstation) la marca o sistemas externos conectados."
+          },
+          {
+            type: "text",
             content: "Una vez recibidas, todas las órdenes deben ingresarse en el Tracker para realizar su seguimiento operativo."
           },
           {
@@ -239,6 +248,10 @@ const STAGES: Stage[] = [
           {
             type: "text",
             content: "• Cross Dock: ingreso y despacho inmediato de la mercadería."
+          },
+          {
+            type: "button",
+            action: "crossDockGuide"
           },
           {
             type: "text",
