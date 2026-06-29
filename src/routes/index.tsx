@@ -5,6 +5,7 @@ import DependeMarca from "@/assets/DependeMarca.png";
 import heroImage from "@/assets/hero.png";
 import hero from "@/assets/hero.png";
 import slackConfirmaLlegadaAsset from "@/assets/Slack.png";
+import racks from "@/assets/racks.png";
 import cajaArmada from "@/assets/cajaArmada.png";
 import pedirAprobacion from "@/assets/Autorizacion.png";
 import {
@@ -1169,7 +1170,7 @@ function StageWarehouseColumn({
                 type="button"
                 onClick={() =>
                   setImageModal({
-                    src: slackConfirmaLlegadaAsset,
+                    src: racks,
                     alt: "Ejemplo de confirmación en Slack",
                   })
                 }
