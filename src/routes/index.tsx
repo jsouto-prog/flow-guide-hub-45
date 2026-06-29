@@ -251,7 +251,8 @@ const STAGES: Stage[] = [
           },
           {
             type: "button",
-            action: "crossDockGuide"
+            action: "crossDockGuide",
+            content: "Ver Guía de Cross Dock"
           },
           {
             type: "text",
@@ -274,13 +275,12 @@ const STAGES: Stage[] = [
         blocks: [
           {
             type: "text",
-            content:
-              "Mandar a armar una orden significa que se debe solicitar al warehouse que prepare y arme la caja correspondiente a la orden. Una vez finalizado el armado, el warehouse enviará una fotografía donde se visualizan las medidas de la caja."
+            content: 'Mandar a armar una orden significa solicitar al warehouse que prepare el pedido recibido por parte de la marca. Hay que cargar la orden en Mintsoft utilizando un template llamado <a href="TU_LINK_DE_GOOGLE_SHEETS_AQUI" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: underline; font-weight: 500;">SOL X TEST</a>. Una vez finalizado el armado, el warehouse enviará una fotografía donde se visualizan las medidas de la caja.'
           },
           {
             type: "text",
             content:
-              "Las órdenes de Boutique y Major tienen procesos distintos y es importante respetar las reglas de armado."
+              "Las órdenes de Boutique y Major es exactamente el mismo en ambos casos. La principal diferencia se encuentra en la etapa previa al packing, ya que la preparación de los productos antes de su empaquetado cambia de manera significativa según el tipo de orden."
           },
           {
             type: "text",
@@ -1160,6 +1160,24 @@ function StageWarehouseColumn({
                 <Play className="h-4 w-4 fill-current" />
                 Video de Samuel
               </button>
+              
+              <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">
+                3. Luego de que Samuel termina de escanear la mercadería se agrupa en RS TRANSIT para luego darse locación en su correspondiente Rack/ bin.
+              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setImageModal({
+                    src: slackConfirmaLlegadaAsset,
+                    alt: "Ejemplo de confirmación en Slack",
+                  })
+                }
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-3 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <ScanLine className="h-4 w-4 text-primary" />
+                PLANO DEL WAREHOUSE DE LOS RACKS
+              </button>
             </div>
           )}
           {s.id === "outbound" && ( //ACA EDITAR OUTBOUND WAREHOUSE
@@ -1361,14 +1379,26 @@ function Activity({
               {activity.blocks.map((block, idx) => {
                 if (block.type === "text") {
                   return (
-                    <p key={idx} className="text-sm leading-relaxed text-muted-foreground">
-                      {block.content}
-                    </p>
+                    
+                    <p
+                      key={idx}
+                      className="text-sm leading-relaxed text-muted-foreground"
+                      dangerouslySetInnerHTML={{ __html: block.content || "" }} // <-- Esto procesa el HTML de forma segura
+                    />
                   );
                 }
                 if (block.type === "button" && block.action) {
                   const currentResource = MEDIA_RESOURCES[block.action];
                   const resourceType = currentResource ? currentResource.type : undefined;
+                  const handleClick = () => {
+                    if (block.action === "crossDockGuide") {
+                      // Abre Notion en una pestaña nueva directamente
+                      window.open(MEDIA_RESOURCES.crossDockGuide.src, "_blank");
+                    } else {
+                      // Sigue abriendo el modal multimedia para el resto de videos/audios
+                      onTriggerMedia(block.action!);
+                    }
+                  };
                   const Icon = block.action === "box" ? PackageOpen
                     : resourceType === "image"
                       ? ScanLine
@@ -1377,7 +1407,13 @@ function Activity({
                     <button
                       key={idx}
                       className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
-                      onClick={() => onTriggerMedia(block.action!)}
+                      onClick={() => {
+                        if (block.action === "crossDockGuide") {
+                          window.open(MEDIA_RESOURCES.crossDockGuide.src, "_blank", "noopener,noreferrer");
+                        } else {
+                          onTriggerMedia(block.action!);
+                        }
+                      }}
                     >
                       <Icon className="h-4 w-4 text-primary" />
                       {block.content}
