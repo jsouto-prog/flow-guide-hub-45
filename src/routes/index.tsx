@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import logisticsFlowAsset from "@/assets/proceso5411.png";
 import DependeMarca from "@/assets/DependeMarca.png";
-import heroImage from "@/assets/hero.png";
-import hero from "@/assets/hero.png";
+import warehouseBg from "@/assets/Warehouse.png";
+import hero from "@/assets/Comunicacion.png";
 import slackConfirmaLlegadaAsset from "@/assets/Slack.png";
 import racks from "@/assets/racks.png";
 import cajaArmada from "@/assets/cajaArmada.png";
@@ -561,7 +561,18 @@ function Index() {
       </div>
 
       {/* Hero */}
-      <header className="relative overflow-hidden border-b border-border">
+      <header className="relative overflow-hidden border-b border-border bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `linear-gradient(to right, oklch(0.97 0.015 240 / 0.92) 40%, oklch(0.87 0.010 240 / 0.25) 100%), url(${warehouseBg})`
+        }}>
+        {/* Capa de ruido o gradiente extra opcional para mejorar contraste */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 20% 30%, oklch(0.6 0.2 270 / 0.05), transparent 50%)",
+          }}
+        />
         <div
           className="absolute inset-0 opacity-20"
           style={{ background: "var(--gradient-hero)" }}
@@ -574,13 +585,6 @@ function Index() {
           }}
         />
         <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-28">
-          {/* Floating hero image */}
-          <img
-            src={heroImage}
-            alt="Flujo logístico 5411"
-            className="pointer-events-none hidden lg:block absolute right-6 top-40 w-[46%] max-w-[640px] h-auto select-none"
-            style={{ mixBlendMode: "multiply" }}
-          />
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs font-medium backdrop-blur">
             <span className="h-2 w-2 rounded-full" style={{ background: "var(--phase-4)" }} />
             Proceso Operativo Logístico
@@ -600,7 +604,7 @@ function Index() {
           </p>
           {/* Inline image for mobile/tablet */}
           <img
-            src={heroImage}
+            src={warehouseBg}
             alt="Flujo logístico 5411"
             className="mt-8 block lg:hidden w-full max-w-2xl h-auto select-none"
             style={{ mixBlendMode: "multiply" }}
