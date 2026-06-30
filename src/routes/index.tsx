@@ -8,6 +8,7 @@ import slackConfirmaLlegadaAsset from "@/assets/Slack.png";
 import racks from "@/assets/racks.png";
 import cajaArmada from "@/assets/cajaArmada.png";
 import pedirAprobacion from "@/assets/Autorizacion.png";
+import warehouseVideo from "@/assets/WarehouseVideo.mp4";
 import {
   ClipboardList,
   Warehouse,
@@ -190,7 +191,7 @@ const STAGES: Stage[] = [
   },
   {
     id: "outbound",
-    number: 3,
+    number: 2,
     name: "Outbound",
     short: "Preparación de órdenes de salida",
     objective:
@@ -396,7 +397,7 @@ const STAGES: Stage[] = [
   },
   {
     id: "shipping",
-    number: 7,
+    number: 3,
     name: "Shipping y Returns",
     short: "Despacho, freight y devoluciones",
     objective:
@@ -561,34 +562,44 @@ function Index() {
       </div>
 
       {/* Hero */}
-      <header className="relative overflow-hidden border-b border-border bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `linear-gradient(to right, oklch(0.97 0.015 240 / 0.92) 40%, oklch(0.87 0.010 240 / 0.25) 100%), url(${warehouseBg})`
-        }}>
-        {/* Capa de ruido o gradiente extra opcional para mejorar contraste */}
+      {/* Hero con Video de Fondo */}
+      <header className="relative overflow-hidden border-b border-border min-h-[500px]">
+        {/* 1. La etiqueta de video posicionada por detrás */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover z-0"
+        >
+          <source src={warehouseVideo} type="video/mp4" />
+          Tu navegador no soporta videos.
+        </video>
+
+        {/* 2. La capa de gradiente (ahora va como un div absoluto encima del video y debajo del texto) */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-0 z-10 pointer-events-none"
+          style={{
+            backgroundImage: `linear-gradient(to right, oklch(0.97 0.015 240 / 0.85) 35%, oklch(0.97 0.015 240 / 0.3) 100%)`
+          }}
+        />
+
+        {/* Capa de ruido o gradiente extra radial opcional */}
+        <div
+          className="absolute inset-0 pointer-events-none z-10"
           style={{
             backgroundImage:
               "radial-gradient(circle at 20% 30%, oklch(0.6 0.2 270 / 0.05), transparent 50%)",
           }}
         />
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{ background: "var(--gradient-hero)" }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 20% 30%, oklch(0.6 0.2 270 / 0.15), transparent 50%), radial-gradient(circle at 80% 70%, oklch(0.7 0.18 50 / 0.12), transparent 50%)",
-          }}
-        />
-        <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-28">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs font-medium backdrop-blur">
+
+        {/* 3. El contenido del texto principal (importante el z-20 para que quede arriba de todo) */}
+        <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-28 z-20">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-1 text-xs font-medium backdrop-blur">
             <span className="h-2 w-2 rounded-full" style={{ background: "var(--phase-4)" }} />
             Proceso Operativo Logístico
           </div>
+
           <h1 className="mt-6 text-5xl font-bold tracking-tight md:text-7xl">
             Proceso{" "}
             <span
@@ -598,17 +609,12 @@ function Index() {
               5411
             </span>
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl">
+
+          <p className="mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl font-medium">
             Guía interactiva de principio a fin: desde el aviso del cliente hasta el despacho y las
             devoluciones.
           </p>
-          {/* Inline image for mobile/tablet */}
-          <img
-            src={warehouseBg}
-            alt="Flujo logístico 5411"
-            className="mt-8 block lg:hidden w-full max-w-2xl h-auto select-none"
-            style={{ mixBlendMode: "multiply" }}
-          />
+
           <div className="mt-10 flex flex-wrap gap-3">
             <button
               onClick={() => scrollTo(STAGES[0].id)}
@@ -625,16 +631,16 @@ function Index() {
             </a>
           </div>
 
-          {/* Phase pills */}
+          {/* Pastillas de las fases (Inbound, Outbound, etc.) */}
           <div
-            className="mt-24 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8"
-            style={{ marginTop: "calc(6rem + 100px)" }}
+            className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8"
+            style={{ marginTop: "6rem" }}
           >
             {STAGES.filter((s) => s.id !== "control-arribo").map((s) => (
               <button
                 key={s.id}
                 onClick={() => scrollTo(s.id)}
-                className="group rounded-xl border border-border bg-card p-3 text-left transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-soft)]"
+                className="group rounded-xl border border-border bg-card/90 backdrop-blur-sm p-3 text-left transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-soft)]"
               >
                 <div
                   className="mb-2 inline-flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold text-white"
