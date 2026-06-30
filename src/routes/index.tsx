@@ -1348,6 +1348,7 @@ function Activity({
   onTriggerMedia: (key: string) => void;
 }) {
   const [open, setOpen] = useState(true);
+  const [openFineline, setOpenFineline] = useState(false);
   const [imageModal, setImageModal] = useState<{ src: string; alt: string } | null>(null);
   const hasBody = activity.detail || activity.items?.length || activity.blocks?.length;
   const showSlackExample = activity.title === "1. Slack confirma llegada";
@@ -1377,68 +1378,147 @@ function Activity({
       {hasBody && open && (
         <div className="border-t border-border px-4 py-3">
           {activity.detail && (
-            <p className="text-sm leading-relaxed text-muted-foreground">{activity.detail}</p>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              {activity.detail}
+            </p>
           )}
+
           {activity.blocks && (
             <div className="space-y-3">
               {activity.blocks.map((block, idx) => {
                 if (block.type === "text") {
                   return (
-                    
                     <p
                       key={idx}
                       className="text-sm leading-relaxed text-muted-foreground"
-                      dangerouslySetInnerHTML={{ __html: block.content || "" }} // <-- Esto procesa el HTML de forma segura
+                      dangerouslySetInnerHTML={{ __html: block.content || "" }}
                     />
                   );
                 }
+
                 if (block.type === "button" && block.action) {
-                  const currentResource = MEDIA_RESOURCES[block.action];
-                  const resourceType = currentResource ? currentResource.type : undefined;
-                  const handleClick = () => {
-                    if (block.action === "crossDockGuide") {
-                      // Abre Notion en una pestaña nueva directamente
-                      window.open(MEDIA_RESOURCES.crossDockGuide.src, "_blank");
-                    } else {
-                      // Sigue abriendo el modal multimedia para el resto de videos/audios
-                      onTriggerMedia(block.action!);
-                    }
-                  };
-                  const Icon = block.action === "box" ? PackageOpen
-                    : resourceType === "image"
-                      ? ScanLine
-                      : ClipboardList;
+                  const action = block.action;
+
+                  const currentResource = MEDIA_RESOURCES[action];
+                  const resourceType = currentResource
+                    ? currentResource.type
+                    : undefined;
+
+                  const Icon =
+                    block.action === "box"
+                      ? PackageOpen
+                      : resourceType === "image"
+                        ? ScanLine
+                        : ClipboardList;
+
                   return (
-                    <button
-                      key={idx}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
-                      onClick={() => {
-                        if (block.action === "crossDockGuide") {
-                          window.open(MEDIA_RESOURCES.crossDockGuide.src, "_blank", "noopener,noreferrer");
-                        } else {
-                          onTriggerMedia(block.action!);
-                        }
-                      }}
-                    >
-                      <Icon className="h-4 w-4 text-primary" />
-                      {block.content}
-                    </button>
+                    <div key={idx} className="space-y-3">
+                      {activity.title === "Mandar a armar las órdenes" &&
+                        action === "mandar_a_armar_orden" && (
+                          <div className="rounded-xl border border-border bg-secondary/20 overflow-hidden">
+                            <button
+                              onClick={() => setOpenFineline(!openFineline)}
+                              className="flex w-full items-center justify-between px-4 py-3 text-left font-semibold hover:bg-secondary/40 transition-colors"
+                            >
+                              <span>🏷️ Información sobre Fineline (Solo Majors)</span>
+
+                              <span
+                                className={`transition-transform ${openFineline ? "rotate-90" : ""
+                                  }`}
+                              >
+                                ›
+                              </span>
+                            </button>
+
+                            {openFineline && (
+                              <div className="border-t border-border p-4 space-y-4 text-sm text-muted-foreground">
+                                <p className="leading-relaxed">
+                                  La mayoría de las órdenes <strong>Major</strong>{" "}
+                                  requieren <strong>reetiquetado (Fineline)</strong>.
+                                  Esto significa que el warehouse debe reemplazar las
+                                  etiquetas originales de la mercadería por las
+                                  etiquetas solicitadas por la marca. Estas deben
+                                  contener el barcode y toda la información requerida
+                                  por el cliente.
+                                </p>
+
+                                <div>
+                                  <h4 className="font-semibold text-foreground mb-2">
+                                    Antes de comenzar el proceso verificar:
+                                  </h4>
+
+                                  <ul className="space-y-2 list-disc pl-5">
+                                    <li>Si la orden requiere o no Fineline.</li>
+
+                                    <li>
+                                      Que las etiquetas Fineline ya hayan sido
+                                      recibidas en el warehouse.
+                                    </li>
+
+                                    <li>Si la orden requiere Hangers.</li>
+                                  </ul>
+                                </div>
+
+                                <div className="rounded-lg border border-yellow-300 bg-yellow-50 p-4">
+                                  <h4 className="font-semibold text-yellow-900 mb-2">
+                                    Importante
+                                  </h4>
+
+                                  <p className="text-yellow-900 leading-relaxed">
+                                    Las etiquetas Fineline pueden ser enviadas por la
+                                    marca o adquiridas por nuestro equipo.
+                                    Independientemente de quién las provea, es
+                                    fundamental anticipar su gestión para que, cuando la
+                                    mercadería llegue al warehouse, las etiquetas ya se
+                                    encuentren disponibles.
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                      <button
+                        className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
+                        onClick={() => {
+                          if (action === "crossDockGuide") {
+                            window.open(
+                              MEDIA_RESOURCES.crossDockGuide.src,
+                              "_blank",
+                              "noopener,noreferrer"
+                            );
+                          } else {
+                            onTriggerMedia(action);
+                          }
+                        }}
+                      >
+                        <Icon className="h-4 w-4 text-primary" />
+                        {block.content}
+                      </button>
+                    </div>
                   );
                 }
+
                 return null;
               })}
             </div>
           )}
+
           {activity.items && (
             <ul className="mt-2 space-y-1.5">
               {activity.items.map((it, i) => {
                 const itemExample = exampleItems[it];
+
                 return (
-                  <li key={i} className="flex items-start justify-between gap-3 text-sm">
+                  <li
+                    key={i}
+                    className="flex items-start justify-between gap-3 text-sm"
+                  >
                     <div className="flex min-w-0 items-start gap-2">
                       <span className="mt-1 text-primary">•</span>
                       <span className="min-w-0 break-words">{it}</span>
                     </div>
+
                     {itemExample && (
                       <button
                         type="button"
@@ -1453,6 +1533,7 @@ function Activity({
               })}
             </ul>
           )}
+
           {showSlackExample && (
             <button
               onClick={() =>
