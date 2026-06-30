@@ -9,6 +9,7 @@ import racks from "@/assets/racks.png";
 import cajaArmada from "@/assets/cajaArmada.png";
 import pedirAprobacion from "@/assets/Autorizacion.png";
 import warehouseVideo from "@/assets/WarehouseVideo.mp4";
+import ordenEjemplo from "@/assets/orden.png";
 import {
   ClipboardList,
   Warehouse,
@@ -31,13 +32,13 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Proceso 5411 — Guía Interactiva Logística" },
+      { title: "Onboarding 5411 — Guía Interactiva Logística" },
       {
         name: "description",
         content:
           "Guía interactiva del proceso operativo logístico 5411: inbound, outbound, shipping y returns paso a paso.",
       },
-      { property: "og:title", content: "Proceso 5411 — Guía Interactiva" },
+      { property: "og:title", content: "Onboarding 5411 — Guía Interactiva" },
       {
         property: "og:description",
         content:
@@ -88,8 +89,8 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio" |
   generic_warehouse: { title: "Video del Warehouse", type: "video", src: "https://www.youtube.com/embed/eJvWNrbTwZc?autoplay=1&rel=0" },
   recepcion_ordenes: {
     title: "Recepción de órdenes",
-    type: "video",
-    src: "URL_DEL_VIDEO_O_GUIA"
+    type: "image",
+    src: ordenEjemplo
   },
 
   cargar_orden_mintsoft: {
@@ -122,6 +123,11 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio" |
     title: "Video_operativo_outbound",
     type: "video",
     src: "https://www.youtube.com/embed/5ZhUPymlAzc" // Video operativo outbound
+  },
+  Armar_Caja: {
+    title: "Armar_Caja",
+    type: "video",
+    src: "https://www.youtube.com/embed/37yqiN-ceG4" // Video operativo outbound
   },
   crossDockGuide: {
     title: "Guía de Cross Dock",
@@ -230,7 +236,7 @@ const STAGES: Stage[] = [
           {
             type: "button",
             action: "recepcion_ordenes",
-            content: "Ver recepción de órdenes"
+            content: "Ejemplo de recepción de órdenes"
           },
           {
             type: "text",
@@ -283,52 +289,7 @@ const STAGES: Stage[] = [
           {
             type: "text",
             content:
-              "Las órdenes de Boutique y Major es exactamente el mismo en ambos casos. La principal diferencia se encuentra en la etapa previa al packing, ya que la preparación de los productos antes de su empaquetado cambia de manera significativa según el tipo de orden."
-          },
-          {
-            type: "text",
-            content:
-              "BOUTIQUES"
-          },
-          {
-            type: "text",
-            content:
-              "• Crear batches de hasta 50 unidades o 5 órdenes."
-          },
-          {
-            type: "text",
-            content:
-              "• Utilizar como referencia: 'Boutique - Fecha de hoy'."
-          },
-          {
-            type: "text",
-            content:
-              "• Si una orden tiene prioridad sobre otra, crearla en un batch separado y avisar la prioridad al warehouse."
-          },
-          {
-            type: "text",
-            content:
-              "MAJORS"
-          },
-          {
-            type: "text",
-            content:
-              "• Crear 1 batch por orden."
-          },
-          {
-            type: "text",
-            content:
-              "• Si la orden tiene stores, incluir hasta 2 stores por batch."
-          },
-          {
-            type: "text",
-            content:
-              "• Utilizar como referencia: 'MAJOR - #PO'."
-          },
-          {
-            type: "text",
-            content:
-              "Recordatorio: Anotar en el Tracker que la orden entro a Mintsoft"
+              "El proceso de pickeo de las órdenes es exactamente el mismo en ambos casos. La principal diferencia se encuentra en la etapa previa al packing, ya que la preparación de los productos antes de su empaquetado cambia de manera significativa según el tipo de orden."
           },
           {
             type: "button",
@@ -343,7 +304,7 @@ const STAGES: Stage[] = [
           {
             type: "text",
             content:
-              "Cuando se solicita 'sacá esta orden', significa que la orden ya fue preparada por el warehouse y se encuentra lista para ser despachada a su destino correspondiente, ya sea una Boutique o un Major."
+              "Una vez que una orden se encuentra en estado <strong>PACKED</strong>, significa que el pedido ya fue procesado por el warehouse (pickeo y packeo) y está listo para ser despachado."
           },
           {
             type: "text",
@@ -354,6 +315,70 @@ const STAGES: Stage[] = [
             type: "button",
             action: "caja_armada_ejemplo",
             content: "Caja armada - Ejemplo"
+          },
+          {
+            type: "text",
+            content:
+              "<strong>Órdenes de Boutique con 1 sola caja</strong>"
+          },
+          {
+            type: "text",
+            content:
+              "• Si la orden está aprobada para salir, el warehouse (Nairobis) se encarga de generar la etiqueta (label) de UPS."
+          },
+          {
+            type: "text",
+            content:
+              "• Si la orden no está aprobada para salir, el warehouse (Nairobis) deja la caja preparada e identificada con un sticker rojo, quedando en espera hasta recibir la autorización de despacho."
+          },
+          {
+            type: "text",
+            content:
+              "<strong>Importante:</strong> Al cargar la orden en Mintsoft se debe indicar esta condición (<strong>No aprobada para salir</strong>) en el campo <strong>Packing Notes</strong>."
+          },
+
+          {
+            type: "text",
+            content:
+              "<strong>Órdenes de Major con 1 sola caja</strong>"
+          },
+          {
+            type: "text",
+            content:
+              "• Si la orden está aprobada para salir, el warehouse (Karen / Aida) genera la etiqueta (label) de UPS e imprime toda la documentación cargada en Mintsoft (Packing List, Carton Labels, etc.)."
+          },
+          {
+            type: "text",
+            content:
+              "• Si la orden no está aprobada para salir, el warehouse (Karen / Aida) deja la caja preparada e identificada con un sticker rojo, quedando en espera hasta recibir la autorización de despacho."
+          },
+          {
+            type: "text",
+            content:
+              "<strong>Importante:</strong> Al cargar la orden en Mintsoft se debe indicar esta condición (<strong>No aprobada para salir</strong>) en el campo <strong>Packing Notes</strong>."
+          },
+
+          {
+            type: "text",
+            content:
+              "<strong>Órdenes Boutique / Major con más de 1 caja</strong>"
+          },
+          {
+            type: "text",
+            content:
+              "• Si cuentan con la aprobación para salir, nosotros generamos las etiquetas de UPS junto con la documentación requerida por el Major y enviamos todo al warehouse por correo electrónico con el asunto <strong>'PARA SALIR'</strong>, para que procedan con el despacho."
+          },
+
+          {
+            type: "button",
+            action: "caja_armada_ejemplo",
+            content: "Caja armada - Ejemplo"
+          },
+
+          {
+            type: "text",
+            content:
+              "<strong>Importante:</strong> Actualmente estamos atravesando un proceso de cambios operativos, por lo que esta información podrá actualizarse y modificarse en adelante."
           },
           {
             type: "text",
@@ -602,7 +627,7 @@ function Index() {
           </div>
 
           <h1 className="mt-6 text-5xl font-bold tracking-tight md:text-7xl">
-            Proceso{" "}
+            Onboarding{" "}
             <span
               className="bg-clip-text text-transparent"
               style={{ backgroundImage: "var(--gradient-hero)" }}
@@ -830,7 +855,7 @@ function Index() {
           </section>
 
           <footer className="mt-20 border-t border-border pt-8 text-center text-xs text-muted-foreground">
-            Proceso 5411 — Guía interactiva operativa
+            Onboarding 5411 — Guía interactiva operativa
           </footer>
         </main>
       </div>
@@ -1238,6 +1263,18 @@ function StageWarehouseColumn({
               >
                 <Play className="h-4 w-4 fill-current" />
                 Ver Video  - Armar la orden
+              </button>
+              <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">2. El warehouse empieza a armar la caja</p>
+              <button
+                type="button"
+                onClick={() => onTriggerMedia("Armar_Caja")}
+                className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
+                style={{
+                  background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
+                }}
+              >
+                <Play className="h-4 w-4 fill-current" />
+                Se empieza a pickear y explicación de fineline (MAJORS)
               </button>
             </div>
           )}
