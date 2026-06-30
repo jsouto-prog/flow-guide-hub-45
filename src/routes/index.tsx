@@ -121,7 +121,7 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio" |
   Video_operativo_outbound: {
     title: "Video_operativo_outbound",
     type: "video",
-    src: "URL_DEL_VIDEO_O_GUIA" // Video operativo outbound
+    src: "https://www.youtube.com/embed/5ZhUPymlAzc" // Video operativo outbound
   },
   crossDockGuide: {
     title: "Guía de Cross Dock",
@@ -1237,7 +1237,7 @@ function StageWarehouseColumn({
                 }}
               >
                 <Play className="h-4 w-4 fill-current" />
-                Ver Video Operativo Outbound
+                Ver Video  - Armar la orden
               </button>
             </div>
           )}
