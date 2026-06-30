@@ -82,7 +82,8 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio" |
   labels: { title: "Cómo Enviar labels", type: "video", src: "https://www.youtube.com/embed/Ox7jbakLZK8" },
   compare_tracking: { title: "ASN REPORT", type: "video", src: "https://www.youtube.com/embed/HiEPR1qTa6E" }, 
   warehouse_camilo: { title: "Video del Warehouse - Camilo", type: "video", src: "https://www.youtube.com/embed/0MqtGJ3c_pY" },
-  audio_camilo: { title: "Perspectiva de Camilo - Audio", type: "audio", src: "audio camilo" },
+  audio_camilo: { title: "Perspectiva de Camilo - Audio", type: "video", src: "https://www.youtube.com/embed/89CBuovfewA" },
+  audio_samuel: { title: "Perspectiva de Samuel - Audio", type: "video", src: "https://www.youtube.com/embed/xeYgRup3cC4" },
   samuel_inbound: { title: "Video de Samuel", type: "video", src: "https://www.youtube.com/embed/Uu0Lnk4ikEU" },
   generic_warehouse: { title: "Video del Warehouse", type: "video", src: "https://www.youtube.com/embed/eJvWNrbTwZc?autoplay=1&rel=0" },
   recepcion_ordenes: {
@@ -277,7 +278,7 @@ const STAGES: Stage[] = [
         blocks: [
           {
             type: "text",
-            content: 'Mandar a armar una orden significa solicitar al warehouse que prepare el pedido recibido por parte de la marca. Hay que cargar la orden en Mintsoft utilizando un template llamado <a href="TU_LINK_DE_GOOGLE_SHEETS_AQUI" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: underline; font-weight: 500;">SOL X TEST</a>. Una vez finalizado el armado, el warehouse enviará una fotografía donde se visualizan las medidas de la caja.'
+            content: 'Mandar a armar una orden significa solicitar al warehouse que prepare el pedido recibido por parte de la marca. Hay que cargar la orden en Mintsoft utilizando un template llamado <a href="https://docs.google.com/spreadsheets/d/1tTvWVIygN5TXWkee9eNk9JFZB5tOBS3A90u_HqixFUc/edit?gid=896359184#gid=896359184" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; text-decoration: underline; font-weight: 500;">SOL X TEST</a>. Una vez finalizado el armado, el warehouse enviará una fotografía donde se visualizan las medidas de la caja.'
           },
           {
             type: "text",
@@ -1171,6 +1172,35 @@ function StageWarehouseColumn({
                 <Play className="h-4 w-4 fill-current" />
                 Video de Samuel
               </button>
+              {/* Audio Samuel Independiente */}
+              <div className="border-t pt-4">
+                <div className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  Audio de Samuel explicando el proceso
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => onTriggerMedia("audio_samuel")}
+                  className="flex w-full items-center gap-3 rounded-2xl border border-border bg-muted/20 px-4 py-3 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02]"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                    🎤
+                  </div>
+
+                  <div className="flex-1 text-left">
+                    <div className="font-semibold">
+                      Perspectiva de Samuel
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Explicación del proceso
+                    </div>
+                  </div>
+
+                  <span className="text-xs text-muted-foreground">
+                    ▶ Audio
+                  </span>
+                </button>
+              </div>
               
               <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">
                 3. Luego de que Samuel termina de escanear la mercadería se agrupa en RS TRANSIT para luego darse locación en su correspondiente Rack/ bin.
