@@ -85,6 +85,8 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio" |
   warehouse_camilo: { title: "Video del Warehouse - Camilo", type: "video", src: "https://www.youtube.com/embed/0MqtGJ3c_pY" },
   audio_camilo: { title: "Perspectiva de Camilo - Audio", type: "video", src: "https://www.youtube.com/embed/89CBuovfewA" },
   audio_samuel: { title: "Perspectiva de Samuel - Audio", type: "video", src: "https://www.youtube.com/embed/xeYgRup3cC4" },
+  audio_nai: { title: "Perspectiva de Nai - Audio", type: "video", src: "https://www.youtube.com/embed/t3X5y8-8F9Q" },
+  audio_karen: { title: "Perspectiva de Karen - Audio", type: "video", src: "https://www.youtube.com/embed/FyfDM4Bkalc" },
   samuel_inbound: { title: "Video de Samuel", type: "video", src: "https://www.youtube.com/embed/Uu0Lnk4ikEU" },
   generic_warehouse: { title: "Video del Warehouse", type: "video", src: "https://www.youtube.com/embed/eJvWNrbTwZc?autoplay=1&rel=0" },
   recepcion_ordenes: {
@@ -429,57 +431,43 @@ const STAGES: Stage[] = [
   {
     id: "shipping",
     number: 3,
-    name: "Shipping y Returns",
-    short: "Despacho, freight y devoluciones",
+    name: "Returns",
+    short: "Devoluciones",
     objective:
-      "Despachar las órdenes preparadas mediante el carrier correcto y gestionar devoluciones.",
-    responsible: "Equipo Shipping + Warehouse",
+      "Gestionar las devoluciones de nuestros clientes",
+    responsible: "Equipo BS AS",
     inputs: ["Pedidos armados y etiquetados"],
     activities: [
       {
-        title: "A) UPS AUTOMÁTICO",
-        detail: "Integración Mintsoft + UPS.",
-        items: [
-          "Tracking Number",
-          "Commercial Invoice",
-          "Labels",
-          "Total Cost",
-          "Warehouse: la etiqueta sale integrada, solo deben pegarla y despachar",
-        ],
-      },
-      {
-        title: "B) UPS MANUAL",
-        detail: "El warehouse manda foto, dimensiones, peso y commercial invoice.",
-        items: [
-          "Peso",
-          "Dimensiones",
-          "Reference 1 = PO",
-          "Reference 2 = Marca",
-          "Third Party UPS Account",
-          "Labels",
-          "Tracking Number",
-          "Warehouse: espera la label final para pegarla antes del pickup",
-        ],
-      },
-      {
-        title: "C) TFORCE FREIGHT (PALLETS)",
-        detail: "Para cargas grandes, pallets y freighttttt.",
-        items: [
-          "BOL Documents",
-          "Pallets",
-          "Tracking freight",
-          "4 copias BOL: 2 pallet + 1 chofer + 1 warehouse",
-          "Warehouse: consolida pallets y prepara documentación para camión freight",
-        ],
-      },
-      {
-        title: "D) RETURNS",
-        detail: "Flujo: invertir direcciones, generar return label, pickup opcional.",
-        items: [
-          "Ref 1: WH RETURN - Boutique",
-          "Ref 2: Marca",
-          "Warehouse: reciben retorno, reingresan stock y validan estado físico",
-        ],
+        title: " RETURNS",
+        detail: "En algunos casos, una marca puede solicitar que generes una return label para su cliente. Cuando esto sucede, deberás crearla manualmente en UPS. Para hacerlo, es importante contar con la siguiente información:",
+        blocks:[
+          {
+            type: "text",
+            content:
+              '<div style="margin-top: 14px; margin-bottom: 8px;">• Datos completos del remitente (quien envía el paquete).</div>'
+          },
+          {
+            type: "text",
+            content:
+              " • Peso de cada caja y medidas de la caja."
+          },
+          {
+            type: "text",
+            content:
+              "En el campo Reference, siempre se debe ingresar el nombre de la marca + Return (por ejemplo: BrandName - Return). Esto facilita la identificación del envío cuando llega al warehouse."
+          },
+          {
+            type: "text",
+            content:
+              "También puede pasar que la return label la genere la marca y te avise/ o no que está volviendo mercadería."
+          },
+          {
+            type: "text",
+            content:
+              "Es importante estar en el grupo de slack #returns- wholesale, ya que allí las chicas van anotando que se proceso o que necesita revision de tu parte"
+          },
+        ]
       },
     ],
     docs: ["UPS Labels", "Commercial Invoice", "BOL Documents", "Return Labels"],
@@ -1281,6 +1269,34 @@ function StageWarehouseColumn({
                 <Play className="h-4 w-4 fill-current" />
                 Se empieza a pickear y explicación de fineline (MAJORS)
               </button>
+              {/* Audio Karen Independiente */}
+              <div className="border-t pt-4">
+                <div className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  Audio de Karen 
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => onTriggerMedia("audio_karen")}
+                  className="flex w-full items-center gap-3 rounded-2xl border border-border bg-muted/20 px-4 py-3 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02]"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                    🎤
+                  </div>
+
+                  <div className="flex-1 text-left">
+                    <div className="font-semibold">
+                      Perspectiva de Karen
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Explicación del proceso
+                    </div>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    ▶ Audio
+                  </span>
+                </button>
+              </div>
               <button
                 type="button"
                 onClick={() => onTriggerMedia("Armar_Caja_Boutique")}
@@ -1292,6 +1308,35 @@ function StageWarehouseColumn({
                 <Play className="h-4 w-4 fill-current" />
                 Se empieza a pickear (Boutiques)
               </button>
+              {/* Audio Nai Independiente */}
+              <div className="border-t pt-4">
+                <div className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  Audio de Nai 
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => onTriggerMedia("audio_nai")}
+                  className="flex w-full items-center gap-3 rounded-2xl border border-border bg-muted/20 px-4 py-3 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02]"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                    🎤
+                  </div>
+
+                  <div className="flex-1 text-left">
+                    <div className="font-semibold">
+                      Perspectiva de Nai
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Explicación del proceso
+                    </div>
+                  </div>
+
+                  <span className="text-xs text-muted-foreground">
+                    ▶ Audio
+                  </span>
+                </button>
+              </div>
               <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">4. El warehouse envía foto de la caja armada</p>
               <button
                 type="button"
