@@ -1337,7 +1337,7 @@ function StageWarehouseColumn({
                   </span>
                 </button>
               </div>
-              <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">4. El warehouse envía foto de la caja armada</p>
+              <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">3. El warehouse envía foto de la caja armada</p>
               <button
                 type="button"
                 onClick={() => onTriggerMedia("caja_armada_ejemplo")}
@@ -1347,6 +1347,151 @@ function StageWarehouseColumn({
                 }}
               >
                 Caja armada - Ejemplo
+              </button>
+              <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">4. Etapa PS: El warehouse (Ana) imprimió en el transcurso del día las etiquetas que armamos manual y enviamos por correo electrónico junto con LOS PACKING LIST Y CARTON LABELS EN CASO DE SER NECESARIAS.Y prepara las cajas,  dejando todo listo para la llegada del camión de UPS, prevista aproximadamente entre las 16-17hs.</p>
+              <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">5. LLega el camion de UPS y se lleva las cajas a sus destinos</p>
+
+
+            </div>
+          )}
+          {s.id === "shipping" && ( //WAREHOUSE ETAPA RETURNS EDITAR ACA
+            <div className="w-full mt-3 space-y-4">
+              <div className="py-2 text-center text-xl font-extrabold text-blue-600">
+                Etapa Camilo
+              </div>
+              <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">{s.warehouse}</p>
+              {/* Video Camilo */}
+              <button
+                type="button"
+                onClick={() => onTriggerMedia("warehouse_camilo")}
+                className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
+                style={{
+                  background:
+                    warehouseAccent?.icon ??
+                    `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
+                }}
+              >
+                <Play className="h-4 w-4 fill-current" />
+                Video del Warehouse
+              </button>
+
+              {/* Ejemplo Slack */}
+              <div className="border-t pt-4">
+                <div className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  Ejemplo
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setImageModal({
+                      src: slackConfirmaLlegadaAsset,
+                      alt: "Ejemplo de confirmación en Slack",
+                    })
+                  }
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-3 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <ScanLine className="h-4 w-4 text-primary" />
+                  Ver foto de Slack
+                </button>
+              </div>
+
+              {/* Audio Camilo Independiente */}
+              <div className="border-t pt-4">
+                <div className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  Audio de Camilo explicando el proceso
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => onTriggerMedia("audio_camilo")}
+                  className="flex w-full items-center gap-3 rounded-2xl border border-border bg-muted/20 px-4 py-3 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02]"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                    🎤
+                  </div>
+
+                  <div className="flex-1 text-left">
+                    <div className="font-semibold">
+                      Perspectiva de Camilo
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Explicación del proceso
+                    </div>
+                  </div>
+
+                  <span className="text-xs text-muted-foreground">
+                    ▶ Audio
+                  </span>
+                </button>
+              </div>
+
+              <div className="my-2 border-t border-border" />
+
+              {/* Samuel Section */}
+              <div className="pt-2 text-center text-xl font-extrabold text-green-600">
+                Etapa Samuel
+              </div>
+
+              <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">
+                2. De acuerdo con las prioridades, Samuel retira las cajas de RS y las lleva a su mesa de trabajo. Luego imprime las etiquetas (labels), organiza las cajas en el orden correspondiente, coloca las etiquetas y comienza el proceso de escaneo.
+              </div>
+
+              {/* Video Samuel Independiente con Estilo Solicitado */}
+              <button
+                type="button"
+                onClick={() => onTriggerMedia("samuel_inbound")}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <Play className="h-4 w-4 fill-current" />
+                Video de Samuel
+              </button>
+              {/* Audio Samuel Independiente */}
+              <div className="border-t pt-4">
+                <div className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  Audio de Samuel explicando el proceso
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => onTriggerMedia("audio_samuel")}
+                  className="flex w-full items-center gap-3 rounded-2xl border border-border bg-muted/20 px-4 py-3 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02]"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                    🎤
+                  </div>
+
+                  <div className="flex-1 text-left">
+                    <div className="font-semibold">
+                      Perspectiva de Samuel
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Explicación del proceso
+                    </div>
+                  </div>
+
+                  <span className="text-xs text-muted-foreground">
+                    ▶ Audio
+                  </span>
+                </button>
+              </div>
+
+              <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">
+                3. Luego de que Samuel termina de escanear la mercadería se agrupa en RS TRANSIT para luego darse locación en su correspondiente Rack/ bin.
+              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setImageModal({
+                    src: racks,
+                    alt: "Ejemplo de confirmación en Slack",
+                  })
+                }
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-3 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <ScanLine className="h-4 w-4 text-primary" />
+                PLANO DEL WAREHOUSE DE LOS RACKS
               </button>
             </div>
           )}
