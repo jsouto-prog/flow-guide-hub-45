@@ -1546,7 +1546,7 @@ function Activity({
               {activity.blocks.map((block, idx) => {
                 if (block.type === "text") {
                   return (
-                    <p
+                    <div
                       key={idx}
                       className="text-sm leading-relaxed text-muted-foreground"
                       dangerouslySetInnerHTML={{ __html: block.content || "" }}
