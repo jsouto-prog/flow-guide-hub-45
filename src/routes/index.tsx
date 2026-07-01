@@ -129,6 +129,11 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio" |
     type: "video",
     src: "https://www.youtube.com/embed/37yqiN-ceG4" // Video operativo outbound
   },
+  Armar_Caja_Boutique: {
+    title: "Armar_Caja_Boutique",
+    type: "video",
+    src: "https://www.youtube.com/embed/QFwc7Wt3hUo" // Video operativo outbound
+  },
   crossDockGuide: {
     title: "Guía de Cross Dock",
     type: "video",
@@ -1275,6 +1280,28 @@ function StageWarehouseColumn({
               >
                 <Play className="h-4 w-4 fill-current" />
                 Se empieza a pickear y explicación de fineline (MAJORS)
+              </button>
+              <button
+                type="button"
+                onClick={() => onTriggerMedia("Armar_Caja_Boutique")}
+                className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
+                style={{
+                  background: warehouseAccent?.icon ?? `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
+                }}
+              >
+                <Play className="h-4 w-4 fill-current" />
+                Se empieza a pickear (Boutiques)
+              </button>
+              <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">4. El warehouse envía foto de la caja armada</p>
+              <button
+                type="button"
+                onClick={() => onTriggerMedia("caja_armada_ejemplo")}
+                className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
+                style={{
+                  background:  `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
+                }}
+              >
+                Caja armada - Ejemplo
               </button>
             </div>
           )}
