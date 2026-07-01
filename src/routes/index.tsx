@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import logisticsFlowAsset from "@/assets/proceso5411.png";
 import DependeMarca from "@/assets/DependeMarca.png";
-import warehouseBg from "@/assets/Warehouse.png";
+import mapa from "@/assets/Mapa.png";
 import hero from "@/assets/Comunicacion.png";
 import slackConfirmaLlegadaAsset from "@/assets/Slack.png";
 import racks from "@/assets/racks.png";
@@ -10,6 +10,8 @@ import cajaArmada from "@/assets/cajaArmada.png";
 import pedirAprobacion from "@/assets/Autorizacion.png";
 import warehouseVideo from "@/assets/WarehouseVideo.mp4";
 import ordenEjemplo from "@/assets/orden.png";
+import grupoReturns from "@/assets/GrupoReturn.png";
+import cajaPosta from "@/assets/CajaPosta.jpeg";
 import {
   ClipboardList,
   Warehouse,
@@ -50,7 +52,7 @@ export const Route = createFileRoute("/")({
 });
 
 // Definición de tipos para soportar acciones multimedia específicas
-type ActionType = "asn" | "box" | "labels" | "tracker" | "compare_tracking" | "recepcion_ordenes" | "cargar_orden_mintsoft" | "mandar_a_armar_orden" | "caja_armada_ejemplo" | "explicacion_ups_tracker" | "ejemplo_autorizacion" | "crossDockGuide";;
+type ActionType = "asn" | "box" | "labels" | "tracker" | "compare_tracking" | "recepcion_ordenes" | "cargar_orden_mintsoft" | "mandar_a_armar_orden" | "caja_armada_ejemplo" | "explicacion_ups_tracker" | "ejemplo_autorizacion" | "crossDockGuide" | "returns_video" | "returns_slack" | "cajaLista";
 
 type Stage = {
   id: string;
@@ -83,6 +85,8 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio" |
   labels: { title: "Cómo Enviar labels", type: "video", src: "https://www.youtube.com/embed/Ox7jbakLZK8" },
   compare_tracking: { title: "ASN REPORT", type: "video", src: "https://www.youtube.com/embed/HiEPR1qTa6E" }, 
   warehouse_camilo: { title: "Video del Warehouse - Camilo", type: "video", src: "https://www.youtube.com/embed/0MqtGJ3c_pY" },
+  ari_returns: { title: "Video del Warehouse - Ari", type: "video", src: "https://www.youtube.com/embed/pfeDuQki4rA" },
+  two_boxes: { title: "Video del Warehouse - Two Boxes", type: "video", src: "https://www.youtube.com/embed/dc-zu37tXYI" },
   audio_camilo: { title: "Perspectiva de Camilo - Audio", type: "video", src: "https://www.youtube.com/embed/89CBuovfewA" },
   audio_samuel: { title: "Perspectiva de Samuel - Audio", type: "video", src: "https://www.youtube.com/embed/xeYgRup3cC4" },
   audio_nai: { title: "Perspectiva de Nai - Audio", type: "video", src: "https://www.youtube.com/embed/t3X5y8-8F9Q" },
@@ -98,7 +102,7 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio" |
   cargar_orden_mintsoft: {
     title: "Cómo cargar una orden",
     type: "video",
-    src: "URL_DEL_VIDEO_O_GUIA"
+    src: "https://www.youtube.com/embed/gQlhAAuWubI"
   },
   mandar_a_armar_orden: {
     title: "Cómo mandar a armar una orden",
@@ -109,6 +113,11 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio" |
     title: "Caja armada - Ejemplo",
     type: "image",
     src: cajaArmada,
+  },
+  cajaLista: { //estan inversas
+    title: "Orden armada - Ejemplo",
+    type: "image",
+    src: cajaPosta,
   },
 
   explicacion_ups_tracker: {
@@ -141,6 +150,16 @@ const MEDIA_RESOURCES: Record<string, { title: string; type: "video" | "audio" |
     type: "video",
     src: "https://app.notion.com/p/Armado-de-Ordenes-3183d576fa0280848566d0081bb6b3cc",
   },
+  returns_video: {
+    title: "Returns Video",
+    type: "video",
+    src: "https://www.youtube.com/",//para un futuro si alguien quiere mostrar un return en vivo
+  },
+  returns_slack: {
+    title: "Returns Slack Group",
+    type: "image",
+    src: grupoReturns, 
+  },
 };
 
 const STAGES: Stage[] = [
@@ -167,7 +186,7 @@ const STAGES: Stage[] = [
       },
       {
         title: "2. Tracker de la marca",
-        detail: "Cada marca tiene si tracker donde ponemos la información de las órdenes y los cargamentos. Una vez generado el ASN debemos anotarlo en la hoja de cargamentos (ASN# +tracking, unidades, caja y ETA).",
+        detail: "Cada marca tiene su tracker donde ponemos la información de las órdenes y los cargamentos. Una vez generado el ASN debemos anotarlo en la hoja de cargamentos (ASN# +tracking, unidades, caja y ETA).",
         blocks: [{ type: "button", action: "tracker", content: "Explicación de Tracker" }],
       },
       {
@@ -175,7 +194,7 @@ const STAGES: Stage[] = [
         blocks: [
           {
             type: "text",
-            content: "Una vez que se recibe la foto de camilo por el grupo, anotamos en el Tracking and hacemos el envío de las carton labes (email INBOUND con el nombre de la marca, el número de cargamento y carton labels). Si hay cajas faltantes esperar a que llegue el restante y hablar con la marca si hace falta."
+            content: "Una vez que se recibe la foto de Camilo por el grupo, anotamos  el numero de tracking and hacemos el envío de las carton labes (email INBOUND con el nombre de la marca, el número de cargamento y carton labels). Si hay cajas faltantes esperar a que llegue el restante y hablar con la marca si hace falta."
           },
           {
             type: "button",
@@ -186,7 +205,7 @@ const STAGES: Stage[] = [
       },
       {
         title: "4. Validation Tracking vs ASN -  Respuesta a la marca",
-        detail: "Se compara el tracking físico contra el ASN cargado en el sistema. Una vez que finaliza el escaneo, se le envía a la marca el ASN REPORT.(Si es que lo pide)",
+        detail: "Se compara las unidades  fisicas contra el ASN cargado en sistema.  Una vez que finaliza el escaneo, se le envía a la marca el ASN REPORT.",
         blocks: [{ type: "button", action: "compare_tracking", content: "ASN REPORT" }],
       },
     ],
@@ -314,14 +333,14 @@ const STAGES: Stage[] = [
               "Una vez que una orden se encuentra en estado <strong>PACKED</strong>, significa que el pedido ya fue procesado por el warehouse (pickeo y packeo) y está listo para ser despachado."
           },
           {
-            type: "text",
-            content:
-              "La recepción de la foto enviada por el warehouse confirma que la caja ya fue armada y está lista para los siguientes pasos del proceso."
+            type: "button",
+            action: "cajaLista",
+            content: "Caja armada - Ejemplo"
           },
           {
             type: "button",
             action: "caja_armada_ejemplo",
-            content: "Caja armada - Ejemplo"
+            content: "Orden armada - Ejemplo"
           },
           {
             type: "text",
@@ -390,22 +409,12 @@ const STAGES: Stage[] = [
           {
             type: "text",
             content:
-              "En algunos casos, aunque la orden esté preparada, no puede despacharse inmediatamente. Es necesario contar con la autorización del cliente, del Major o de la Boutique antes de coordinar la salida desde el warehouse."
+              "Hay órdenes de Majors que requieren una aprobación previa antes de ser despachadas. Este proceso se denomina ruteo y puede realizarse por correo electrónico o a través de un portal específico. En ambos casos, es importante dejar constancia de la solicitud de aprobación en el Tracker. Una vez despachada la orden, se debe registrar en Mintsoft en caso de que haya sido generada de forma manual. Además, se debe actualizar el estado de la orden en el Tracker para indicar que el envío ya fue realizado."
           },
           {
             type: "button",
             action: "ejemplo_autorizacion",
             content: "Autorización - Ver ejemplo"
-          },
-          {
-            type: "text",
-            content:
-              "Una vez solicitada la autorización, se debe actualizar el Tracker indicando que la orden se encuentra 'routeada'. Esto significa que ya se notificó al cliente que la caja está lista para salir del warehouse y que se está esperando la aprobación final para proceder con el despacho."
-          },
-          {
-            type: "text",
-            content:
-              "Cuando se recibe la autorización, o cuando la orden no requiere aprobación previa, se puede proceder con el despacho. Este proceso puede realizarse de forma manual a través de UPS o de forma automática cuando la integración entre Mintsoft y UPS ya se encuentra configurada."
           },
           {
             type: "button",
@@ -467,6 +476,11 @@ const STAGES: Stage[] = [
             content:
               "Es importante estar en el grupo de slack #returns- wholesale, ya que allí las chicas van anotando que se proceso o que necesita revision de tu parte"
           },
+          {
+            type: "button",
+            action: "returns_slack",
+            content: "Grupo de Slack Returns - Ejemplo"
+          },
         ]
       },
     ],
@@ -474,12 +488,7 @@ const STAGES: Stage[] = [
     outputs: ["Pedido despachado / Retorno reingresado"],
     dependencies: ["Batches y Preparación"],
     warehouse:
-      "Despachan según carrier o consolidan retornos. Respetan cutoff de pickup y horarios.",
-    critical: [
-      "Warehouse cierra 5:00 PM",
-      "Pickup cutoff 4:00 PM — si no está listo, queda retenido al día siguiente",
-      "PACK AND HOLD: preparar y embalar, PERO no despachar hasta autorización final",
-    ],
+      "El warehouse recibe diariamente un gran volumen de returns, tanto de Wholesale como de Ecommerce. Al día siguiente de su recepción, el equipo del warehouse comienza a clasificar los paquetes por marca para dar inicio al proceso de trabajo correspondiente.",
     phaseVar: "--phase-8",
   },
 ];
@@ -493,10 +502,10 @@ const FAQS = [
   },
   {
     q: "¿Cuál es el formato del código de un Carton?",
-    a: "DOS PALABRAS + últimos 6 dígitos del tracking + número de caja. Ejemplo: POSSE468889-001.",
+    a: "DOS PALABRAS + últimos 6 dígitos del tracking + número de caja. Ejemplo: POSSE-468889-001.",
   },
   {
-    q: "¿Cuándo envío las labels al warehouse?",
+    q: "¿Cuándo envío las carton labels al warehouse?",
     a: "Recién cuando confirman por Slack que llegaron las cajas físicamente.",
   },
   {
@@ -505,27 +514,16 @@ const FAQS = [
   },
   {
     q: "¿Qué hago si una orden queda en ONBACKORDER?",
-    a: "El stock existe pero no está ubicado correctamente. Contactar a Samu, ubicar cajas, registrar posiciones y hacer Reprocess manual.",
-  },
-  {
-    q: "¿Cuántas órdenes puedo agrupar por batch?",
-    a: "Boutique: máximo 5 órdenes por batch. Major: 1 orden por batch.",
+    a: "El stock existe pero no está ubicado correctamente. Es posible que el stock correspondiente a la orden aún no llegó o no se procesó.",
   },
   {
     q: "Cuáles son los estados de una orden?",
-    a: "Entered → Packing → Packed → Routed → Shipped.",
+    a: "Tracker: Entered → Packing → Packed → Routed Shipped. / Mintsoft: New  →  Awaiting picking  → Picked → Packed → Despatched o Invoice",
+    
   },
   {
     q: "¿Cuál es el cutoff de pickup?",
     a: "4:00 PM. El warehouse cierra a las 5:00 PM. Si no está listo antes del cutoff, queda retenido para el día siguiente.",
-  },
-  {
-    q: "¿Qué significa Pack and Hold?",
-    a: "Preparar y embalar las cajas PERO no despachar todavía. Quedan armadas, etiquetadas y retenidas en custodia hasta recibir autorización final.",
-  },
-  {
-    q: "¿Cuántas copias del BOL se necesitan en TForce Freight?",
-    a: "4 copias: 2 para el pallet, 1 para el chofer y 1 para el warehouse.",
   },
 ];
 
@@ -778,41 +776,6 @@ function Index() {
               </div>
             )}
           </div>
-
-          {/* Horarios + Pack and Hold */}
-          <section id="horarios" className="mt-16 grid gap-6 md:grid-cols-2 scroll-mt-8">
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
-              <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Horarios operativos
-              </div>
-              <h3 className="mt-1 text-2xl font-bold">Cutoffs & cierre</h3>
-              <div className="mt-6 space-y-3">
-                <Stat label="Warehouse closes" value="5:00 PM" />
-                <Stat label="Pickup cutoff" value="4:00 PM" />
-              </div>
-              <p className="mt-4 text-sm text-muted-foreground">
-                Si no está listo antes del cutoff, queda retenido para el día siguiente.
-              </p>
-            </div>
-            <div
-              className="rounded-2xl border border-border p-6 shadow-[var(--shadow-soft)]"
-              style={{
-                background: "linear-gradient(135deg, oklch(0.96 0.04 60), oklch(0.94 0.06 40))",
-              }}
-            >
-              <div
-                className="text-xs font-bold uppercase tracking-wider"
-                style={{ color: "var(--phase-7)" }}
-              >
-                Pack and Hold
-              </div>
-              <h3 className="mt-1 text-2xl font-bold">Preparar pero no despachar</h3>
-              <p className="mt-4 text-sm leading-relaxed">
-                Las cajas quedan armadas, etiquetadas y retenidas en custodia hasta recibir
-                autorización final del cliente.
-              </p>
-            </div>
-          </section>
 
           {/* FAQ */}
           <section id="faq" className="mt-16 scroll-mt-8">
@@ -1160,7 +1123,7 @@ function StageWarehouseColumn({
                       Perspectiva de Camilo
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      Explicación del proceso
+                      PUNTO CRITICO/ VALIDACIONES
                     </div>
                   </div>
 
@@ -1210,7 +1173,7 @@ function StageWarehouseColumn({
                       Perspectiva de Samuel
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      Explicación del proceso
+                      PUNTO CRITICO/ VALIDACIONES
                     </div>
                   </div>
 
@@ -1289,7 +1252,7 @@ function StageWarehouseColumn({
                       Perspectiva de Karen
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      Explicación del proceso
+                      PUNTO CRITICO/ VALIDACIONES
                     </div>
                   </div>
                   <span className="text-xs text-muted-foreground">
@@ -1328,7 +1291,7 @@ function StageWarehouseColumn({
                       Perspectiva de Nai
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      Explicación del proceso
+                      PUNTO CRITICO/ VALIDACIONES
                     </div>
                   </div>
 
@@ -1337,10 +1300,10 @@ function StageWarehouseColumn({
                   </span>
                 </button>
               </div>
-              <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">3. El warehouse envía foto de la caja armada</p>
+              <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">3. El warehouse termina de armar la caja</p>
               <button
                 type="button"
-                onClick={() => onTriggerMedia("caja_armada_ejemplo")}
+                onClick={() => onTriggerMedia("cajaLista")}
                 className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{
                   background:  `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
@@ -1348,7 +1311,7 @@ function StageWarehouseColumn({
               >
                 Caja armada - Ejemplo
               </button>
-              <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">4. Etapa PS: El warehouse (Ana) imprimió en el transcurso del día las etiquetas que armamos manual y enviamos por correo electrónico junto con LOS PACKING LIST Y CARTON LABELS EN CASO DE SER NECESARIAS.Y prepara las cajas,  dejando todo listo para la llegada del camión de UPS, prevista aproximadamente entre las 16-17hs.</p>
+              <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">4. Etapa PS: El warehouse (Ana) imprime durante el transcurso del día las etiquetas que armamos manualmente y enviamos por correo electrónico, junto con los packing lists y las carton labels, en caso de ser necesarias. Luego prepara las cajas, dejando todo listo para la llegada del camión de UPS, prevista aproximadamente entre las 16:00 y las 17:00 hs.</p>
               <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">5. LLega el camion de UPS y se lleva las cajas a sus destinos</p>
 
 
@@ -1356,14 +1319,11 @@ function StageWarehouseColumn({
           )}
           {s.id === "shipping" && ( //WAREHOUSE ETAPA RETURNS EDITAR ACA
             <div className="w-full mt-3 space-y-4">
-              <div className="py-2 text-center text-xl font-extrabold text-blue-600">
-                Etapa Camilo
-              </div>
               <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">{s.warehouse}</p>
-              {/* Video Camilo */}
+              {/* Video Ari Returns */}
               <button
                 type="button"
-                onClick={() => onTriggerMedia("warehouse_camilo")}
+                onClick={() => onTriggerMedia("ari_returns")}
                 className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{
                   background:
@@ -1374,125 +1334,33 @@ function StageWarehouseColumn({
                 <Play className="h-4 w-4 fill-current" />
                 Video del Warehouse
               </button>
-
-              {/* Ejemplo Slack */}
-              <div className="border-t pt-4">
-                <div className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Ejemplo
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setImageModal({
-                      src: slackConfirmaLlegadaAsset,
-                      alt: "Ejemplo de confirmación en Slack",
-                    })
-                  }
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-3 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  <ScanLine className="h-4 w-4 text-primary" />
-                  Ver foto de Slack
-                </button>
-              </div>
-
-              {/* Audio Camilo Independiente */}
-              <div className="border-t pt-4">
-                <div className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Audio de Camilo explicando el proceso
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => onTriggerMedia("audio_camilo")}
-                  className="flex w-full items-center gap-3 rounded-2xl border border-border bg-muted/20 px-4 py-3 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02]"
-                >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
-                    🎤
-                  </div>
-
-                  <div className="flex-1 text-left">
-                    <div className="font-semibold">
-                      Perspectiva de Camilo
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Explicación del proceso
-                    </div>
-                  </div>
-
-                  <span className="text-xs text-muted-foreground">
-                    ▶ Audio
-                  </span>
-                </button>
-              </div>
-
-              <div className="my-2 border-t border-border" />
-
-              {/* Samuel Section */}
-              <div className="pt-2 text-center text-xl font-extrabold text-green-600">
-                Etapa Samuel
-              </div>
-
               <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">
-                2. De acuerdo con las prioridades, Samuel retira las cajas de RS y las lleva a su mesa de trabajo. Luego imprime las etiquetas (labels), organiza las cajas en el orden correspondiente, coloca las etiquetas y comienza el proceso de escaneo.
+                1. Se separan las prendas por marca.
               </div>
-
-              {/* Video Samuel Independiente con Estilo Solicitado */}
+              <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">2. Se Escanea cada prenda en Two Boxes.</div>
+              {/* Video Ari Returns */}
               <button
                 type="button"
-                onClick={() => onTriggerMedia("samuel_inbound")}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
+                onClick={() => onTriggerMedia("two_boxes")}
+                className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
+                style={{
+                  background:
+                    warehouseAccent?.icon ??
+                    `linear-gradient(135deg, var(${s.phaseVar}), oklch(from var(${s.phaseVar}) calc(l - 0.12) c h))`,
+                }}
               >
                 <Play className="h-4 w-4 fill-current" />
-                Video de Samuel
+                Video de Two Boxes
               </button>
-              {/* Audio Samuel Independiente */}
-              <div className="border-t pt-4">
-                <div className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Audio de Samuel explicando el proceso
-                </div>
+                <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">3. Realizan el Quality Check de cada prenda.</div>
 
-                <button
-                  type="button"
-                  onClick={() => onTriggerMedia("audio_samuel")}
-                  className="flex w-full items-center gap-3 rounded-2xl border border-border bg-muted/20 px-4 py-3 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02]"
-                >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
-                    🎤
-                  </div>
+                
+              <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">4. Cierran el return en el sistema.</div>
 
-                  <div className="flex-1 text-left">
-                    <div className="font-semibold">
-                      Perspectiva de Samuel
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Explicación del proceso
-                    </div>
-                  </div>
+                
+              <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">5. Notifican por Slack que el proceso fue completado (con el numero de guia)</div>
 
-                  <span className="text-xs text-muted-foreground">
-                    ▶ Audio
-                  </span>
-                </button>
-              </div>
-
-              <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">
-                3. Luego de que Samuel termina de escanear la mercadería se agrupa en RS TRANSIT para luego darse locación en su correspondiente Rack/ bin.
-              </div>
-
-              <button
-                type="button"
-                onClick={() =>
-                  setImageModal({
-                    src: racks,
-                    alt: "Ejemplo de confirmación en Slack",
-                  })
-                }
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-3 text-sm font-semibold transition-all hover:bg-secondary hover:scale-[1.02] active:scale-[0.98]"
-              >
-                <ScanLine className="h-4 w-4 text-primary" />
-                PLANO DEL WAREHOUSE DE LOS RACKS
-              </button>
+              <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">6. Cuando una caja se llena, se le da locación en los racks.</div>
             </div>
           )}
         </div>
@@ -1762,6 +1630,19 @@ function Activity({
                                     mercadería llegue al warehouse, las etiquetas ya se
                                     encuentren disponibles.
                                   </p>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    window.open(
+                                      "https://drive.google.com/drive/folders/1L72v9unY_jTAdUreHthTsxpTrNmyF3aO?usp=sharing",
+                                      "_blank",
+                                      "noopener,noreferrer"
+                                    )
+                                  }
+                                  className="mt-4 rounded-lg bg-yellow-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-yellow-700"
+                                >
+                                  Ver carpeta de Finelines
+                                </button>
                                 </div>
                               </div>
                             )}
@@ -1963,7 +1844,7 @@ const FLOW_HOTSPOTS: {
 function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
   const [hovered, setHovered] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [activeModalImage, setActiveModalImage] = useState<"marca" | "envio" | null>(null);
+  const [activeModalImage, setActiveModalImage] = useState<"marca" | "envio" | "mapa" | null>(null);
   const active = hovered ?? 1;
   const activeHotspot = FLOW_HOTSPOTS.find((h) => h.number === active)!;
 
@@ -2061,6 +1942,28 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
                       Comunicación
                     </div>
                   )}
+                  {h.number === 2 && (
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        setActiveModalImage("mapa");
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          setActiveModalImage("mapa");
+                        }
+                      }}
+                      aria-label="Mapa Warehouse. Abrir modal"
+                      className="absolute left-1/2 top-60 z-10 -translate-x-1/2 flex items-center gap-2 rounded-full border border-primary/20 bg-primary px-8 py-3 text-sm font-bold text-primary-foreground whitespace-nowrap shadow-lg shadow-primary/20 transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 hover:shadow-xl hover:shadow-primary/30 active:scale-95 cursor-pointer"
+                    >
+                      Mapa Warehouse
+                    </div>
+                  )}
 
                   <span
                     className="pointer-events-none absolute inset-y-0 left-0 w-px opacity-30"
@@ -2083,11 +1986,19 @@ function LogisticsFlowMap({ onJump }: { onJump: (id: string) => void }) {
           <ImageModal
             open={!!activeModalImage}
             onClose={() => setActiveModalImage(null)}
-            src={activeModalImage === "marca" ? DependeMarca : hero}
+            src={
+              activeModalImage === "marca"
+                ? DependeMarca
+                : activeModalImage === "mapa"
+                  ? mapa
+                  : hero
+            }
             alt={
               activeModalImage === "marca"
                 ? "Depende de la Marca"
-                : "La marca envía un cargamento"
+                : activeModalImage === "mapa"
+                  ? "Mapa del Warehouse"
+                  : "La marca envía un cargamento"
             }
           />
         )}
