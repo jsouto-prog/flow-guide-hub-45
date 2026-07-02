@@ -502,7 +502,7 @@ const FAQS = [
   },
   {
     q: "¿Cuál es el formato del código de un Carton?",
-    a: "DOS PALABRAS + últimos 6 dígitos del tracking + número de caja. Ejemplo: POSSE-468889-001.",
+    a: "PRIMERAS DOS LETRAS + últimos 6 dígitos del tracking + número de caja. Ejemplo: MO-468889-001.",
   },
   {
     q: "¿Cuándo envío las carton labels al warehouse?",
@@ -1204,8 +1204,8 @@ function StageWarehouseColumn({
           )}
           {s.id === "outbound" && ( //ACA EDITAR OUTBOUND WAREHOUSE
             <div className="w-full mt-3 space-y-4">
-              <div className="py-2 text-center text-xl font-extrabold text-blue-600">
-                Etapa quien?
+              <div className="py-2 text-center text-xl font-extrabold text-green-600">
+                Etapa armado de ordenes
               </div>
               <p className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground text-justify">{s.warehouse}</p>
               {/* Ejemplo: Si querés disparar un video o audio de esta etapa */}
